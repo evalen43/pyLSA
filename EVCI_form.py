@@ -11,7 +11,7 @@ import wx.dataview as dv
 from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 import os
 
-from wx_evci_mod import TokNperM2, XML_reader
+from wx_evci_mod import TokNperM2, XML_reader,TokNperM3
 
 g=9.806
 strutype=""
