@@ -11,17 +11,17 @@ INTEGER(kind=c_int) ::  values(8)
 real(kind=c_double) :: UNITL,UNITF,E,totalwht
 real(kind=c_double), parameter :: PI=3.141592
 real(kind=c_double), parameter :: grav=9.806
-character(kind=c_char), public, dimension(:), allocatable :: nodestring(10)
-character(kind=c_char), public :: strutype(10)
-CHARACTER(kind=c_char), public :: PNAME(20)
-CHARACTER(kind=c_char), public :: PTITLE(40)
-CHARACTER (kind=c_char) :: exampletitle(80)
-character(kind=c_char), public :: filein(60)    
-CHARACTER(kind=c_char) :: fileout(80)
-CHARACTER (kind=c_char)  :: date(8)
-CHARACTER (kind=c_char) :: time(10)
-CHARACTER (kind=c_char)  :: zone(5)
-CHARACTER (kind=c_char) :: mer(1)
+character(kind=c_char,len=10), public, dimension(:), allocatable :: nodestring
+character(kind=c_char,len=10), public :: strutype
+CHARACTER(kind=c_char,len=20), public :: PNAME
+CHARACTER(kind=c_char,len=40), public :: PTITLE
+CHARACTER (kind=c_char,len=80) :: exampletitle
+character(kind=c_char,len=60), public :: filein    
+CHARACTER(kind=c_char,len=80) :: fileout
+CHARACTER (kind=c_char,len=8)  :: date
+CHARACTER (kind=c_char,len=10) :: time
+CHARACTER (kind=c_char,len=5)  :: zone
+CHARACTER (kind=c_char) :: mer
 
 logical(kind=c_bool), public :: kerr
 
@@ -40,32 +40,32 @@ end interface
 type, bind(c) :: distload
 integer(c_int) :: mem_no
 real(c_double) wa,wb,a,f(3)
-
 end type
-type, bind(c) :: femloc
-    real(c_double), dimension (:),allocatable :: fem
-    integer(c_int) :: mno
+
+type :: femloc
+    real(kind=c_double), allocatable, dimension (:) :: fem
+    integer(kind=c_int) :: mno
 end type femloc
 
-type, bind(c) :: Element
-    integer(c_int) :: inc1,inc2,sec_no,mat_no,elem_no
-    character(c_char) :: mem_name(10)
+type :: Element
+    integer(kind=c_int) :: inc1,inc2,sec_no,mat_no,elem_no
+    character(kind=c_char,len=10) :: mem_name
     real(kind=c_double) :: beta,dx,dy,dz,elem_len,axialf
 end type element
 
-type, bind(c) :: SECTION
-    real(c_double):: ax,iz, iy,ix,rz,ry,tube_od, tube_wth
-    character(c_char) :: sec_name(10)
-    !contains
-    procedure :: pipeparam
+type :: SECTION
+    real(kind=c_double):: ax,iz, iy,ix,rz,ry,tube_od, tube_wth
+    character(kind=c_char,len=10) :: sec_name
+    ! contains
+    ! procedure :: pipeparam
 end type SECTION
 
-type, bind(c) :: material
+type :: material
     REAL(kind=c_double) :: Emod,Gmod,matden,poisson
     integer(kind=c_int) :: matid
-    CHARACTER (kind=c_char) :: matname(8)
-    !contains
-    procedure :: mat_param
+    CHARACTER (kind=c_char,len=8) :: matname
+    ! contains
+    ! procedure :: mat_param
 END TYPE material
 
 type(material), ALLOCATABLE, dimension(:) :: mat_table
@@ -76,195 +76,197 @@ type(distload),allocatable, dimension(:) :: trap_load
 
 contains
 
-! subroutine inputgen()
-! use iso_fortran_env
-! !use structvarsgen
-! implicit none
-! character(c_char) :: stype(8),ulen(8),mtype(8),ufor(8),code(8),ulenb(8)
-! integer :: elemno 
-! integer(c_int) :: N1,N2,i,kelem,j,L1,L2,k,iostatus,clen,sec_id,kdsp,mat_id
-! real(c_couble) :: ax,iz,d,dx,dy,dz,Px,Py,Mz,pipeod,pipewth
+subroutine inputgen() !bind(c,name='inputgen')
+!use iso_c_binding
+use iso_fortran_env
+!use structvarsgen
+implicit none
+character(kind=c_char,len=8) :: stype,ulen,mtype,ufor,code,ulenb
+integer(kind=c_int) :: elemno 
+integer(kind=c_int) :: N1,N2,i,kelem,j,L1,L2,k,iostatus,clen,sec_id,kdsp,mat_id
+real(kind=c_double) :: ax,iz,d,dx,dy,dz,Px,Py,Mz,pipeod,pipewth
 
-! namelist /structpar/ nn,ne,nlnode,nbn,strutype,nsec,nmat,nlmem,code,nlc
-! namelist /sectype/ stype, ax, iz, pipeod, pipewth, ulen
-! namelist /mat_type/ mtype
-! namelist /nodes/ ulen
-! namelist /loadednodes/ ufor
-! namelist /boundary/ ulenb
+namelist /structpar/ nn,ne,nlnode,nbn,strutype,nsec,nmat,nlmem,code,nlc
+namelist /sectype/ stype, ax, iz, pipeod, pipewth, ulen
+namelist /mat_type/ mtype
+namelist /nodes/ ulen
+namelist /loadednodes/ ufor
+namelist /boundary/ ulenb
 
-! nne=2
-! ndf=3
-! nlc=1 
+nne=2
+ndf=3
+nlc=1 
 
-! WRITE(output_UNIT, '(a)', ADVANCE='NO')' Enter name of input file: '
-! read(INPUT_UNIT,'(a)') filein
-! open(newunit=filein_unit,file=filein,status='old', IOSTAT=iostatus)
-! IF (iostatus /= 0) then      
-!     WRITE(error_unit, *) '** Unable to open file: ', filein
-! end if  
+WRITE(output_UNIT, '(a)', ADVANCE='NO')' Enter name of input file: '
+read(INPUT_UNIT,'(a)') filein
+open(newunit=filein_unit,file=filein,status='old', IOSTAT=iostatus)
+IF (iostatus /= 0) then      
+    WRITE(error_unit, *) '** Unable to open file: ', filein
+end if  
 
-! clen=INDEX(filein,".")
-! fileout=filein(1:clen-1) // "-out.txt"
-! open(newunit=fileout_unit,file=fileout)
+clen=INDEX(filein,".")
+fileout=filein(1:clen-1) // "-out.txt"
+open(newunit=fileout_unit,file=fileout)
 
-! nn=0;ne=0;nlnode=0;nbn=0;strutype='';nsec=0;nmat=0;nlmem=0;code=''
+nn=0;ne=0;nlnode=0;nbn=0;strutype='';nsec=0;nmat=0;nlmem=0;code=''
 
-! read(filein_unit,FMT='(A80)') exampletitle
-! read(filein_unit,nml=structpar)
-! !write(fileout_unit,nml=structpar)
-! allocate(mat_table(nmat),sec_table(nsec))
-! do i=1,nmat
-!     read(filein_unit,nml=mat_type)
-! !    write(fileout_unit,nml=mat_type)
-!     mat_table(i)%matname=mtype
-!     mat_table(i)%matid=i
-!     call mat_param(mat_table(i))
-!     write(fileout_unit,'(a8,2x,i5)') 'Material ',i
-!     WRITE(fileout_unit,22) mat_table(i)%Emod,mat_table(i)%Gmod,mat_table(i)%matden, &
-!       mat_table(i)%poisson
-! 22    format(   'modulus of elasticity              ',g20.7,/, &
-!                 'shear modulus                      ',g20.7,/, &
-!                 'mass density                      ',g20.7,/, &
-!                 'poisson number                       ',f10.3)
-! enddo
+read(filein_unit,FMT='(A80)') exampletitle
+read(filein_unit,nml=structpar)
+!write(fileout_unit,nml=structpar)
+allocate(mat_table(nmat),sec_table(nsec))
+do i=1,nmat
+    read(filein_unit,nml=mat_type)
+!    write(fileout_unit,nml=mat_type)
+    mat_table(i)%matname=mtype
+    mat_table(i)%matid=i
+    call mat_param(mat_table(i))
+    write(fileout_unit,'(a8,2x,i5)') 'Material ',i
+    WRITE(fileout_unit,22) mat_table(i)%Emod,mat_table(i)%Gmod,mat_table(i)%matden, &
+      mat_table(i)%poisson
+22    format(   'modulus of elasticity              ',g20.7,/, &
+                'shear modulus                      ',g20.7,/, &
+                'mass density                      ',g20.7,/, &
+                'poisson number                       ',f10.3)
+enddo
 
-! nib=nbn*(ndf+1)
-! ndfel=nne*ndf
-! n=nn*ndf
-! kerr=.true.
-! nforc=ndfel*ne*nlc
-! PNAME="LSA-2D"
-! PTITLE="Linear Static Analysis"
+nib=nbn*(ndf+1)
+ndfel=nne*ndf
+n=nn*ndf
+kerr=.true.
+nforc=ndfel*ne*nlc
+PNAME="LSA-2D"
+PTITLE="Linear Static Analysis"
 
-! allocate(x(nn),y(nn),z(nn),ib(nib),al(n,nlc),reac(n,nlc), &
-!     w(ndf),ic(ndf), intforc(nforc),nodestring(nn), &
-!     elem_prop(ne))
+allocate(x(nn),y(nn),z(nn),ib(nib),al(n,nlc),reac(n,nlc), &
+    w(ndf),ic(ndf), intforc(nforc),nodestring(nn), &
+    elem_prop(ne))
 
-! allocate(fem_dload(ne))  
+allocate(fem_dload(ne))  
 
-! do i=1,ne
-!     fem_dload%mno=i
-!     allocate(fem_dload(i)%fem(ndfel))
-! enddo
-! al=0
-! reac=0
+do i=1,ne
+    fem_dload%mno=i
+    allocate(fem_dload(i)%fem(ndfel))
+enddo
+al=0
+reac=0
 
-! ms=0
-! write(fileout_unit,'(a18)') 'Section Properties'
-! do i=1,nsec
-!     ax=0.0;iz=0.0;pipeod=0.0;pipewth=0.0;ulen=' '
-!     read(filein_unit,nml=sectype)
-! !    write(fileout_unit,nml=sectype)
-!     UNITL=ulen2m(ulen)
-!     if(stype=="GEN") then
-!         sec_table(i)%ax=ax*UNITL**2
-!         sec_table(i)%iz=iz*UNITL**4
-!         sec_table(i)%sec_name=stype
-!     else if(stype=="PIPE") then
-!         write(fileout_unit,'(a10,i3,2x,a4,f10.3,2x,a4,f10.3)') 'section no. ',i,'od ', &
-!         pipeod,'wth ',pipewth
-!         sec_table(i)%tube_od=pipeod*UNITL
-!         sec_table(i)%tube_wth=pipewth*UNITL
-!         sec_table(i)%sec_name=stype
-!     !    write(fileout_unit,'(3f12.4)')unitl,sec_table(i)%tube_od,sec_table(i)%tube_wth
-!         call pipeparam(sec_table(i))
-!     end if
-! enddo  
+ms=0
+write(fileout_unit,'(a18)') 'Section Properties'
+do i=1,nsec
+    ax=0.0;iz=0.0;pipeod=0.0;pipewth=0.0;ulen=' '
+    read(filein_unit,nml=sectype)
+!    write(fileout_unit,nml=sectype)
+    UNITL=ulen2m(ulen)
+    if(stype=="GEN") then
+        sec_table(i)%ax=ax*UNITL**2
+        sec_table(i)%iz=iz*UNITL**4
+        sec_table(i)%sec_name=stype
+    else if(stype=="PIPE") then
+        write(fileout_unit,'(a10,i3,2x,a4,f10.3,2x,a4,f10.3)') 'section no. ',i,'od ', &
+        pipeod,'wth ',pipewth
+        sec_table(i)%tube_od=pipeod*UNITL
+        sec_table(i)%tube_wth=pipewth*UNITL
+        sec_table(i)%sec_name=stype
+    !    write(fileout_unit,'(3f12.4)')unitl,sec_table(i)%tube_od,sec_table(i)%tube_wth
+        call pipeparam(sec_table(i))
+    end if
+enddo  
 
-!       WRITE(fileout_unit,21)NN,NE,NLC,NBN,nlc!,Emod,Gmod,matden
-! 21    format(   'number of nodes                    ',i5,/,&
-!                 'number of elements                 ',i5,/,&
-!                 'number of loading cases            ',i5,/,&
-!                 'number of boundary nodes           ',i5,/,&
-!                 'number of loading cases            ',i5)
-! call header()
-! call time_now()
-! read(filein_unit,nml=nodes)
-! UNITL=ulen2m(ulen)
-! write(fileout_unit,nml=nodes)
-! !write(fileout_unit,'("Nodes")')
-! !write(fileout_unit,nml=nodes)
-! do i=1,nn
-!     if(strutype=='2DFrame' .or. strutype=='2DTruss')then
-!       read(filein_unit,fmt=*) n1,x(i),y(i)
-!       write(nodestring(i),fmt='(i10)') n1
-!       write(fileout_unit,'(i5,2f10.2)') n1,x(i),y(i)
-!       z(i)=0.0; x(i)=x(i)*UNITL; y(i)=y(i)*UNITL
-!     else
-!       read(filein_unit,fmt=*) n1,x(i),y(i)
-!       write(nodestring(i),fmt='(i10)') n1
-!       write(fileout_unit,'(i5,2f10.2)') n1,x(i),y(i)
-!       x(i)=x(i)*UNITL; y(i)=y(i)*UNITL; z(i)=z(i)*UNITL
-!     endif
-! enddo
-! write(fileout_unit,'("Elements")')
-! do i=1,ne
-!     kelem=nne*(i-1)
-!     read(filein_unit,fmt=*) elemno,n1,n2, sec_id,mat_id
-!     write(fileout_unit,'(5i5)') elemno,n1,n2,sec_id,mat_id
-!     elem_prop(i)%inc1=n1
-!     elem_prop(i)%inc2=N2
-!     elem_prop(i)%sec_no=sec_id
-!     elem_prop(i)%elem_no=elemno
-!     elem_prop(i)%beta=0.0
-!     elem_prop(i)%mat_no=mat_id
-!     dx=x(n2)-x(n1)
-!     dy=y(n2)-y(n1)
-!     dz=z(n2)-z(n1)
-!     d=sqrt(dx**2+dy**2+dz**2)
-!     elem_prop(i)%elem_len=d
-!     elem_prop(i)%dx=dx
-!     elem_prop(i)%dy=dy
-!     elem_prop(i)%dz=dz
+      WRITE(fileout_unit,21)NN,NE,NLC,NBN,nlc!,Emod,Gmod,matden
+21    format(   'number of nodes                    ',i5,/,&
+                'number of elements                 ',i5,/,&
+                'number of loading cases            ',i5,/,&
+                'number of boundary nodes           ',i5,/,&
+                'number of loading cases            ',i5)
+call header()
+call time_now()
+read(filein_unit,nml=nodes)
+UNITL=ulen2m(ulen)
+write(fileout_unit,nml=nodes)
+!write(fileout_unit,'("Nodes")')
+!write(fileout_unit,nml=nodes)
+do i=1,nn
+    if(strutype=='2DFrame' .or. strutype=='2DTruss')then
+      read(filein_unit,fmt=*) n1,x(i),y(i)
+      write(nodestring(i),fmt='(i10)') n1
+      write(fileout_unit,'(i5,2f10.2)') n1,x(i),y(i)
+      z(i)=0.0; x(i)=x(i)*UNITL; y(i)=y(i)*UNITL
+    else
+      read(filein_unit,fmt=*) n1,x(i),y(i)
+      write(nodestring(i),fmt='(i10)') n1
+      write(fileout_unit,'(i5,2f10.2)') n1,x(i),y(i)
+      x(i)=x(i)*UNITL; y(i)=y(i)*UNITL; z(i)=z(i)*UNITL
+    endif
+enddo
+write(fileout_unit,'("Elements")')
+do i=1,ne
+    kelem=nne*(i-1)
+    read(filein_unit,fmt=*) elemno,n1,n2, sec_id,mat_id
+    write(fileout_unit,'(5i5)') elemno,n1,n2,sec_id,mat_id
+    elem_prop(i)%inc1=n1
+    elem_prop(i)%inc2=N2
+    elem_prop(i)%sec_no=sec_id
+    elem_prop(i)%elem_no=elemno
+    elem_prop(i)%beta=0.0
+    elem_prop(i)%mat_no=mat_id
+    dx=x(n2)-x(n1)
+    dy=y(n2)-y(n1)
+    dz=z(n2)-z(n1)
+    d=sqrt(dx**2+dy**2+dz**2)
+    elem_prop(i)%elem_len=d
+    elem_prop(i)%dx=dx
+    elem_prop(i)%dy=dy
+    elem_prop(i)%dz=dz
 
-!     j=abs(n2-n1)
-!     if(ms<j)ms=j
-! enddo
-! ms=ndf*(ms+1)
-! write(fileout_unit,'("Bandwidth",2x, i5)') ms
-! allocate(tk(n,ms))v4.2.1LoadingSupportShopAccountLogout
-! tk=0.0
-! write(fileout_unit,'("Nodal Loads")')
-! read(filein_unit,nml=loadednodes)
-! write(fileout_unit,nml=loadednodes)
-! if(nlnode>0) then
-! do i=1,nlnode
-!     read(filein_unit,fmt=*) n1,Px,Py,Mz,dx,dy,dz
-!     write(fileout_unit,'(i5,6f12.2)') n1,Px,Py,Mz,dx,dy,dz    
-!     kdsp=ndf*(n1-1)
-!     al(kdsp+1,1)=Px*ufor2kN(ufor)
-!     al(kdsp+2,1)=Py*ufor2kN(ufor)
-!     al(kdsp+3,1)=Mz*ufor2kN(ufor)
-!     reac(kdsp+1,1)=dx
-!     reac(kdsp+2,1)=dy
-!     reac(kdsp+3,1)=dz    
-! enddo
-! end if
-! write(fileout_unit,'("Node Boundaries")')
-! write(fileout_unit,'(27x,"Status",14x,"Prescribed Values")')
-! write(fileout_unit,'(19x,"0:Prescribed, 1:Free")')
-! write(fileout_unit,'(7x,"Node",8x,"U",9x,"V",8x,"RZ",6x,"U",9x,"V",8x,"RZ")')
-! read(filein_unit,nml=boundary)
-! write(fileout_unit,nml=boundary)
-! UNITL=ulen2m(ulenb)
-! do i=1,nbn
-!     read(filein_unit,fmt=*) j,(ic(k),k=1,ndf),(w(k),k=1,ndf)
-!     write(fileout_unit,'(4i10,3f10.4)') j,(ic(k),k=1,ndf),(w(k),k=1,ndf)
-!       L1=(ndf+1)*(i-1)+1
-!       L2=ndf*(j-1)
-!     ib(L1)=j
-!     do k=1,ndf
-!         n1=L1+k
-!         n2=L2+k
-!         ib(n1)=ic(k)
-!         reac(n2,1)=w(k)*UNITL
-!     enddo
-! enddo
-! call dloadgen()
+    j=abs(n2-n1)
+    if(ms<j)ms=j
+enddo
+ms=ndf*(ms+1)
+write(fileout_unit,'("Bandwidth",2x, i5)') ms
+allocate(tk(n,ms))!v4.2.1LoadingSupportShopAccountLogout
+tk=0.0
+write(fileout_unit,'("Nodal Loads")')
+read(filein_unit,nml=loadednodes)
+write(fileout_unit,nml=loadednodes)
+if(nlnode>0) then
+do i=1,nlnode
+    read(filein_unit,fmt=*) n1,Px,Py,Mz,dx,dy,dz
+    write(fileout_unit,'(i5,6f12.2)') n1,Px,Py,Mz,dx,dy,dz    
+    kdsp=ndf*(n1-1)
+    al(kdsp+1,1)=Px*ufor2kN(ufor)
+    al(kdsp+2,1)=Py*ufor2kN(ufor)
+    al(kdsp+3,1)=Mz*ufor2kN(ufor)
+    reac(kdsp+1,1)=dx
+    reac(kdsp+2,1)=dy
+    reac(kdsp+3,1)=dz    
+enddo
+end if
+write(fileout_unit,'("Node Boundaries")')
+write(fileout_unit,'(27x,"Status",14x,"Prescribed Values")')
+write(fileout_unit,'(19x,"0:Prescribed, 1:Free")')
+write(fileout_unit,'(7x,"Node",8x,"U",9x,"V",8x,"RZ",6x,"U",9x,"V",8x,"RZ")')
+read(filein_unit,nml=boundary)
+write(fileout_unit,nml=boundary)
+UNITL=ulen2m(ulenb)
+do i=1,nbn
+    read(filein_unit,fmt=*) j,(ic(k),k=1,ndf),(w(k),k=1,ndf)
+    write(fileout_unit,'(4i10,3f10.4)') j,(ic(k),k=1,ndf),(w(k),k=1,ndf)
+      L1=(ndf+1)*(i-1)+1
+      L2=ndf*(j-1)
+    ib(L1)=j
+    do k=1,ndf
+        n1=L1+k
+        n2=L2+k
+        ib(n1)=ic(k)
+        reac(n2,1)=w(k)*UNITL
+    enddo
+enddo
+call dloadgen()
 
-!  end subroutine inputgen
+ end subroutine inputgen
 
-subroutine mat_param(mymat) bind(c,name='mat_param')
+subroutine mat_param(mymat) !bind(c,name='mat_param')
+!  use iso_c_binding
     class(material) :: mymat
 
     select case(mymat%matname)
@@ -287,9 +289,10 @@ subroutine mat_param(mymat) bind(c,name='mat_param')
 
 end subroutine mat_param
 !---------------------------------
-subroutine pipeparam(mysection) bind(c,name='pipeparam')
+subroutine pipeparam(mysection) !bind(c,name='pipeparam')
+!use iso_c_binding
 class(section) :: mysection
-real(c_couble) :: id,wth,od
+real(kind=c_double) :: id,wth,od
 od=mysection%tube_od
 wth=mysection%tube_wth
 id=od-2*wth
@@ -306,10 +309,11 @@ end subroutine pipeparam
 ! Units conversion
 ! -----------------------
 
-FUNCTION ufor2kN(UNIT) result(factor) bind(c,name='ufor2kN')
+FUNCTION ufor2kN(UNIT) result(factor) !bind(c,name='ufor2kN')
+!use iso_c_binding
     IMPLICIT NONE
-    CHARACTER(c_char), intent(in) :: UNIT(8)
-    REAL(c_couble) :: factor
+    CHARACTER(kind=c_char,len=8), intent(in) :: UNIT
+    REAL(kind=c_double) :: factor
     select case (UNIT) ! Converts units to meter
     case ("lb")
         factor=0.454*grav/1000.0
@@ -326,10 +330,11 @@ END FUNCTION ufor2kN
 
 
 
-FUNCTION ulen2m(UNIT) result(factor) bind(c,name='ulen2m')
+FUNCTION ulen2m(UNIT) result(factor) !bind(c,name='ulen2m')
+!use iso_c_binding
     IMPLICIT NONE
-    CHARACTER(c_char), intent(in) :: UNIT(8)
-    REAL(c_couble) :: factor
+    CHARACTER(kind=c_char,len=8), intent(in) :: UNIT
+    REAL(kind=c_double) :: factor
     select case (UNIT) ! Converts units to meter
     case ("inch")
         factor=0.0254
@@ -350,7 +355,7 @@ END FUNCTION ulen2m
 ! -----------------------
 
 subroutine time_now() bind(c,name='time_now')
-
+use iso_c_binding
 CALL date_and_time(DATE=date,TIME=time,ZONE=zone,VALUES=values)
 tmpmonth=values(2)
 tmpday=values(3)
@@ -377,6 +382,7 @@ end subroutine time_now
    ! -----------------------
 
 subroutine header() bind(c,name='header')
+use iso_c_binding
 WRITE(fileout_unit,'(20x,A20)') PNAME
 WRITE(fileout_unit,'(A80)') exampletitle
 WRITE(fileout_unit,'(80("-"))')
@@ -386,9 +392,10 @@ end subroutine header
 ! K Assem
 ! -----------------------
 subroutine k_assem() bind(c,name='k_assem')
+use iso_c_binding
 implicit none
 integer :: nel
-real(c_couble), dimension(ndfel,ndfel):: rot,elst
+real(c_double), dimension(ndfel,ndfel):: rot,elst
 integer(c_int), dimension(2)::con
 do nel=1,ne
     elst=0.0
@@ -405,10 +412,11 @@ end subroutine k_assem
 ! Band Solver
 ! -----------------------
 subroutine band_solvergen() bind(c,name='band_solvergen')
+use iso_c_binding
 implicit none
 integer :: nel
-real(c_couble), dimension(ndfel,ndfel):: rot,elst
-integer(c_int), dimension(2)::con
+real(kind=c_double), dimension(ndfel,ndfel):: rot,elst
+integer(kind=c_int), dimension(2)::con
 do nel=1,ne
     elst=0.0
     rot=0.0
@@ -423,11 +431,11 @@ call BOUNDgen()
 call BGAUSSgen()
 end subroutine band_solvergen
 
-SUBROUTINE printmatrix(sk,label) bind(c,name='printmatrix')
-
+SUBROUTINE printmatrix(sk,label) !bind(c,name='printmatrix')
+!use iso_c_binding
     IMPLICIT NONE
-    REAL(c_couble), intent(in) :: sk(:,:)
-    CHARACTER (c_char), intent(in) :: label(*)
+    REAL(kind=c_double), intent(in) :: sk(:,:)
+    CHARACTER (kind=c_char,len=*), intent(in) :: label
     INTEGER :: i,j
     !n=size(tk,1)
     !ms=size(tk,2)
@@ -441,12 +449,13 @@ END SUBROUTINE printmatrix
 ! -----------------------
 ! Multiply Matrix * Vector
 ! -----------------------
-FUNCTION matvec (mat, v) result (r) bind(c,name='matvec')
+FUNCTION matvec (mat, v) result (r) !bind(c,name='matvec')
+!use iso_c_binding
 implicit none
 
-real(c_couble), INTENT(IN) :: mat(:,:)
-real(c_couble), INTENT(IN) :: v(:)
-real(c_couble) :: r(SIZE(mat,1))
+real(kind=c_double), INTENT(IN) :: mat(:,:)
+real(kind=c_double), INTENT(IN) :: v(:)
+real(kind=c_double) :: r(SIZE(mat,1))
 
 integer(c_int) :: i
 integer(c_int) :: m
@@ -462,12 +471,13 @@ END FUNCTION
 ! -----------------------
 ! Multiply Matrix * Matrix
 ! -----------------------
-FUNCTION mmult (matA, B) result (C) bind(c,name='mmult')
+FUNCTION mmult (matA, B) result (C) !bind(c,name='mmult')
+!use iso_c_binding
 implicit none
 
-real(c_couble), INTENT(IN) :: matA(:,:)
-real(c_couble), INTENT(IN) :: B(:,:)
-real(c_couble) :: C(size(matA,1), size(B, 2))    
+real(kind=c_double), INTENT(IN) :: matA(:,:)
+real(kind=c_double), INTENT(IN) :: B(:,:)
+real(kind=c_double) :: C(size(matA,1), size(B, 2))    
 
 integer :: M, col, i, j
 
@@ -485,13 +495,14 @@ END FUNCTION
 ! -----------------------
 ! Element Stiffness Matrix
 ! -----------------------
-function elem_stiff(nel) result(kelst) bind(c,name='elem_stiff')
+function elem_stiff(nel) result(kelst) !bind(c,name='elem_stiff')
+!use iso_c_binding
 implicit none
 
-integer(c_int),INTENT(IN) :: nel
-integer(c_int) :: isec,imat
-real(c_couble) :: EIz,EAx,d,EIy,GIx
-real(c_couble) :: kelst(ndfel,ndfel) 
+integer(kind=c_int),INTENT(IN) :: nel
+integer(kind=c_int) :: isec,imat
+real(kind=c_double) :: EIz,EAx,d,EIy,GIx
+real(kind=c_double),dimension(ndfel,ndfel) :: kelst 
 
 imat=elem_prop(nel)%mat_no
 isec=elem_prop(nel)%sec_no
@@ -587,13 +598,14 @@ end function elem_stiff
 ! -----------------------
 ! Element Rotation Matrix
 ! -----------------------
-function rotmatgen(nel) result(rot) bind(c,name='rotmatgen')
+function rotmatgen(nel) result(rot) !bind(c,name='rotmatgen')
+!use iso_c_binding
 implicit none
 
-REAL(c_couble)  :: rot(ndfel,ndfel)
-INTEGER(c_int), INTENT(IN)                :: nel
-real(c_couble) :: dt,beta,cx,cy,cz,cxz
-integer(c_int) :: i,j
+REAL(kind=c_double)  :: rot(ndfel,ndfel)
+INTEGER(kind=c_int), INTENT(IN)                :: nel
+real(kind=c_double) :: dt,beta,cx,cy,cz,cxz
+integer(kind=c_int) :: i,j
 rot=0.0
 dt=elem_prop(nel)%elem_len !prop(kdsp+5)
 beta=elem_prop(nel)%beta!prop(kdsp+1)
@@ -668,6 +680,7 @@ END function rotmatgen
 ! Assembling Global Stiffness Matrix
 ! -----------------------
 SUBROUTINE elassgen(elst,con) bind(c,name='elassgen')
+use iso_c_binding
 !use structvarsgen
 IMPLICIT NONE
 !NEL =number of the current node
@@ -726,6 +739,7 @@ RETURN
 END SUBROUTINE elassgen
 
 SUBROUTINE dloadgen() bind(c,name='dloadgen')
+use iso_c_binding
 !use structvarsgen
 implicit none
 INTEGER(kind=c_int) :: klc
@@ -797,11 +811,12 @@ RETURN
 END SUBROUTINE dloadgen
 
 SUBROUTINE forcegen() bind(c,name='forcegen')
+use iso_c_binding
 !use structvarsgen
 IMPLICIT NONE
 
-REAL(kind=c_couble) :: u(ndfel),f(ndfel),ul(ndfel),fg(ndfel)
-REAL(kind=c_couble) :: rot(ndfel,ndfel),elst(ndfel,ndfel)
+REAL(kind=c_double) :: u(ndfel),f(ndfel),ul(ndfel),fg(ndfel)
+REAL(kind=c_double) :: rot(ndfel,ndfel),elst(ndfel,ndfel)
 INTEGER(kind=c_int) :: klc,n1,n2,lc,nel,k1,k2,j1,j2,i,i1,i2,j
 
 lc=size(al,2)
@@ -862,6 +877,7 @@ RETURN
 END SUBROUTINE forcegen
 
 SUBROUTINE boundgen() bind(c,name='boundgen')
+use iso_c_binding
 !use structvarsgen
 IMPLICIT NONE
 !---INTRODUCTION OF THE BOUNDARY CONDITIONS
@@ -914,14 +930,15 @@ RETURN
 END SUBROUTINE boundgen
 
 SUBROUTINE mfem(klc,f) bind(c,name='mfem')
+use iso_c_binding
 !use structvarsgen
 implicit none
 
-real(kind=c_couble) ::  vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel)
-real(kind=c_couble) :: wa,wb,a,dl,ra,rb,rma,rmb
+real(kind=c_double) ::  vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel)
+real(kind=c_double) :: wa,wb,a,dl,ra,rb,rma,rmb
 integer(kind=c_int) :: n1,n2,kdsp1,kdsp2,mn,i,j
 integer(kind=c_int),INTENT(IN) :: klc
-real(kind=c_couble),INTENT(IN) :: f(:)
+real(kind=c_double),INTENT(IN) :: f(:)
 
 
 DO  i=1,nlmem
@@ -977,7 +994,8 @@ END DO
 RETURN
 END SUBROUTINE mfem
 
-SUBROUTINE outptgen() bind(c,name='outptgen')
+SUBROUTINE outptgen() !bind(c,name='outptgen')
+!use iso_c_binding
 use iso_fortran_env
 !use structvarsgen, nodename => nodestring
 IMPLICIT NONE
@@ -986,10 +1004,10 @@ IMPLICIT NONE
 !       AND MEMBER FORCES
 !-----------------------------------------------------------------
 
-INTEGER(c_int) :: k,k2,k1,klc
-INTEGER(c_int) :: i,j,nel,j1,l1,no,n1
+INTEGER(kind=c_int) :: k,k2,k1,klc
+INTEGER(kind=c_int) :: i,j,nel,j1,l1,no,n1
 !CHARACTER*80 :: line
-CHARACTER(c_char), DIMENSION(4,2) ::  dat(8)
+CHARACTER(kind=c_char,len=8), DIMENSION(4,2) ::  dat
 
 
 nlc=size(al,2)
@@ -1062,7 +1080,8 @@ CALL time_now()
 RETURN
 END SUBROUTINE outptgen
 
-SUBROUTINE bgaussgen() bind(c,name='bgaussgen')
+SUBROUTINE bgaussgen() !bind(c,name='bgaussgen')
+!use iso_c_binding
 !use structvarsgen, only:printmatrix,fileout_unit,n,nlc,kerr,ms,a =>tk, b => al
 use iso_fortran_env
 use ieee_exceptions
@@ -1072,9 +1091,9 @@ IMPLICIT NONE
 !---MS:     COLUMN DIMENSION OF A
 !---LC:     COLUMN DIMENSION OF B
 !---D:      AUXILIARY VECTOR
-REAL(c_couble),  allocatable :: d(:)
-REAL(c_couble) :: c
-INTEGER(c_int) :: n1,k,l,ni,k1,k2,j,icol,i,k3
+REAL(kind=c_double),  allocatable :: d(:)
+REAL(kind=c_double) :: c
+INTEGER(kind=c_int) :: n1,k,l,ni,k1,k2,j,icol,i,k3
 !logical :: isnan
 allocate(d(n))
 
