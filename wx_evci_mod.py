@@ -2,6 +2,7 @@ import wx
 from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 from io import BytesIO
 import wx.xml
+import sqlite3
 #import wx.dataview
 
 g=9.806
