@@ -8,10 +8,9 @@
 import wx
 import wx.xrc
 import wx.dataview as dv
-from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
+#from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 import os
-
-from wx_evci_mod import TokNperM2, XML_reader,TokNperM3
+from wx_evci_mod import TokNperM2, XML_reader,TokNperM3,ToMeter, materials,sections
 
 g=9.806
 strutype=""
@@ -272,6 +271,8 @@ class EVCI_Form ( wx.Frame ):
 				self.m_textfilein.SetValue(data)
 			fname = f.name
 			self.m_statusBar1.PushStatusText(fname)
+			print(fname)
+			XML_reader(fname)
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file",wx.ICON_QUESTION |wx.OK)
 			return

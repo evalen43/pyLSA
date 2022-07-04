@@ -1,4 +1,4 @@
-import wx
+#import wx
 #from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 #from io import BytesIO
 import wx.xml
@@ -11,11 +11,13 @@ lineinput = []
 fyield=0.0
 scaleS = 0.0
 scaleden=0.0
-emod=0.0
-matden=0.0
-poisson=0.0
-matid=''
-matype=''
+# emod=0.0
+# matden=0.0
+# poisson=0.0
+# matid=''
+# matype=''
+materials = []
+sections=[]
 def TokNperM2(unitF):
     if unitF == "kN/m2":
         tonewton=1.0
@@ -122,12 +124,12 @@ def XML_reader(filein):
             lines=content.splitlines()     
             #content = content.replace("=", " ")
             #content = content.replace("\n", " ")
-            materials=[]
+            global materials
             for line in lines:
                 lineinput = line.split("=", " ")
                 i=0
-                global matid
-                global matype
+                #global matid
+                #global matype
                 matid=lineinput[0]
                 matype=lineinput[1]
                 while i<len(lineinput):
