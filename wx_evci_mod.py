@@ -1,6 +1,3 @@
-#import wx
-#from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
-#from io import BytesIO
 import wx.xml
 import sqlite3
 #import wx.dataview
@@ -11,13 +8,13 @@ lineinput = []
 fyield=0.0
 scaleS = 0.0
 scaleden=0.0
-# emod=0.0
-# matden=0.0
-# poisson=0.0
-# matid=''
-# matype=''
+emod=''
+matden=''
+poisson=''
 materials = []
 sections=[]
+steel = ('', 'Steel', 200e+06, 78.5, 0.28)
+titanium = ('', 'Titaniun', 113e+06, 44.13, 0.3)
 def TokNperM2(unitF):
     if unitF == "kN/m2":
         tonewton=1.0
@@ -92,7 +89,7 @@ def XML_reader(filein):
             projName=content
         elif tagname == "code":
             UnitS = child.GetAttribute("unitS", "kN/m2")  # UnitS: stress unit ...
-            print(UnitS)
+            #print(UnitS)
             if UnitS == "default-value": scaleS=1.0
             else: scaleS=TokNperM2(UnitS)                    
             content=content.replace("="," ")
@@ -126,25 +123,36 @@ def XML_reader(filein):
             #content = content.replace("\n", " ")
             global materials
             for line in lines:
-                lineinput = line.split("=", " ")
+                line = line.replace("=", " ")
+                lineinput = line.split()
                 i=0
-                #global matid
-                #global matype
+                #print(lineinput)
                 matid=lineinput[0]
                 matype=lineinput[1]
-                while i<len(lineinput):
-                    if lineinput[i]=="E":
-                        global emod
-                        emod=float(lineinput[i+1])*scaleS
-                    elif lineinput[i]=="Density":
-                        global matden
-                        matden=float(lineinput[i+1])*toknm3
-                    elif lineinput[i]=="Poisson":
-                        global poisson
-                        poisson=float(lineinput[i+1])
-                    i +=1
-                material=(matid,matype,emod,matden,poisson) 
-                materials.append(material)              
+                if matype=='General':
+                    while i<len(lineinput):
+                        if lineinput[i]=="E":
+                            global emod
+                            emod=float(lineinput[i+1])*scaleS
+                        elif lineinput[i]=="Density":
+                            global matden
+                            matden=float(lineinput[i+1])*toknm3
+                        elif lineinput[i]=="Poisson":
+                            global poisson
+                            poisson=float(lineinput[i+1])
+                        i +=1
+                    material=(matid,matype,emod,matden,poisson) 
+                    materials.append(material)
+                elif matype=='Steel':
+                    y=list(steel)
+                    y[0] = matid
+                    material=tuple(y)
+                    materials.append(material)
+                elif matype=='Titanium':
+                    y = list(titanium)
+                    y[0] = matid
+                    material = tuple(y)
+                    materials.append(material)
         elif tagname == "section":
             UnitL = child.GetAttribute("unitL", "m")
             if UnitL == "default-value":

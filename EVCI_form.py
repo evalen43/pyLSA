@@ -271,8 +271,9 @@ class EVCI_Form ( wx.Frame ):
 				self.m_textfilein.SetValue(data)
 			fname = f.name
 			self.m_statusBar1.PushStatusText(fname)
-			print(fname)
+			#print(fname)
 			XML_reader(fname)
+			print(materials)
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file",wx.ICON_QUESTION |wx.OK)
 			return
@@ -311,8 +312,9 @@ class EVCI_Form ( wx.Frame ):
 			fname=f.name 
 			self.m_statusBar1.title=fname
 			self.m_statusBar1 = fname
-			print(fname)
+			#print(fname)
 			XML_reader(fname)
+			print(materials)
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file", wx.ICON_QUESTION | wx.OK)
 			return
