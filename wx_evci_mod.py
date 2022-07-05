@@ -159,5 +159,19 @@ def XML_reader(filein):
                 scaleL = 1.0
             else:
                 scaleL = ToMeter(UnitL)
-        lines=content.splitlines()        
+        lines=content.splitlines()
+        global sections
+        for line in lines:
+            line = line.replace("=", " ")
+            lineinput = line.split()
+            i = 0
+            #print(lineinput)
+            secid = lineinput[0]
+            while i<len(lineinput):
+                if lineinput[i]=='Type':
+                    sectype=lineinput[i+1]
+                elif lineinput[i]=='EID':
+                    eid= lineinput[i+1]
+
+                
         child = child.GetNext()
