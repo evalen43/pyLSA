@@ -14,8 +14,8 @@ node5	 2000. 0.
 8	 	4000. 	0.
 </nodes>
 <section unitL='inch' >
-400 Type=Tube OD=30.0 WTH=0.75 
-200 Type=Tube OD=30.0 WTH=0.5
+400 Tube OD=30.0 WTH=0.75 
+200 Tube OD=30.0 WTH=0.5
 </section>
 <material>
 400 Steel

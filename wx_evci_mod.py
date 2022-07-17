@@ -167,11 +167,24 @@ def XML_reader(filein):
             i = 0
             #print(lineinput)
             secid = lineinput[0]
-            while i<len(lineinput):
-                if lineinput[i]=='Type':
-                    sectype=lineinput[i+1]
-                elif lineinput[i]=='EID':
-                    eid= lineinput[i+1]
+            sectype=lineinput[1]
+            if sectype=='Tube':
+                while i<len(lineinput):
+                    if lineinput[i]=='OD':
+                        od=lineinput[i+1]
+                    elif lineinput[i]=='WTH':
+                        wth=lineinput[i+1]        
+            elif sectype=='EDI':
+                edi= lineinput[2]
+                # Connecto to database
+                conn=sqlite3.connect('aisc_shapes_v15_US_R1.db')
+                # Create cursor
+                c=conn.cursor()
+                # Query the database
+                c.execute("SELECT * FROM aisc_shapes_v15_US_R1 WHERE EDI=edi")
+                items=c.fetchall()
+                for item in items:
+                    print(item)
 
                 
         child = child.GetNext()
