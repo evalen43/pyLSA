@@ -1,5 +1,6 @@
 import wx.xml
 import sqlite3
+import math
 #import wx.dataview
 
 g=9.806
@@ -58,7 +59,18 @@ def ToMeter(unitL):
         factor=0.01
     elif unitL=="m":
         factor=1.0
-    return factor                
+    return factor  
+def pipeparam(od,wth):
+    id=od-2*wth
+    ax=0.25*math.pi*(od**2-id**2)
+    iner=math.pi*(od**4-id**4)/64
+    radius=math.sqrt(iner/ax)
+    Zx=0.0
+    Sx=iner*2/od
+    w=0.0
+    J=2*iner
+    section=('',w,ax,od,iner,Zx,Sx,radius,iner,Zx,Sx,radius,J)
+    return section              
 def XML_reader(filein):
     # start processing the XML file
     doc = wx.xml.XmlDocument()
@@ -171,9 +183,12 @@ def XML_reader(filein):
             if sectype=='Tube':
                 while i<len(lineinput):
                     if lineinput[i]=='OD':
-                        od=lineinput[i+1]
+                        od=lineinput[i+1]*scaleL
                     elif lineinput[i]=='WTH':
-                        wth=lineinput[i+1]        
+                        wth=lineinput[i+1]*scaleL
+                section=pipeparam(od,wth)
+                section[0]=secid
+                sections.append(section)                    
             elif sectype=='EDI':
                 edi= lineinput[2]
                 # Connecto to database

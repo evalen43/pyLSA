@@ -14,8 +14,8 @@ node5	 2000. 0.
 8	 	4000. 	0.
 </nodes>
 <section unitL='inch' >
-400 Type=AISC   EDI=W30X99 
-200 Type=AISC   EDI=W24X68
+400 EDI W30X99 
+200 EDI W24X68
 </section>
 <material unitS='psi' den='kgf/m3'>
 400 General E=29000  Density=7850. Poisson=0.3
