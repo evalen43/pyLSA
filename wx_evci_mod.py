@@ -181,7 +181,7 @@ def XML_reader(filein):
                 # Create cursor
                 c=conn.cursor()
                 # Query the database
-                c.execute("SELECT * FROM aisc_shapes_v15_US_R1 WHERE EDI=edi")
+                c.execute("SELECT * FROM shapesv15_US WHERE EDI=edi")
                 items=c.fetchall()
                 for item in items:
                     print(item)
