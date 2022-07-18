@@ -177,7 +177,7 @@ def XML_reader(filein):
             elif sectype=='EDI':
                 edi= lineinput[2]
                 # Connecto to database
-                conn=sqlite3.connect('/home/evalen43/pyLSA/aisc_shapes_v15_US_R1.db')
+                conn=sqlite3.connect('/home/ev/pyLSA/aisc_shapes_v15_US_R1.db')
                 # Create cursor
                 c=conn.cursor()
                 # Query the database
@@ -185,6 +185,20 @@ def XML_reader(filein):
                 items=c.fetchall()
                 for item in items:
                     if item[0]==edi:
+                        y=list(item)
+                        y[1]=y[1]*0.454/scaleL # w
+                        y[2]= y[2]*scaleL**2 # A
+                        y[3]= y[3]*scaleL # d
+                        y[4]=y[4]*scaleL**4 # Ix
+                        y[5] = y[5]*scaleL**3  # Zx
+                        y[6] = y[6]*scaleL**3  # Sx
+                        y[7] = y[7]*scaleL  # rx
+                        y[8] = y[8]*scaleL**4  # Iy
+                        y[9] = y[9]*scaleL**3  # Zy
+                        y[10] = y[10]*scaleL**3  # Sy
+                        y[11] = y[11]*scaleL  # ry
+                        y[12] = y[12]*scaleL**4  # J
+                        item=tuple(y)
                         sections.append(item)
                         #print(item)
 
