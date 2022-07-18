@@ -184,7 +184,8 @@ def XML_reader(filein):
                 c.execute("SELECT * FROM shapesv15_US WHERE EDI=edi")
                 items=c.fetchall()
                 for item in items:
-                    print(item)
+                    if item[0]==edi:
+                        print(item)
 
                 
         child = child.GetNext()
