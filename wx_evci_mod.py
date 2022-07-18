@@ -186,7 +186,7 @@ def XML_reader(filein):
                 for item in items:
                     if item[0]==edi:
                         y=list(item)
-                        y[1]=y[1]*0.454/scaleL # w
+                        y[1]=y[1]*0.01459 # w
                         y[2]= y[2]*scaleL**2 # A
                         y[3]= y[3]*scaleL # d
                         y[4]=y[4]*scaleL**4 # Ix
