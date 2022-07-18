@@ -315,6 +315,7 @@ class EVCI_Form ( wx.Frame ):
 			#print(fname)
 			XML_reader(fname)
 			print(materials)
+			print(sections)
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file", wx.ICON_QUESTION | wx.OK)
 			return

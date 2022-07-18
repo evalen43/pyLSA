@@ -185,7 +185,8 @@ def XML_reader(filein):
                 items=c.fetchall()
                 for item in items:
                     if item[0]==edi:
-                        print(item)
+                        sections.append(item)
+                        #print(item)
 
                 
         child = child.GetNext()
