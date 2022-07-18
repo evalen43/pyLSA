@@ -177,7 +177,7 @@ def XML_reader(filein):
             elif sectype=='EDI':
                 edi= lineinput[2]
                 # Connecto to database
-                conn=sqlite3.connect('aisc_shapes_v15_US_R1.db')
+                conn=sqlite3.connect('pyLSA/aisc_shapes_v15_US_R1.db')
                 # Create cursor
                 c=conn.cursor()
                 # Query the database
