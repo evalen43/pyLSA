@@ -183,11 +183,14 @@ def XML_reader(filein):
             if sectype=='Tube':
                 while i<len(lineinput):
                     if lineinput[i]=='OD':
-                        od=lineinput[i+1]*scaleL
+                        od=float(lineinput[i+1])*scaleL
                     elif lineinput[i]=='WTH':
-                        wth=lineinput[i+1]*scaleL
+                        wth=float(lineinput[i+1])*scaleL
+                    i +=1
                 section=pipeparam(od,wth)
-                section[0]=secid
+                y=list(section)
+                y[0]=secid
+                section=tuple(y)
                 sections.append(section)                    
             elif sectype=='EDI':
                 edi= lineinput[2]
