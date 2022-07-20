@@ -14,6 +14,11 @@ matden=''
 poisson=''
 materials = []
 sections=[]
+x=[]
+y=[]
+z=[]
+nodes=[]
+coor=[]
 steel = ('', 'Steel', 200e+06, 78.5, 0.28)
 titanium = ('', 'Titaniun', 113e+06, 44.13, 0.3)
 def TokNperM2(unitF):
@@ -85,13 +90,7 @@ def XML_reader(filein):
     elif strutype =="Grid":    ndf=3
     elif strutype =="Frame2D_8DOF": ndf=4
     else: ndf=3    
-    #print(strutype)
-
     #     if child.GetType() == wx.xml.XML_PI_NODE and child.GetName() == "target":
-
-    #         # process Process Instruction contents
-    #         pi = child.GetContent()
-
             # Other code here...
     child = doc.GetRoot().GetChildren()
     while child:
@@ -219,6 +218,35 @@ def XML_reader(filein):
                             item=tuple(y)
                             sections.append(item)
                             #print(item)
-
+        elif tagname == "nodes":
+            UnitL = child.GetAttribute("unitL", "m")
+            if UnitL == "default-value":
+                scaleL = 1.0
+            else:
+                scaleL = ToMeter(UnitL)
+            lines = content.splitlines()
+            for line in lines:
+                #line = line.replace("=", " ")
+                lineinput = line.split()
+                nodeid=lineinput[0]
+                nodex=float(lineinput[1])
+                nodey=float(lineinput[2])
+                if len(lineinput) >3:
+                    nodez=float(lineinput[3])
+                else: 
+                    nodez=0.0
+                nodes = (nodeid, nodex, nodey, nodez)
+                coor.append(nodes)    
+        elif tagname == "elements":
+            lines = content.splitlines()
+        elif tagname == "boundary":
+            lines = content.splitlines()
+        elif tagname == "loading":
+            UnitL = child.GetAttribute("unitL", "m")
+            if UnitL == "default-value":
+                scaleL = 1.0
+            else:
+                scaleL = ToMeter(UnitL)
+            lines = content.splitlines()
                 
         child = child.GetNext()

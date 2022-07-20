@@ -10,7 +10,7 @@ import wx.xrc
 import wx.dataview as dv
 #from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 import os
-from wx_evci_mod import TokNperM2, XML_reader,TokNperM3,ToMeter, materials,sections
+from wx_evci_mod import TokNperM2, XML_reader,TokNperM3,ToMeter, materials,sections,coor
 
 g=9.806
 strutype=""
@@ -316,6 +316,7 @@ class EVCI_Form ( wx.Frame ):
 			XML_reader(fname)
 			print(materials)
 			print(sections)
+			print(coor)
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file", wx.ICON_QUESTION | wx.OK)
 			return
