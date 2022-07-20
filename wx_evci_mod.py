@@ -19,6 +19,8 @@ y=[]
 z=[]
 nodes=[]
 coor=[]
+nodelist=[]
+seclist=[]
 steel = ('', 'Steel', 200e+06, 78.5, 0.28)
 titanium = ('', 'Titaniun', 113e+06, 44.13, 0.3)
 def TokNperM2(unitF):
@@ -74,7 +76,7 @@ def pipeparam(od,wth):
     Sx=iner*2/od
     w=0.0
     J=2*iner
-    section=('',w,ax,od,iner,Zx,Sx,radius,iner,Zx,Sx,radius,J)
+    section=(w,ax,od,iner,Zx,Sx,radius,iner,Zx,Sx,radius,J)
     return section              
 def XML_reader(filein):
     # start processing the XML file
@@ -177,7 +179,7 @@ def XML_reader(filein):
                 lineinput = line.split()
                 i = 0
                 #print(lineinput)
-                secid = lineinput[0]
+                seclist.append(lineinput[0])
                 sectype=lineinput[1]
                 if sectype=='Tube':
                     while i<len(lineinput):
@@ -187,9 +189,9 @@ def XML_reader(filein):
                             wth=float(lineinput[i+1])*scaleL
                         i +=1
                     section=pipeparam(od,wth)
-                    y=list(section)
-                    y[0]=secid
-                    section=tuple(y)
+                    #y=list(section)
+                    #y[0]=secid
+                    #section=tuple(y)
                     sections.append(section)                    
                 elif sectype=='EDI':
                     edi= lineinput[2]
@@ -228,14 +230,14 @@ def XML_reader(filein):
             for line in lines:
                 #line = line.replace("=", " ")
                 lineinput = line.split()
-                nodeid=lineinput[0]
+                nodelist.append(lineinput[0])
                 nodex=float(lineinput[1])
                 nodey=float(lineinput[2])
                 if len(lineinput) >3:
                     nodez=float(lineinput[3])
                 else: 
                     nodez=0.0
-                nodes = (nodeid, nodex, nodey, nodez)
+                nodes = (nodex, nodey, nodez)
                 coor.append(nodes)    
         elif tagname == "elements":
             lines = content.splitlines()
