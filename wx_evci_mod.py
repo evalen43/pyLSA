@@ -21,6 +21,9 @@ nodes=[]
 coor=[]
 nodelist=[]
 seclist=[]
+matlist=[]
+elemlist=[]
+elements=[]
 steel = ('', 'Steel', 200e+06, 78.5, 0.28)
 titanium = ('', 'Titaniun', 113e+06, 44.13, 0.3)
 def TokNperM2(unitF):
@@ -140,7 +143,7 @@ def XML_reader(filein):
                 lineinput = line.split()
                 i=0
                 #print(lineinput)
-                matid=lineinput[0]
+                matlist.append(lineinput[0])
                 matype=lineinput[1]
                 if matype=='General':
                     while i<len(lineinput):
@@ -154,7 +157,7 @@ def XML_reader(filein):
                             global poisson
                             poisson=float(lineinput[i+1])
                         i +=1
-                    material=(matid,matype,emod,matden,poisson) 
+                    material=(matype,emod,matden,poisson) 
                     materials.append(material)
                 elif matype=='Steel':
                     y=list(steel)
@@ -241,6 +244,15 @@ def XML_reader(filein):
                 coor.append(nodes)    
         elif tagname == "elements":
             lines = content.splitlines()
+            for line in lines:
+                lineinput = line.split()
+                elemlist.append(lineinput[0])
+                inc1=nodelist.index(lineinput[1])
+                inc2=nodelist.index(lineinput[2])
+                secid=seclist.index(lineinput[3])
+                matid=matlist.index(lineinput[4])
+                element=(inc1,inc2,secid,matid)
+                elements.append(element)
         elif tagname == "boundary":
             lines = content.splitlines()
         elif tagname == "loading":
