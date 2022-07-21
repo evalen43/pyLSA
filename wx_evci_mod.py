@@ -1,6 +1,8 @@
 import wx.xml
 import sqlite3
 import math
+import numpy as np
+#import scipy
 #import wx.dataview
 
 g=9.806
@@ -251,7 +253,13 @@ def XML_reader(filein):
                 inc2=nodelist.index(lineinput[2])
                 secid=seclist.index(lineinput[3])
                 matid=matlist.index(lineinput[4])
-                element=(inc1,inc2,secid,matid)
+                pt1=np.array(coor[inc1])
+                pt2=np.array(coor[inc2])
+                temp=pt1-pt2
+                elemlen=np.linalg.norm(temp)
+                axis_x=np.array((1,0,0))
+                cosx=np.dot(temp,axis_x.T)/elemlen
+                element=(inc1,inc2,secid,matid,elemlen,cosx)
                 elements.append(element)
         elif tagname == "boundary":
             lines = content.splitlines()
