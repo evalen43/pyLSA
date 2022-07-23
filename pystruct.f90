@@ -1,23 +1,18 @@
 module pystruct
 implicit none
 
-!public :: eleme_prop, mat_table, sect_table
-
-!real(kind=8), parameter :: pi=3.141592
 character(len=10), public :: strutype
 integer(kind=4), public :: ndfel,ne,ndf,nne,n,ms
 real(kind=8), allocatable :: tk(:,:)
-
-
 
 contains
 
 !-----------------------
 !K Assem
 !-----------------------
-subroutine k_assem(ndfel,elem_prop,mat_table,sec_table) !bind(c,name='k_assem')
+subroutine k_assem(elem_prop,mat_table,sec_table) !bind(c,name='k_assem')
 implicit none
-integer(kind=4), intent(in) :: ndfel
+!integer(kind=4), intent(in) :: ndfel
 integer :: nel
 real(kind=8), intent(in) :: elem_prop(:,:),mat_table(:,:),sec_table(:,:)
 real(kind=8), allocatable :: rot(:,:),elst(:,:)
@@ -33,7 +28,7 @@ do nel=1,ne
     !rot=rotmatgen(nel,elem_prop)
     call rotmatgen(nel,elem_prop,rot)
     elst=matmul(transpose(rot),matmul(elst,rot))
-    call elassgen(tk,elst,con)           
+    call elassgen(elst,con)           
 enddo
 deallocate(rot,elst) 
 end subroutine k_assem 
@@ -61,7 +56,7 @@ eiz=mat_table(imat,1)*sec_table(isec,4)!%iz
 eiy=mat_table(imat,1)*sec_table(isec,8)!%iy
 gix=mat_table(imat,1)*sec_table(isec,12)!%ix
 !print *, imat,isec,d
-!allocate(kelst(ndfel,ndfel))
+
 kelst=0.0
 select case (strutype )
 
@@ -140,7 +135,7 @@ case('3dframe')
         kelst(12, 12) = 4.0 * eiz / d         !(11,11)   
 !    call printmatrix(kelst,"kelst")
 end select
-!deallocate(kelst)
+
 return
 !end function elem_stiff
 end subroutine elem_stiff
@@ -157,8 +152,7 @@ real(kind=8), intent(inout)  :: rot(:,:)
 integer(kind=4), intent(in) :: nel
 real(kind=8) :: dt,beta,cx,cy,cz,cxz
 integer(kind=4) :: i,j
-!ndf=ndfel/2
-!allocate(rot(ndfel,ndfel))
+
 rot=0.0
 dt=elem_prop(nel,5)!%elem_len !prop(kdsp+5)
 beta=0.0!elem_prop(nel)%beta!prop(kdsp+1)
@@ -226,14 +220,14 @@ do  i=1,ndf
     rot(i+ndf,j+ndf)=rot(i,j)
   end do
 end do
-!deallocate(rot)
+
 !end function rotmatgen
 end subroutine rotmatgen
 
 ! -----------------------
 ! Assembling Global Stiffness Matrix
 ! -----------------------
-subroutine elassgen(tk,elst,con) !bind(c,name='elassgen')
+subroutine elassgen(elst,con) !bind(c,name='elassgen')
 !use iso_c_binding
 !use structvarsgen
 implicit none
@@ -245,7 +239,7 @@ implicit none
 integer(kind=4) :: n1,n2,kc,kr,i1,i2,i,j1,j,j2,k,ic9,k2=0,k1=0, ki,l
 integer(kind=4),intent(in) :: con(:)
 real(kind=8),intent(in) :: elst(:,:)
-real(kind=8), intent(inout) :: tk(:,:)
+!real(kind=8), intent(inout) :: tk(:,:)
  
 do  i=1,nne
   n1 =con(i)
@@ -292,7 +286,5 @@ end do
 !write(fileout_unit,'("subroutine elass: ",i5)')nel
 return
 end subroutine elassgen
-
-
 
 end module pystruct
