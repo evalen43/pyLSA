@@ -3,18 +3,17 @@ implicit none
 
 character(len=10), public :: strutype
 integer(kind=4), public :: ndfel,ne,ndf,nne,n,ms
-real(kind=8), allocatable :: tk(:,:)
+real(kind=8), allocatable :: tk(:,:),elem_prop(:,:),mat_table(:,:),sec_table(:,:)
 
 contains
 
 !-----------------------
 !K Assem
 !-----------------------
-subroutine k_assem(elem_prop,mat_table,sec_table) !bind(c,name='k_assem')
+subroutine k_assem()!mat_table,sec_table) !bind(c,name='k_assem')
 implicit none
-!integer(kind=4), intent(in) :: ndfel
 integer :: nel
-real(kind=8), intent(in) :: elem_prop(:,:),mat_table(:,:),sec_table(:,:)
+!real(kind=8), intent(in) :: mat_table(:,:),sec_table(:,:)
 real(kind=8), allocatable :: rot(:,:),elst(:,:)
 integer(kind=4) ::con(2)
 allocate(rot(ndfel,ndfel),elst(ndfel,ndfel),tk(n,ms))
@@ -24,9 +23,9 @@ do nel=1,ne
     con(1)=int(elem_prop(nel,1))!%inc1
     con(2) =int(elem_prop(nel,2))!%inc2
     !elst=elem_stiff(nel,ndfel,mat_table,sec_table)
-    call elem_stiff(nel,elem_prop,mat_table,sec_table,elst)
+    call elem_stiff(nel,elst)
     !rot=rotmatgen(nel,elem_prop)
-    call rotmatgen(nel,elem_prop,rot)
+    call rotmatgen(nel,rot)
     elst=matmul(transpose(rot),matmul(elst,rot))
     call elassgen(elst,con)           
 enddo
@@ -37,16 +36,15 @@ end subroutine k_assem
 ! element stiffness matrix
 ! -----------------------
 !function elem_stiff(nel,ndfel,elem_prop,mat_table,sec_table) result(kelst) !bind(c,name='elem_stiff')
-subroutine elem_stiff(nel,elem_prop,mat_table,sec_table,kelst)
+subroutine elem_stiff(nel,kelst)!,mat_table,sec_table,kelst)
 implicit none
 
 integer(kind=4),intent(in) :: nel
-real(kind=8), intent(in) :: elem_prop(:,:),mat_table(:,:),sec_table(:,:)
+!real(kind=8), intent(in) :: mat_table(:,:),sec_table(:,:)
 integer(kind=4) :: isec,imat
 real(kind=8) :: eiz,eax,d,eiy,gix
 real(kind=8),intent(inout) :: kelst(:,:) 
 
-!allocate(kelst(ndfel,ndfel))
 imat=int(elem_prop(nel,4))!%mat_no
 isec=int(elem_prop(nel,3))!%sec_no
 d=elem_prop(nel,5)!%elem_len
@@ -144,10 +142,9 @@ end subroutine elem_stiff
 ! Element Rotation Matrix
 ! -----------------------
 !function rotmatgen(nel,ndfel,elem_prop) result(rot) !bind(c,name='rotmatgen')
-subroutine rotmatgen(nel,elem_prop,rot) !bind(c,name='rotmatgen')
-!use iso_c_binding
+subroutine rotmatgen(nel,rot) !bind(c,name='rotmatgen')
 implicit none
-real(kind=8), intent(in) :: elem_prop(:,:)
+!real(kind=8), intent(in) :: elem_prop(:,:)
 real(kind=8), intent(inout)  :: rot(:,:)
 integer(kind=4), intent(in) :: nel
 real(kind=8) :: dt,beta,cx,cy,cz,cxz
