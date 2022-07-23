@@ -159,7 +159,8 @@ def XML_reader(filein):
                             global poisson
                             poisson=float(lineinput[i+1])
                         i +=1
-                    material=(matype,emod,matden,poisson) 
+                    #material=(matype,emod,matden,poisson)
+                    material = (emod, matden, poisson)
                     materials.append(material)
                 elif matype=='Steel':
                     y=list(steel)
@@ -258,8 +259,10 @@ def XML_reader(filein):
                 temp=pt1-pt2
                 elemlen=np.linalg.norm(temp)
                 axis_x=np.array((1,0,0))
+                axis_y = np.array((0, 1, 0))
                 cosx=np.dot(temp,axis_x.T)/elemlen
-                element=(inc1,inc2,secid,matid,elemlen,cosx)
+                sinx = np.dot(temp, axis_y.T)/elemlen
+                element=(inc1,inc2,secid,matid,elemlen,cosx,sinx)
                 elements.append(element)
         elif tagname == "boundary":
             lines = content.splitlines()

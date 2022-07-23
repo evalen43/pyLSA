@@ -1,85 +1,64 @@
 module pystruct
-!use, intrinsic :: iso_c_binding
 implicit none
 
-public :: element, material, section
+!public :: eleme_prop, mat_table, sect_table
 
 real(kind=8), parameter :: pi=3.141592
 character(len=10), public :: strutype
-integer(kind=4),public :: ndfel,ne,ndf,nne
+integer(kind=4), public :: ndfel,ne,ndf,nne,n,ms
 real(kind=8), allocatable :: tk(:,:)
 
-type :: element
-    integer(kind=4) :: inc1,inc2,sec_no,mat_no,elem_no
-    character(len=10) :: mem_name
-    real(kind=8) :: beta,dx,dy,dz,elem_len,axialf
-end type element
 
-type :: material
-    real(kind=8) :: emod,gmod,matden,poisson
-    integer(kind=4) :: matid
-    character (len=8) :: matname
-    contains
-    procedure :: mat_param
-end type material
-
-type :: section
-    real(kind=8):: ax,iz, iy,ix,rz,ry,tube_od, tube_wth
-    character(len=10) :: sec_name
-    contains
-    procedure :: pipeparam
-end type section
-
-type(element), allocatable, dimension(:) :: elem_prop
-type(material), allocatable, dimension(:) :: mat_table
-type(section), allocatable, dimension(:) :: sec_table
 
 contains
 
 !-----------------------
 !K Assem
 !-----------------------
-subroutine k_assem() !bind(c,name='k_assem')
-!use iso_c_binding
+subroutine k_assem(ndfel,elem_prop,mat_table,sec_table) !bind(c,name='k_assem')
 implicit none
+integer(kind=4), intent(in) :: ndfel
 integer :: nel
-real(kind=8), dimension(ndfel,ndfel):: rot,elst
-integer(kind=4), dimension(2)::con
+real(kind=8), intent(in) :: elem_prop(:,:),mat_table(:,:),sec_table(:,:)
+real(kind=8), allocatable :: rot(:,:),elst(:,:)
+integer(kind=4) ::con(2)
+allocate(rot(ndfel,ndfel),elst(ndfel,ndfel),tk(n,ms))
 do nel=1,ne
     elst=0.0
     rot=0.0
-    con(1)=elem_prop(nel)%inc1
-    con(2) =elem_prop(nel)%inc2
-    elst=elem_stiff(nel)
+    con(1)=elem_prop(nel,1)!%inc1
+    con(2) =elem_prop(nel,2)!%inc2
+    elst=elem_stiff(nel,ndfel,mat_table,sec_table)
     !call elem_stiff(nel,elst)
-    rot=rotmatgen(nel)
+    rot=rotmatgen(nel,ndfel,elem_prop)
     !call rotmatgen(nel,rot)
     elst=matmul(transpose(rot),matmul(elst,rot))
-    call elassgen(elst,con)           
-enddo  
+    call elassgen(tk,elst,con)           
+enddo
+deallocate(rot,elst) 
 end subroutine k_assem 
 
 ! -----------------------
 ! element stiffness matrix
 ! -----------------------
-function elem_stiff(nel) result(kelst) !bind(c,name='elem_stiff')
-!subroutine elem_stiff(nel,kelst) bind(c,name='elem_stiff')
-!use iso_c_binding
+function elem_stiff(nel,ndfel,elem_prop,mat_table,sec_table) result(kelst) !bind(c,name='elem_stiff')
 implicit none
 
-integer(kind=4),intent(in) :: nel
+integer(kind=4),intent(in) :: nel,ndfel
+real(kind=8), intent(in) :: elem_prop(:,:),mat_table(:,:),sec_table(:,:)
 integer(kind=4) :: isec,imat
 real(kind=8) :: eiz,eax,d,eiy,gix
-real(kind=8), dimension(ndfel,ndfel) :: kelst 
+real(kind=8) :: kelst(ndfel,ndfel) 
 
-imat=elem_prop(nel)%mat_no
-isec=elem_prop(nel)%sec_no
-d=elem_prop(nel)%elem_len
+!allocate(kelst(ndfel,ndfel))
+imat=elem_prop(nel,4)!%mat_no
+isec=elem_prop(nel,3)!%sec_no
+d=elem_prop(nel,5)!%elem_len
 
-eax=mat_table(imat)%emod*sec_table(isec)%ax
-eiz=mat_table(imat)%emod*sec_table(isec)%iz
-eiy=mat_table(imat)%emod*sec_table(isec)%iy
-gix=mat_table(imat)%gmod*sec_table(isec)%ix
+eax=mat_table(imat,1)*sec_table(isec,1)!%emod*sec_table(isec,1)!%ax
+eiz=mat_table(imat,1)*sec_table(isec,4)!%iz
+eiy=mat_table(imat,1)*sec_table(isec,8)!%iy
+gix=mat_table(imat,1)*sec_table(isec,12)!%ix
 !print *, imat,isec,d
 !allocate(kelst(ndfel,ndfel))
 kelst=0.0
@@ -160,7 +139,7 @@ case('3dframe')
         kelst(12, 12) = 4.0 * eiz / d         !(11,11)   
 !    call printmatrix(kelst,"kelst")
 end select
-
+!deallocate(kelst)
 return
 end function elem_stiff
 !end subroutine elem_stiff
@@ -168,21 +147,23 @@ end function elem_stiff
 ! -----------------------
 ! Element Rotation Matrix
 ! -----------------------
-function rotmatgen(nel) result(rot) !bind(c,name='rotmatgen')
+function rotmatgen(nel,ndfel,elem_prop) result(rot) !bind(c,name='rotmatgen')
 !subroutine rotmatgen(nel,rot) bind(c,name='rotmatgen')
 !use iso_c_binding
 implicit none
-
+real(kind=8), intent(in) :: elem_prop(:,:)
 real(kind=8)  :: rot(ndfel,ndfel)
-integer(kind=4), intent(in)                :: nel
+integer(kind=4), intent(in) :: nel,ndfel
 real(kind=8) :: dt,beta,cx,cy,cz,cxz
 integer(kind=4) :: i,j
+!ndf=ndfel/2
+!allocate(rot(ndfel,ndfel))
 rot=0.0
-dt=elem_prop(nel)%elem_len !prop(kdsp+5)
-beta=elem_prop(nel)%beta!prop(kdsp+1)
-cx=elem_prop(nel)%dx/dt !prop(kdsp+6)/dt
-cy=elem_prop(nel)%dy/dt !prop(kdsp+7)/dt
-cz=elem_prop(nel)%dz/dt !prop(kdsp+8)/dt
+dt=elem_prop(nel,5)!%elem_len !prop(kdsp+5)
+beta=0.0!elem_prop(nel)%beta!prop(kdsp+1)
+cx=elem_prop(nel,6)!%dx/dt !prop(kdsp+6)/dt
+cy=elem_prop(nel,7)!%dy/dt !prop(kdsp+7)/dt
+cz=0.0!elem_prop(nel)%dz/dt !prop(kdsp+8)/dt
 cxz=sqrt(cx*cx+cz*cz)
 select case ( strutype )
   case ('2dtruss')
@@ -244,14 +225,14 @@ do  i=1,ndf
     rot(i+ndf,j+ndf)=rot(i,j)
   end do
 end do
-
+!deallocate(rot)
 end function rotmatgen
 !end subroutine rotmatgen
 
 ! -----------------------
 ! Assembling Global Stiffness Matrix
 ! -----------------------
-subroutine elassgen(elst,con) !bind(c,name='elassgen')
+subroutine elassgen(tk,elst,con) !bind(c,name='elassgen')
 !use iso_c_binding
 !use structvarsgen
 implicit none
@@ -262,7 +243,8 @@ implicit none
 !integer(c_int), intent(in) :: nne,ndf
 integer(kind=4) :: n1,n2,kc,kr,i1,i2,i,j1,j,j2,k,ic9,k2,k1, ki,l
 integer(kind=4),intent(in) :: con(:)
-real(kind=8),intent(inout) :: elst(:,:)
+real(kind=8),intent(in) :: elst(:,:)
+real(kind=8), intent(inout) :: tk(:,:)
  
 do  i=1,nne
   n1 =con(i)
@@ -309,47 +291,6 @@ end do
 !write(fileout_unit,'("subroutine elass: ",i5)')nel
 return
 end subroutine elassgen
-
-subroutine mat_param(mymat) !bind(c,name='mat_param')
-!  use iso_c_binding
-    class(material) :: mymat
-
-    select case(mymat%matname)
-    case("steel")
-        mymat%emod=200e+06 !kn/m2 or 200gpa
-        mymat%poisson=0.28
-        mymat%matden=78.5!e+03 !kn/m3
-        mymat%gmod=79.3e+06 !kn/m2 or 79.3 gpa
-    case("titanium")
-        mymat%emod=113e+06 !kn/m2 or 120gpa
-        mymat%poisson=0.3
-        mymat%matden=44.13!e+03 !kn/m3
-        mymat%gmod=45e+06 !kn/m2 or 45 gpa
-    case default
-        mymat%emod=200e+06 !kn/m2 or 200gpa
-        mymat%poisson=0.28
-        mymat%matden=78.5!e+03 !kn/m3
-        mymat%gmod=79.3e+06 !kn/m2 or 79.3 gpa
-    end select
-
-end subroutine mat_param
-
-subroutine pipeparam(mysection) !bind(c,name='pipeparam')
-implicit none
-
-class(section) :: mysection
-real(kind=8) :: id,wth,od
-od=mysection%tube_od
-wth=mysection%tube_wth
-id=od-2*wth
-mysection%ax=0.25*pi*(od**2-id**2)
-mysection%iz=pi*(od**4-id**4)/64.0
-mysection%iy=pi*(od**4-id**4)/64.0
-mysection%ix=2*mysection%iz
-mysection%rz=sqrt(mysection%iz/mysection%ax)
-mysection%ry=sqrt(mysection%iy/mysection%ax)
-!write(fileout_unit,'(3f12.4)')od,id,mysection%ax
-end subroutine pipeparam
 
 
 
