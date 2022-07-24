@@ -225,7 +225,6 @@ def XML_reader(filein):
                             y[12] = y[12]*scaleL**4  # J
                             item=tuple(y)
                             sections.append(item)
-                            #print(item)
         elif tagname == "nodes":
             UnitL = child.GetAttribute("unitL", "m")
             if UnitL == "default-value":

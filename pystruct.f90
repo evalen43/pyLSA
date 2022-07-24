@@ -2,8 +2,11 @@ module pystruct
 implicit none
 
 character(len=10), public :: strutype
-integer(kind=4), public :: ndfel,ne,ndf,nne,n,ms
-real(kind=8), allocatable :: tk(:,:),elem_prop(:,:),mat_table(:,:),sec_table(:,:)
+integer(kind=4), public :: ndfel,ne,ndf,nne,n,ms,nbn,fileout_unit
+real(kind=8), allocatable :: tk(:,:),elem_prop(:,:),mat_table(:,:), &
+  sec_table(:,:),al(:,:),reac(:,:)
+integer(kind=4),allocatable :: ib(:) 
+logical, public :: kerr 
 
 contains
 
@@ -283,5 +286,148 @@ end do
 !write(fileout_unit,'("subroutine elass: ",i5)')nel
 return
 end subroutine elassgen
+
+SUBROUTINE boundgen() !bind(c,name='boundgen')
+IMPLICIT NONE
+!---INTRODUCTION OF THE BOUNDARY CONDITIONS
+INTEGER(kind=4) :: l1,no,l2,k1,i,kr,kv,j,l,icol,nlc
+nlc=size(reac,2)
+
+DO  l=1,nbn
+  
+!---NO=NUMBER OF THE CURRENT BOUNDARY
+  
+  l1=(ndf+1)*(l-1)+1
+  no=ib(l1)
+  k1=ndf*(no-1)
+  DO  i=1,ndf
+    l2=l1+i
+    IF(ib(l2) == 0) THEN
+      GO TO    10
+    ELSE
+      cycle!GO TO   100
+    END IF
+    
+!---SET DIAGONAL COEFFICIENT OF TK EQUAL TO 1 AND PLACE PRESCRIBED VALUE IN AL
+    10      kr=k1+i
+    DO  j=2,ms
+      kv=kr+j-1
+      IF(n-kv < 0) THEN
+        GO TO    30
+      END IF
+!---MODIFY ROW OF TK AND CORRESPONDING ELEMENTS IN AL
+      DO  icol=1,nlc
+        al(kv,icol)=al(kv,icol)-tk(kr,j)*reac(kr,icol)
+      END DO
+      tk(kr,j)=0.
+      30      kv=kr-j+1
+      if(kv<=0) cycle
+      
+!---MODIFY COLUMN IN TK AND CORRESPONDING ELEMENT IN AL
+      do icol=1,nlc
+        al(kv,icol)=al(kv,icol)-tk(kv,j)*reac(kr,icol)
+      END DO
+      tk(kv,j)=0.
+    END DO
+    tk(kr,1)=1.
+    DO  icol=1,nlc
+      al(kr,icol)=reac(kr,icol)
+    END DO
+  END DO
+END DO
+RETURN
+END SUBROUTINE boundgen
+
+SUBROUTINE bgaussgen() !bind(c,name='bgaussgen')
+!use iso_c_binding
+!use structvarsgen, only:printmatrix,fileout_unit,n,nlc,kerr,ms,a =>tk, b => al
+use iso_fortran_env
+use ieee_exceptions
+IMPLICIT NONE
+
+!---N:     ROW DIMENSION OF A AND B
+!---MS:     COLUMN DIMENSION OF A
+!---LC:     COLUMN DIMENSION OF B
+!---D:      AUXILIARY VECTOR
+REAL(kind=8),  allocatable :: d(:)
+REAL(kind=8) :: c
+INTEGER(kind=4) :: n1,k,l,ni,k1,k2,j,icol,i,k3,nlc
+!logical :: isnan
+nlc=size(reac,2)
+allocate(d(n))
+
+kerr=.false.
+n1=n-1
+DO  k=1,n1
+  c=tk(k,1)
+  k1=k+1
+  IF(ABS(c)-.000001 <= 0.0) THEN 
+    WRITE(fileout_unit,'("**** SINGULARITY IN ROW",i5,1X,"****")') k
+    kerr=.true.
+    call printmatrix(tk,"Stiff")
+    return
+  END IF  
+!---DIVIDE ROW BY DIAGONAL COEFFICIENT
+  
+  ni=k1+ms-2
+  l=MIN0(ni,n)
+  DO  j=2,ms
+    d(j)=tk(k,j)
+  END DO
+  DO  j=k1,l
+    k2=j-k+1
+    tk(k,k2)=tk(k,k2)/c
+  END DO
+  DO  icol=1,nlc
+    al(k,icol)=al(k,icol)/c
+  END DO
+  
+!       ELIMINATE UNKNOWN X(K) FROM ROW I
+  
+  DO  i=k1,l
+    k2=i-k1+2
+    c=d(k2)
+    DO  j=i,l
+      k2=j-i+1
+      k3=j-k+1
+      tk(i,k2)=tk(i,k2)-c*tk(k,k3)
+    END DO
+    DO  icol=1,nlc
+      al(i,icol)=al(i,icol)-c*al(k,icol)
+    END DO
+  END DO
+END DO
+
+!---COMPUTE LAST UNKNOWN
+
+IF(ABS(tk(n,1))-.000001 <= 0.0) THEN
+  WRITE(fileout_unit,'("**** SINGULARITY IN ROW",i5,1X,"****")') n
+  kerr=.false.
+  call printmatrix(tk,"Stiff")  
+!  call exit(1)
+END IF
+DO  icol=1,nlc
+  al(n,icol)=al(n,icol)/tk(n,1)
+END DO
+
+!---APPLY BACKSUBSTITUTION PROCESS TO COMPUTE REMAINING UNKNOWNS
+
+DO  i=1,n1
+  k=n-i
+  k1=k+1
+  ni=k1+ms-2
+  l=MIN0(ni,n)
+  DO  j=k1,l
+    k2=j-k+1
+    DO  icol=1,nlc
+      al(k,icol)=al(k,icol)-tk(k,k2)*al(j,icol)
+    END DO
+  END DO
+END DO
+kerr=.true.
+deallocate(d)
+
+RETURN
+END SUBROUTINE bgaussgen
 
 end module pystruct
