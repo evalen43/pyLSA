@@ -303,13 +303,14 @@ def XML_reader(filein):
             UnitF=child.GetAttribute("unitF","N")
             if UnitF=="default-value": scaleF=1.0
             else: scaleF=TokN(UnitF)
-            children=child.GetChildren()
+            children=child.GetNext()
             tagchild=children.GetName()
-            if tagchild=='loaded-nodes':
-                lines = content.splitlines()
-                print(lines)
-            elif tagchild=='loaded-members':
-                lines = content.splitlines()
-                print(lines)
+            print(tagchild)
+            # if tagchild=='loaded-nodes':
+            #     lines = content.splitlines()
+            #     print(lines)
+            # elif tagchild=='loaded-members':
+            #     lines = content.splitlines()
+            #     print(lines)
                 
         child = child.GetNext()
