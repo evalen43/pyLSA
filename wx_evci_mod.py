@@ -1,3 +1,4 @@
+#from operator import ne
 import wx.xml
 import sqlite3
 import math
@@ -6,7 +7,7 @@ import numpy as np
 #import wx.dataview
 
 g=9.806
-ndf=0
+ndf=0 ;  ne=0 ; ms=0; n=0; nne=2
 lineinput = []
 fyield=0.0
 scaleS = 0.0
@@ -16,16 +17,9 @@ matden=''
 poisson=''
 materials = []
 sections=[]
-x=[]
-y=[]
-z=[]
-nodes=[]
-coor=[]
-nodelist=[]
-seclist=[]
-matlist=[]
-elemlist=[]
-elements=[]
+x=[];y=[];z=[]
+nodes=[];coor=[];nodelist=[]
+seclist=[];matlist=[];elemlist=[];elements=[];bndlist=[];boundaries=[]
 steel = ('', 'Steel', 200e+06, 78.5, 0.28)
 titanium = ('', 'Titaniun', 113e+06, 44.13, 0.3)
 def TokNperM2(unitF):
@@ -82,7 +76,18 @@ def pipeparam(od,wth):
     w=0.0
     J=2*iner
     section=(w,ax,od,iner,Zx,Sx,radius,iner,Zx,Sx,radius,J)
-    return section              
+    return section  
+def bndparam(bndid,bntype):
+    j=bndlist.index(bndid)
+    if bntype=='ENCASTRE': ibnd=(j,0,0,0)
+        #ib.append(ibnd)
+    elif bntype=='HINGE':  ibnd=(j,0,0,1)
+        #ib.append(ibnd)
+    elif bntype=='HSLIDEX': ibnd=(j,1,0,0)
+        #ib.append(ibnd)
+    elif bntype=='HSLIDEY': ibnd=[j,0,1,0]
+    return ibnd
+    
 def XML_reader(filein):
     # start processing the XML file
     doc = wx.xml.XmlDocument()
@@ -232,6 +237,8 @@ def XML_reader(filein):
             else:
                 scaleL = ToMeter(UnitL)
             lines = content.splitlines()
+            global n
+            n=len(lines)*ndf
             for line in lines:
                 #line = line.replace("=", " ")
                 lineinput = line.split()
@@ -246,11 +253,16 @@ def XML_reader(filein):
                 coor.append(nodes)    
         elif tagname == "elements":
             lines = content.splitlines()
+            global ne
+            ne=len(lines)
             for line in lines:
                 lineinput = line.split()
                 elemlist.append(lineinput[0])
                 inc1=nodelist.index(lineinput[1])
                 inc2=nodelist.index(lineinput[2])
+                j=abs(inc1-inc2)
+                global ms
+                if ms<j: ms=j
                 secid=seclist.index(lineinput[3])
                 matid=matlist.index(lineinput[4])
                 pt1=np.array(coor[inc1])
@@ -263,8 +275,15 @@ def XML_reader(filein):
                 sinx = np.dot(temp, axis_y.T)/elemlen
                 element=(inc1,inc2,secid,matid,elemlen,cosx,sinx)
                 elements.append(element)
+            ms=ndf*(ms+1)    
         elif tagname == "boundary":
             lines = content.splitlines()
+            for line in lines:
+                lineinput = line.split()
+                bnodeid=lineinput[0]
+                bndlist.append(bnodeid)
+                bntype=lineinput[1]
+                boundaries.append(bndparam(bnodeid,bntype))
         elif tagname == "loading":
             UnitL = child.GetAttribute("unitL", "m")
             if UnitL == "default-value":
