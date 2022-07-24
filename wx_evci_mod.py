@@ -6,7 +6,7 @@ import numpy as np
 #import scipy
 #import wx.dataview
 
-g=9.806
+grav=9.806
 ndf=0 ;  ne=0 ; ms=0; n=0; nne=2
 lineinput = []
 fyield=0.0
@@ -65,7 +65,19 @@ def ToMeter(unitL):
         factor=0.01
     elif unitL=="m":
         factor=1.0
-    return factor  
+    return factor
+
+def TokN(unitF):
+    if unitF == 'lbf':
+        factor = 0.454*grav/1000.0
+    elif unitF == 'kip':
+        factor = 0.454*grav
+    elif unitF == 'N':
+        factor = 0.001
+    elif unitF == 'te':
+        factor = 1.0*grav
+    return factor    
+  
 def pipeparam(od,wth):
     id=od-2*wth
     ax=0.25*math.pi*(od**2-id**2)
@@ -286,10 +298,18 @@ def XML_reader(filein):
                 boundaries.append(bndparam(bnodeid,bntype))
         elif tagname == "loading":
             UnitL = child.GetAttribute("unitL", "m")
-            if UnitL == "default-value":
-                scaleL = 1.0
-            else:
-                scaleL = ToMeter(UnitL)
-            lines = content.splitlines()
+            if UnitL == "default-value": scaleL = 1.0
+            else: scaleL = ToMeter(UnitL)
+            UnitF=child.GetAttribute("unitF","N")
+            if UnitF=="default-value": scaleF=1.0
+            else: scaleF=TokN(UnitF)
+            children=child.GetChildren()
+            tagchild=children.GetName()
+            if tagchild=='loaded-nodes':
+                lines = content.splitlines()
+                print(lines)
+            elif tagchild=='loaded-members':
+                lines = content.splitlines()
+                print(lines)
                 
         child = child.GetNext()

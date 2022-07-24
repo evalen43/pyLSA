@@ -34,16 +34,16 @@ node1 ENCASTRE
 node5 ENCASTRE
 8 ENCASTRE
 </boundary>
-<loading unitL='m' unitF='N'> 
-<case  id="1">
+<loading unitL='m' unitF='N' id='1'>
+<case id='1'>
 <loaded-nodes>
 nodeid=node2 Px=30000.
 nodeid=node3 Py=-40000.
 nodeid=6 Py=-40000.
 </loaded-nodes>
-</case> 
-<case  id="2">
-<loaded-members>
+</case>
+<case id=2>
+<<loaded-members>
 memid=elem1 loadtype=pload P=30000. a=0.5  sysref=globx
 </loaded-members>
 </case>
