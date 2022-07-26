@@ -11,7 +11,8 @@ import wx.dataview as dv
 #from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 import os
 from wx_evci_mod import XML_reader,materials,sections,coor, \
-    nodelist,seclist,matlist,elemlist,elements,bndlist,boundaries
+    nodelist,seclist,matlist,elemlist,elements,bndlist,boundaries, \
+    nodeloads
 
 g=9.806
 strutype=""
@@ -325,6 +326,7 @@ class EVCI_Form ( wx.Frame ):
 			print(elements)
 			print(bndlist)
 			print(boundaries)
+			print(nodeloads)
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file", wx.ICON_QUESTION | wx.OK)
 			return

@@ -10,17 +10,13 @@ import numpy as np
 grav=9.806
 ndf=0 ;  ne=0 ; ms=0; n=0; nne=2
 lineinput = []
-fyield=0.0
-scaleS = 0.0
-scaleden=0.0
-emod=''
-matden=''
-poisson=''
-materials = []
-sections=[]
+fyield=0.0;scaleS = 0.0;scaleden=0.0
+emod='';matden='';poisson=''
+materials = [];sections=[]
 x=[];y=[];z=[]
 nodes=[];coor=[];nodelist=[]
 seclist=[];matlist=[];elemlist=[];elements=[];bndlist=[];boundaries=[]
+nodeloads=[]
 steel = ('', 'Steel', 200e+06, 78.5, 0.28)
 titanium = ('', 'Titaniun', 113e+06, 44.13, 0.3)
 def TokNperM2(unitF):
@@ -335,6 +331,18 @@ def XML_reader(filein):
                         content2 = load2.GetNodeContent()
                         lines = content2.splitlines()
                         print(lines)
+                        px=0.0;py=0.0;mz=0.0
+                        nodeid=lineinput[1]
+                        for line in lines:
+                            line = line.replace("=", " ")
+                            lineinput = line.split()
+                            if lineinput[2]=='Px': px=float(lineinput[3])
+                            elif lineinput[2] == 'Py':
+                                py = float(lineinput[3])
+                            elif lineinput[2] == 'Mz':
+                                mz = float(lineinput[3])
+                            ldtuple=(nodeid,px,py,mz)
+                            nodeloads.append(ldtuple)    
                     elif tag2 == 'loaded-members':
                         content2 = load2.GetNodeContent()
                         lines = content2.splitlines()
