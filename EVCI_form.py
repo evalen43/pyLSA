@@ -10,9 +10,8 @@ import wx.xrc
 import wx.dataview as dv
 #from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 import os
-from wx_evci_mod import TokNperM2, XML_reader,TokNperM3,ToMeter, \
-    materials,sections,coor,nodelist,seclist,matlist,elemlist, \
-    elements,bndlist,boundaries
+from wx_evci_mod import XML_reader,materials,sections,coor, \
+    nodelist,seclist,matlist,elemlist,elements,bndlist,boundaries
 
 g=9.806
 strutype=""

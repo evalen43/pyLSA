@@ -179,6 +179,7 @@ def XML_reader(filein):
                 i=0
                 #print(lineinput)
                 matlist.append(lineinput[0])
+                matid = lineinput[0]
                 matype=lineinput[1]
                 if matype=='General':
                     while i<len(lineinput):
@@ -235,7 +236,7 @@ def XML_reader(filein):
                 elif sectype=='EDI':
                     edi= lineinput[2]
                     # Connecto to database
-                    conn=sqlite3.connect('/home/ev/pyLSA/aisc_shapes_v15_US_R1.db')
+                    conn=sqlite3.connect('/home/evalen43/pyLSA/aisc_shapes_v15_US_R1.db')
                     # Create cursor
                     c=conn.cursor()
                     # Query the database
@@ -340,19 +341,6 @@ def XML_reader(filein):
                         print(lines)
                     load2=load2.GetNext()    
                 load=load.GetNext()
-            #content=load.GetNodeContent()
-            # while child2:
-            #     tag=child2.GetName()
-            #     print(tag)
-            # child2=child2.GetNext()    
-            # child3=child2.GetNext()
-            # tag3 = child3.GetName()
-            # print(tag3)
-            # if tagchild=='loaded-nodes':
-            #     lines = content.splitlines()
-            #     print(lines)
-            # elif tagchild=='loaded-members':
-            #     lines = content.splitlines()
-            #     print(lines)
+
                 
         child = child.GetNext()
