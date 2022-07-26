@@ -16,7 +16,7 @@ materials = [];sections=[]
 x=[];y=[];z=[]
 nodes=[];coor=[];nodelist=[]
 seclist=[];matlist=[];elemlist=[];elements=[];bndlist=[];boundaries=[]
-nodeloads=[]
+nodeloads=[];loadcaseslist=[]
 steel = ('', 'Steel', 200e+06, 78.5, 0.28)
 titanium = ('', 'Titaniun', 113e+06, 44.13, 0.3)
 def TokNperM2(unitF):
@@ -111,7 +111,16 @@ def XML_reader2(filein):
                     if y.tag !=" ":print(y.tag,y.text)
                 for z in case.iter('loaded-members'):
                     if z.tag !=" ":print(z.tag, z.text)
-     
+def structure(strutype):
+    if strutype == "Frame2D":   ndf = 3
+    elif strutype =="Frame3D": ndf=6
+    elif strutype =="Truss3D": ndf=3
+    elif strutype =="Truss2D": ndf=2
+    elif strutype =="Grid":    ndf=3
+    elif strutype =="Frame2D_8DOF": ndf=4
+    else: ndf=3 
+    return ndf       
+
 def XML_reader(filein):
     # start processing the XML file
     doc = wx.xml.XmlDocument()
@@ -119,15 +128,8 @@ def XML_reader(filein):
         return False
     global ndf
     strutype = doc.GetRoot().GetName()
-    if strutype =="Frame2D":   ndf=3
-    elif strutype =="Frame3D": ndf=6
-    elif strutype =="Truss3D": ndf=3
-    elif strutype =="Truss2D": ndf=2
-    elif strutype =="Grid":    ndf=3
-    elif strutype =="Frame2D_8DOF": ndf=4
-    else: ndf=3    
-    #     if child.GetType() == wx.xml.XML_PI_NODE and child.GetName() == "target":
-            # Other code here...
+    ndf=structure(strutype)
+
     child = doc.GetRoot().GetChildren()
     while child:
         tagname = child.GetName()
@@ -322,11 +324,13 @@ def XML_reader(filein):
             load = child.GetChildren()
             while load:
                 tagchild=load.GetName()
+                tagattrib=load.GetAttribute("id",'')
                 if tagchild=='case':
-                    print(tagchild)
+                    print(tagchild,tagattrib)
                     load2 = load.GetChildren()
                     tag2=load2.GetName()
                     print(tag2)
+                    loadcaseslist.append(tagattrib)
                     if tag2=='loaded-nodes':
                         content2 = load2.GetNodeContent()
                         lines = content2.splitlines()
