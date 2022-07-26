@@ -10,7 +10,7 @@ import wx.xrc
 import wx.dataview as dv
 #from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 import os
-from wx_evci_mod import TokNperM2, XML_reader2,TokNperM3,ToMeter, \
+from wx_evci_mod import TokNperM2, XML_reader,TokNperM3,ToMeter, \
     materials,sections,coor,nodelist,seclist,matlist,elemlist, \
     elements,bndlist,boundaries
 
@@ -274,7 +274,7 @@ class EVCI_Form ( wx.Frame ):
 			fname = f.name
 			self.m_statusBar1.PushStatusText(fname)
 			#print(fname)
-			XML_reader2(fname)
+			XML_reader(fname)
 			#print(materials)
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file",wx.ICON_QUESTION |wx.OK)
@@ -315,17 +315,17 @@ class EVCI_Form ( wx.Frame ):
 			self.m_statusBar1.title=fname
 			self.m_statusBar1 = fname
 			#print(fname)
-			XML_reader2(fname)
-			# print(matlist)
-			# print(materials)
-			# print(seclist)
-			# print(sections)
-			# print(nodelist)
-			# print(coor)
-			# print(elemlist)
-			# print(elements)
-			# print(bndlist)
-			# print(boundaries)
+			XML_reader(fname)
+			print(matlist)
+			print(materials)
+			print(seclist)
+			print(sections)
+			print(nodelist)
+			print(coor)
+			print(elemlist)
+			print(elements)
+			print(bndlist)
+			print(boundaries)
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file", wx.ICON_QUESTION | wx.OK)
 			return
