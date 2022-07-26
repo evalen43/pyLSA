@@ -1,4 +1,4 @@
-#from operator import ne
+from os.path import abspath,expanduser
 import xml.etree.ElementTree as ET
 import wx.xml
 import sqlite3
@@ -232,7 +232,7 @@ def XML_reader(filein):
                 elif sectype=='EDI':
                     edi= lineinput[2]
                     # Connecto to database
-                    conn=sqlite3.connect('/home/evalen43/pyLSA/aisc_shapes_v15_US_R1.db')
+                    conn=sqlite3.connect(abspath(expanduser('~/pyLSA/aisc_shapes_v15_US_R1.db')))
                     # Create cursor
                     c=conn.cursor()
                     # Query the database
@@ -314,11 +314,11 @@ def XML_reader(filein):
             UnitL = child.GetAttribute("unitL", "m")
             if UnitL == "default-value": scaleL = 1.0
             else: scaleL = ToMeter(UnitL)
-            UnitF=child.GetAttribute("unitF","N")
+            UnitF=child.GetAttribute("unitF","kN")
             if UnitF=="default-value": scaleF=1.0
             else: scaleF=TokN(UnitF)
 
-
+            i=0
             load = child.GetChildren()
             while load:
                 tagchild=load.GetName()
@@ -331,22 +331,24 @@ def XML_reader(filein):
                         content2 = load2.GetNodeContent()
                         lines = content2.splitlines()
                         print(lines)
-                        px=0.0;py=0.0;mz=0.0
-                        nodeid=lineinput[1]
                         for line in lines:
+                            px = 0.0;py = 0.0;mz = 0.0
                             line = line.replace("=", " ")
                             lineinput = line.split()
-                            if lineinput[2]=='Px': px=float(lineinput[3])
+                            nodeid = lineinput[1]
+                            if lineinput[2]=='Px': px=float(lineinput[3])*scaleF
                             elif lineinput[2] == 'Py':
-                                py = float(lineinput[3])
+                                py = float(lineinput[3])*scaleF
                             elif lineinput[2] == 'Mz':
-                                mz = float(lineinput[3])
-                            ldtuple=(nodeid,px,py,mz)
+                                mz = float(lineinput[3])*scaleL*scaleF
+                            j=nodelist.index(nodeid)    
+                            ldtuple=(i,j,px,py,mz)
                             nodeloads.append(ldtuple)    
                     elif tag2 == 'loaded-members':
                         content2 = load2.GetNodeContent()
                         lines = content2.splitlines()
                         print(lines)
+                    i +=1    
                     load2=load2.GetNext()    
                 load=load.GetNext()
 
