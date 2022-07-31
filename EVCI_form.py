@@ -223,10 +223,11 @@ class EVCI_Form ( wx.Frame ):
 
 		self.SetMenuBar( self.m_menubar1 )
 
-		#self.m_statusBar1 = self.CreateStatusBar( 3, wx.STB_SIZEGRIP, wx.ID_ANY )
-		self.m_statusBar1 = self.CreateStatusBar(3, wx.STB_SIZEGRIP, wx.ID_ANY)
+		self.m_statusBar1 = self.CreateStatusBar( 3, wx.STB_SIZEGRIP, wx.ID_ANY )
+		# self.CreateStatusBar(3, wx.STB_SIZEGRIP, wx.ID_ANY)
+		#self.m_statusBar1 = wx.StatusBar(self, wx.STB_DEFAULT_STYLE, wx.WindowID)
 		self.m_statusBar1.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_HIGHLIGHTTEXT ) )
-
+		
 
 		self.Centre( wx.BOTH )
 
@@ -313,8 +314,8 @@ class EVCI_Form ( wx.Frame ):
 				data = f.read() 
 				self.m_textfilein.SetValue(data)       
 			fname=f.name 
-			self.m_statusBar1.title=fname
-			self.m_statusBar1 = fname
+			#self.SetStatusText(self,fname)
+			self.m_statusBar1.SetStatusText(fname)
 			#print(fname)
 			XML_reader(fname)
 			print(matlist)
