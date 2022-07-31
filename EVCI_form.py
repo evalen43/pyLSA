@@ -272,7 +272,8 @@ class EVCI_Form ( wx.Frame ):
 				data = f.read()
 				self.m_textfilein.SetValue(data)
 			fname = f.name
-			self.m_statusBar1.PushStatusText(fname)
+			self.SetStatusText(fname)
+			self.m_statusBar1.SetStatusText(fname)
 			#print(fname)
 			XML_reader(fname)
 			#print(materials)

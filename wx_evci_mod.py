@@ -355,6 +355,5 @@ def XML_reader(filein):
                     i +=1    
                     load2=load2.GetNext()    
                 load=load.GetNext()
-
                 
         child = child.GetNext()
