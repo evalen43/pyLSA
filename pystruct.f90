@@ -364,7 +364,7 @@ DO  k=1,n1
   IF(ABS(c)-.000001 <= 0.0) THEN 
     WRITE(fileout_unit,'("**** SINGULARITY IN ROW",i5,1X,"****")') k
     kerr=.true.
-    call printmatrix(tk,"Stiff")
+    !call printmatrix(tk,"Stiff")
     return
   END IF  
 !---DIVIDE ROW BY DIAGONAL COEFFICIENT
@@ -403,7 +403,7 @@ END DO
 IF(ABS(tk(n,1))-.000001 <= 0.0) THEN
   WRITE(fileout_unit,'("**** SINGULARITY IN ROW",i5,1X,"****")') n
   kerr=.false.
-  call printmatrix(tk,"Stiff")  
+  !call printmatrix(tk,"Stiff")  
 !  call exit(1)
 END IF
 DO  icol=1,nlc
