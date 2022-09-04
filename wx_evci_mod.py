@@ -145,6 +145,7 @@ class StruMod(Unit):
 
     @classmethod
     def code(cls,content,child):
+        lineinput=[]
         UnitS = child.GetAttribute("unitS", "kN/m2")
         if UnitS == "default-value": scaleS=1.0
         else: scaleS=Unit.TokNperM2(UnitS)                    
@@ -162,6 +163,7 @@ class StruMod(Unit):
 
     @classmethod
     def material(cls,content,child):
+        lineinput=[]
         materials=[]
         UnitS = child.GetAttribute("unitS", "kN/m2")
         scaleden=child.GetAttribute("den","kN/m3")
@@ -326,6 +328,7 @@ class StruMod(Unit):
     
     @classmethod
     def loading(cls,content,child,fileout):
+        lineinput=[]
         UnitL = child.GetAttribute("unitL", "m")
         if UnitL == "default-value": scaleL = 1.0
         else: scaleL = Unit.ToMeter(UnitL)

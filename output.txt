@@ -54,3 +54,25 @@ loaded-nodes
 case 2
 loaded-members
 ['memid=elem1 loadtype=pload P=30000. a=0.5  sysref=globx']
+Frame2D ndf= 3
+Ferrante Example
+Fy= 248211.26208000001
+case 1
+loaded-nodes
+['nodeid=node2 Px=30000.', 'nodeid=node3 Py=-40000.', 'nodeid=6 Py=-40000.']
+case 2
+loaded-members
+['memid=elem1 loadtype=pload P=30000. a=0.5  sysref=globx']
+Frame2D ndf= 3
+Ferrante Example
+Frame2D ndf= 3
+Ferrante Example
+Frame2D ndf= 3
+Ferrante Example
+Fy= 248211.26208000001
+case 1
+loaded-nodes
+['nodeid=node2 Px=30000.', 'nodeid=node3 Py=-40000.', 'nodeid=6 Py=-40000.']
+case 2
+loaded-members
+['memid=elem1 loadtype=pload P=30000. a=0.5  sysref=globx']
