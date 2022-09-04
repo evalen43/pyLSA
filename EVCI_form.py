@@ -383,39 +383,6 @@ class EVCI_Form ( wx.Frame ):
 		event.Skip()
 
 
-	# def TokNperM2(unitF):
-	# 	if unitF == "kN/m2":
-	# 		tonewton = 1.0
-	# 	elif unitF == "lb/sqf":
-	# 		tonewton = 0.047880258888889
-	# 	elif unitF == "ksi":
-	# 		tonewton = 6894.757280000001
-	# 	elif unitF == "kgf/m2":
-	# 		tonewton = g
-	# 	elif unitF == "ton/sqf":
-	# 		tonewton = 107.25177991111
-	# 	elif unitF == "psi":
-	# 		tonewton = 6.89475728
-	# 	else:
-	# 		tonewton = 1.0
-
-
-	# def TokNperM3(unitF):
-	# 	if unitF == "kN/m3":
-	# 		tonewton = 1.0
-	# 	elif unitF == "lbf/ft3":
-	# 		tonewton = 0.1570865731
-	# 	elif unitF == "kips/inch3":
-	# 		tonewton = 271447.14116097
-	# 	elif unitF == "kgf/m3":
-	# 		tonewton = g/1000.0
-	# 	elif unitF == "tonf/ft3":
-	# 		tonewton = 314.1731461238
-	# 	elif unitF == "t/m3":
-	# 		tonewton = g
-	# 	else:
-	# 		tonewton = 1.0
-
 
 	# def XML_reader(m_dataViewTreeCtrl3):
     # # start processing the XML file
@@ -423,15 +390,7 @@ class EVCI_Form ( wx.Frame ):
 	# 	if not doc.Load(fname):
 	# 		return False
 
-	# 	strutype = doc.GetRoot().GetName()
-	# 	if strutype == "Frame2D":	ndf = 3
-	# 	elif strutype == "Frame3D":	ndf = 6
-	# 	elif strutype == "Truss3D":	ndf = 3
-	# 	elif strutype == "Truss2D":	ndf = 2
-	# 	elif strutype == "Grid":  	ndf = 3
-	# 	elif strutype == "Frame2D_8DOF": ndf = 4
-	# 	else: 	ndf = 0
-	# 	print(strutype)
+
 
     # #     if child.GetType() == wx.xml.XML_PI_NODE and child.GetName() == "target":
 
