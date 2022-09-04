@@ -267,11 +267,11 @@ class EVCI_Form ( wx.Frame,StruMod ):
 			fname = f.name
 			self.SetStatusText(fname)
 			self.m_statusBar1.SetStatusText(fname)
-			StruMod.XML_reader(fname,fileout)
+			StruMod.XML_reader(fname)
 			fileout = open("output.txt", 'r')
 			self.m_textlog.SetValue(fileout.read())
 			fileout.close()
-			fname.close()
+
 			
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file",wx.ICON_QUESTION |wx.OK)
