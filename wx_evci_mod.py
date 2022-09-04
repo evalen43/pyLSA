@@ -18,7 +18,7 @@ class Unit:
         elif unitF=="ksi":
             tonewton = 6894.757280000001
         elif unitF=="kgf/m2":
-            tonewton=grav
+            tonewton=StruMod.grav
         elif unitF=="ton/sqf":
             tonewton = 107.25177991111
         elif unitF=="psi":
@@ -36,11 +36,11 @@ class Unit:
         elif unitF=="kips/inch3":
             tonewton = 271447.14116097
         elif unitF=="kgf/m3":
-            tonewton=grav/1000.0
+            tonewton=StruMod.grav/1000.0
         elif unitF=="tonf/ft3":
             tonewton = 314.1731461238
         elif unitF=="t/m3":
-            tonewton=grav
+            tonewton=StruMod.grav
         else:
             tonewton=1.0
         return tonewton            
@@ -60,13 +60,13 @@ class Unit:
     @staticmethod
     def TokN(unitF):
         if unitF == 'lbf':
-            factor = 0.454*grav/1000.0
+            factor = 0.454*StruMod.grav/1000.0
         elif unitF == 'kip':
-            factor = 0.454*grav
+            factor = 0.454*StruMod.grav
         elif unitF == 'N':
             factor = 0.001
         elif unitF == 'te':
-            factor = 1.0*grav
+            factor = 1.0*StruMod.grav
         return factor    
   
 class StruMod(Unit):
@@ -76,7 +76,6 @@ class StruMod(Unit):
     ms = 0
     n = 0
     nne = 2
-    lineinput = []
     fyield = 0.0
     scaleS = 0.0
     scaleden = 0.0
@@ -101,7 +100,7 @@ class StruMod(Unit):
     boundaries = []
     nodeloads = []
     loadcaseslist = []
-        
+    
     steel = ('', 'Steel', 200e+06, 78.5, 0.28)
     titanium = ('', 'Titaniun', 113e+06, 44.13, 0.3)
 
@@ -129,21 +128,24 @@ class StruMod(Unit):
         elif bntype=='HSLIDEY': ibnd=[j,0,1,0]
         return ibnd
     
-    @classmethod
-    def structure(cls):
-        if cls.strutype == "Frame2D":   ndf = 3
-        elif cls.strutype =="Frame3D": ndf=6
-        elif cls.strutype =="Truss3D": ndf=3
-        elif cls.strutype =="Truss2D": ndf=2
-        elif cls.strutype =="Grid":    ndf=3
-        elif cls.strutype =="Frame2D_8DOF": ndf=4
+    @staticmethod
+    def structure(strutype):
+        if strutype == "Frame2D":   ndf = 3
+        elif strutype == "Frame3D": ndf = 6
+        elif strutype == "Truss3D":
+            ndf = 3
+        elif strutype == "Truss2D":
+            ndf = 2
+        elif strutype == "Grid":
+            ndf = 3
+        elif strutype == "Frame2D_8DOF":
+            ndf = 4
         else: ndf=3 
-        return cls.ndf       
+        return ndf       
 
     @classmethod
     def code(cls,content,child):
         UnitS = child.GetAttribute("unitS", "kN/m2")
-        #print(UnitS)
         if UnitS == "default-value": scaleS=1.0
         else: scaleS=Unit.TokNperM2(UnitS)                    
         content=content.replace("="," ")
@@ -156,10 +158,11 @@ class StruMod(Unit):
             elif lineinput[i]=="fy":
                 fyield = float(lineinput[i+1])*scaleS
             i +=1    
-        return cls.fyield
+        return fyield
 
     @classmethod
     def material(cls,content,child):
+        materials=[]
         UnitS = child.GetAttribute("unitS", "kN/m2")
         scaleden=child.GetAttribute("den","kN/m3")
         if UnitS == "default-value":
@@ -171,15 +174,11 @@ class StruMod(Unit):
         else:
             toknm3=Unit.TokNperM3(scaleden)
         lines=content.splitlines()     
-        #content = content.replace("=", " ")
-        #content = content.replace("\n", " ")
-        #global materials
         for line in lines:
             line = line.replace("=", " ")
             lineinput = line.split()
             i=0
-            #print(lineinput)
-            cls.matlist.append(lineinput[0])
+            StruMod.matlist.append(lineinput[0])
             matid = lineinput[0]
             matype=lineinput[1]
             if matype=='General':
@@ -196,17 +195,17 @@ class StruMod(Unit):
                     i +=1
                 #material=(matype,emod,matden,poisson)
                 material = (emod, matden, poisson)
-                cls.materials.append(material)
+                return materials.append(material)
             elif matype=='Steel':
                 y=list(cls.steel)
                 y[0] = matid
                 material=tuple(y)
-                cls.materials.append(material)
+                return materials.append(material)
             elif matype=='Titanium':
                 y = list(cls.titanium)
                 y[0] = matid
                 material = tuple(y)
-                cls.materials.append(material)        
+                return materials.append(material)        
     
     @classmethod
     def section(cls,content,child):
@@ -277,7 +276,7 @@ class StruMod(Unit):
         for line in lines:
             #line = line.replace("=", " ")
             lineinput = line.split()
-            cls.nodelist.append(lineinput[0])
+            StruMod.nodelist.append(lineinput[0])
             nodex=float(lineinput[1])
             nodey=float(lineinput[2])
             if len(lineinput) >3:
@@ -290,15 +289,15 @@ class StruMod(Unit):
     @classmethod
     def elements(cls,content,child):
         lines = content.splitlines()
-        #global ne
-        ne=len(lines)
+        elements=[]
+        ms=0
+        StruMod.ne=len(lines)
         for line in lines:
             lineinput = line.split()
             cls.elemlist.append(lineinput[0])
             inc1=cls.nodelist.index(lineinput[1])
             inc2=cls.nodelist.index(lineinput[2])
             j=abs(inc1-inc2)
-            #global ms
             if ms<j: ms=j
             secid=cls.seclist.index(lineinput[3])
             matid=cls.matlist.index(lineinput[4])
@@ -311,8 +310,9 @@ class StruMod(Unit):
             cosx=np.dot(temp,axis_x.T)/elemlen
             sinx = np.dot(temp, axis_y.T)/elemlen
             element=(inc1,inc2,secid,matid,elemlen,cosx,sinx)
-            cls.elements.append(element)
-        ms=cls.ndf*(ms+1)    
+            elements.append(element)
+        StruMod.ms=cls.ndf*(ms+1)
+        StruMod.elements=elements    
     
     @classmethod
     def boundary(cls,content,child):
@@ -325,7 +325,7 @@ class StruMod(Unit):
             cls.boundaries.append(cls.bndparam(bnodeid,bntype))
     
     @classmethod
-    def loading(cls,content,child):
+    def loading(cls,content,child,fileout):
         UnitL = child.GetAttribute("unitL", "m")
         if UnitL == "default-value": scaleL = 1.0
         else: scaleL = Unit.ToMeter(UnitL)
@@ -338,15 +338,15 @@ class StruMod(Unit):
             tagchild=load.GetName()
             tagattrib=load.GetAttribute("id",'')
             if tagchild=='case':
-                print(tagchild,tagattrib)
+                fileout.write('{0} {1}\n'.format(tagchild, tagattrib))
                 load2 = load.GetChildren()
                 tag2=load2.GetName()
-                print(tag2)
+                fileout.write('{0}\n'.format(tag2))
                 cls.loadcaseslist.append(tagattrib)
                 if tag2=='loaded-nodes':
                     content2 = load2.GetNodeContent()
                     lines = content2.splitlines()
-                    print(lines)
+                    fileout.write('{0}\n'.format(lines))
                     for line in lines:
                         px = 0.0;py = 0.0;mz = 0.0
                         line = line.replace("=", " ")
@@ -363,7 +363,7 @@ class StruMod(Unit):
                 elif tag2 == 'loaded-members':
                     content2 = load2.GetNodeContent()
                     lines = content2.splitlines()
-                    print(lines)
+                    fileout.write('{0}\n'.format(lines))
                 i +=1    
                 load2=load2.GetNext()    
             load=load.GetNext()
@@ -371,32 +371,32 @@ class StruMod(Unit):
     @classmethod
     def XML_reader(cls,filein):
     # start processing the XML file
+        fileout = open("output.txt", "a")
         doc = wx.xml.XmlDocument()
         if not doc.Load(filein):
             return False
         strutype = doc.GetRoot().GetName()
-        cls.ndf=cls.structure(strutype)
 
+        StruMod.ndf=cls.structure(strutype)
+        fileout.write('{0} ndf= {1}\n'.format(strutype,StruMod.ndf))
         child = doc.GetRoot().GetChildren()
         while child:
             tagname = child.GetName()
             content = child.GetNodeContent()  # process text enclosed by tag1/tag1
             if tagname == "title":
                 projName=content
+                fileout.write('{0}\n'.format(projName))
             elif tagname == "code":
-                cls.code(content,child)
+                StruMod.fyield=cls.code(content,child)
+                fileout.write('Fy= {0}\n'.format(StruMod.fyield))
             elif tagname == "material":
                 cls.material(content,child)
             elif tagname == "section":
                 cls.section(content,child)
             elif tagname == "nodes":
                 cls.nodes(content,child)
-            elif tagname == "elements":
-                cls.elements(content,child)
-            elif tagname == "boundary":
-                cls.boundary(content,child)
-            
-            elif tagname == "loading":
-                cls.loading(content,child)
-                   
+            elif tagname == "elements": cls.elements(content,child)
+            elif tagname == "boundary":cls.boundary(content,child)
+            elif tagname == "loading": cls.loading(content,child,fileout)
             child = child.GetNext()
+        fileout.close()        

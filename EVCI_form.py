@@ -10,24 +10,17 @@ import wx.xrc
 import wx.dataview as dv
 #from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 import os
-from wx_evci_mod import * #XML_reader,materials,sections,coor, \
-    #nodelist,seclist,matlist,elemlist,elements,bndlist,boundaries, \
-    #nodeloads,loadcaseslist
+from wx_evci_mod import * 
 import pystruct    
 
-g=9.806
-strutype=""
-scaleS = 0.0
-lineinput = []
-ndf=0
-fname = ' '
+
 ###########################################################################
 ## Class EVCI_Form
 ###########################################################################
 
-class EVCI_Form ( wx.Frame ):
+class EVCI_Form ( wx.Frame,StruMod ):
     
-    
+
 
 	def __init__( self, parent ):
 		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Structural Analysis & Design ", pos = wx.DefaultPosition, size = wx.Size( 1100,700 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
@@ -255,16 +248,14 @@ class EVCI_Form ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.wxmnu_lrfd, id = self.m_lrfd.GetId() )
 		self.Bind( wx.EVT_MENU, self.wxmnu_2rd, id = self.m_2rd.GetId() )
 
-		
-
 	def __del__( self ):
 		pass
 
 
 	# Virtual event handlers, override them in your derived class
 	def OpenFile_click( self, e ):
-		#event.Skip()
-		global fname
+
+		fileout = open("output.txt", "a")
 		wildcard = "XML Files (*.xml)|*.xml"
 		dlg = wx.FileDialog(self, "Choose a file", os.getcwd(),
 		                    "", wildcard, wx.FD_OPEN)
@@ -276,9 +267,12 @@ class EVCI_Form ( wx.Frame ):
 			fname = f.name
 			self.SetStatusText(fname)
 			self.m_statusBar1.SetStatusText(fname)
-			#print(fname)
-			XML_reader(fname)
-			#print(materials)
+			StruMod.XML_reader(fname,fileout)
+			fileout = open("output.txt", 'r')
+			self.m_textlog.SetValue(fileout.read())
+			fileout.close()
+			fname.close()
+			
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file",wx.ICON_QUESTION |wx.OK)
 			return
@@ -304,13 +298,12 @@ class EVCI_Form ( wx.Frame ):
 	def OnText_changed( self, event ):
 		event.Skip()
 
-	def wxmnu_Open_click( self, e ):
-		#event.Skip()
+	def wxmnu_Open_click( self, e ):   
+
 		wildcard = "XML Files (*.xml)|*.xml"
 		dlg = wx.FileDialog(self, "Choose a file", os.getcwd(), "", wildcard, wx.FD_OPEN)
 		if dlg.ShowModal() == wx.ID_OK: 
-			f = open(dlg.GetPath(), 'r') 
-			global fname
+			f = open(dlg.GetPath(), 'r')
 			with f: 
 				data = f.read() 
 				self.m_textfilein.SetValue(data)       
@@ -318,19 +311,23 @@ class EVCI_Form ( wx.Frame ):
 			#self.SetStatusText(self,fname)
 			self.m_statusBar1.SetStatusText(fname)
 			#print(fname)
-			XML_reader(fname)
-			print(matlist)
-			print(materials)
-			print(seclist)
-			print(sections)
-			print(nodelist)
-			print(coor)
-			print(elemlist)
-			print(elements)
-			print(bndlist)
-			print(boundaries)
-			print(loadcaseslist)
-			print(nodeloads)
+			StruMod.XML_reader(fname)
+			fileout = open("output.txt", 'r')
+			self.m_textlog.SetValue(fileout.read())
+			fileout.close()
+
+			# print(self.matlist)
+			# print(self.materials)
+			# print(seclist)
+			# print(sections)
+			# print(nodelist)
+			# print(coor)
+			# print(elemlist)
+			# print(elements)
+			# print(bndlist)
+			# print(boundaries)
+			# print(loadcaseslist)
+			# print(nodeloads)
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file", wx.ICON_QUESTION | wx.OK)
 			return

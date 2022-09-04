@@ -1,0 +1,56 @@
+Frame2DFerrante ExampleFrame2DFerrante ExampleFrame2D+"
+"Ferrante Example+"
+"Fy = 0.0+"
+"Frame2D
+Ferrante Example
+Fy = 248211.26208000001
+Frame2D
+Ferrante Example
+0.00Fy = 248211.26208000001
+Frame2D
+Ferrante Example
+0.00Fy = 248211.26208000001
+case 1loaded-nodes['nodeid=node2 Px=30000.', 'nodeid=node3 Py=-40000.', 'nodeid=6 Py=-40000.']case 2loaded-members['memid=elem1 loadtype=pload P=30000. a=0.5  sysref=globx']Frame2D
+Ferrante Example
+0.00Fy = 248211.26208000001
+case 1
+loaded-nodes
+['nodeid=node2 Px=30000.', 'nodeid=node3 Py=-40000.', 'nodeid=6 Py=-40000.']case 2
+loaded-members
+['memid=elem1 loadtype=pload P=30000. a=0.5  sysref=globx']
+10
+20
+6.2Fy = 
+5 6
+6
+30
+5 6
+6
+30
+10 5
+20
+6.2Fy = 
+5 6
+6
+30
+5 6
+6
+30
+Frame2D ndf= 3
+Ferrante Example
+248211.26208000001Fy = 
+case 1
+loaded-nodes
+['nodeid=node2 Px=30000.', 'nodeid=node3 Py=-40000.', 'nodeid=6 Py=-40000.']
+case 2
+loaded-members
+['memid=elem1 loadtype=pload P=30000. a=0.5  sysref=globx']
+Frame2D ndf= 3
+Ferrante Example
+Fy= 248211.26208000001
+case 1
+loaded-nodes
+['nodeid=node2 Px=30000.', 'nodeid=node3 Py=-40000.', 'nodeid=6 Py=-40000.']
+case 2
+loaded-members
+['memid=elem1 loadtype=pload P=30000. a=0.5  sysref=globx']
