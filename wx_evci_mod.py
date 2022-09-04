@@ -374,7 +374,7 @@ class StruMod(Unit):
     @classmethod
     def XML_reader(cls,filein):
     # start processing the XML file
-        fileout = open("output.txt", "a")
+        fileout = open("output.txt", "w")
         doc = wx.xml.XmlDocument()
         if not doc.Load(filein):
             return False
@@ -391,7 +391,7 @@ class StruMod(Unit):
                 fileout.write('{0}\n'.format(projName))
             elif tagname == "code":
                 StruMod.fyield=cls.code(content,child)
-                fileout.write('Fy= {0}\n'.format(StruMod.fyield))
+                fileout.write('Fy= {0:.2f}\n'.format(StruMod.fyield))
             elif tagname == "material":
                 cls.material(content,child)
             elif tagname == "section":
