@@ -272,7 +272,6 @@ class EVCI_Form ( wx.Frame,StruMod ):
 			self.m_textlog.SetValue(fileout.read())
 			fileout.close()
 
-			
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file",wx.ICON_QUESTION |wx.OK)
 			return
@@ -283,7 +282,17 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		event.Skip()
 
 	def RunSolver_click( self, event ):
-		event.Skip()
+		pystruct.nn=StruMod.nn
+		pystruct.ne = StruMod.ne
+		pystruct.nbn = StruMod.nbn
+		pystruct.n = StruMod.n
+		pystruct.ms = StruMod.ms
+		pystruct.ndf = StruMod.ndf
+		pystruct.nne = StruMod.nne
+		pystruct.strutype = StruMod.strutype
+		print('nn= {0}\n ne= {1}\n nbn= {2}\n n= {3}\n ms= {4}\n ndf= {5}\n nne= {6}\n'.format
+        	(pystruct.nn,pystruct.ne,pystruct.nbn,pystruct.n,pystruct.ms,pystruct.ndf,pystruct.nne))
+		#event.Skip()
 
 	def Help_click( self, event ):
 		event.Skip()
