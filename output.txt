@@ -1,6 +1,10 @@
-Frame2D ndf= 3
-Ferrante Example
-Fy= 248211.26
+Frame2D Degrees of Freedom per node: 3
+Project Name: Ferrante Example
+Code AISC Fy= 248211.26
+Number of Nodes: 8	
+ Number of Equations: 24	
+Material
+ [('400', 'General', 199947.96112000002, 76.9771, 0.3)]
 case 1
 loaded-nodes
 ['nodeid=node2 Px=30000.', 'nodeid=node3 Py=-40000.', 'nodeid=6 Py=-40000.']

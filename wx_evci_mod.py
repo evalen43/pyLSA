@@ -75,13 +75,10 @@ class StruMod(Unit):
     ne = 0
     ms = 0
     n = 0
+    nn=0
     nne = 2
     fyield = 0.0
-    scaleS = 0.0
-    scaleden = 0.0
-    emod = ''
-    matden = ''
-    poisson = ''
+
     strutype = ''
     projName=''
     materials = []
@@ -100,9 +97,7 @@ class StruMod(Unit):
     boundaries = []
     nodeloads = []
     loadcaseslist = []
-    
-    steel = ('', 'Steel', 200e+06, 78.5, 0.28)
-    titanium = ('', 'Titaniun', 113e+06, 44.13, 0.3)
+ 
 
     @staticmethod
     def pipeparam(od,wth):
@@ -159,55 +154,54 @@ class StruMod(Unit):
             elif lineinput[i]=="fy":
                 fyield = float(lineinput[i+1])*scaleS
             i +=1    
-        return fyield
+        return Code,fyield
 
-    @classmethod
-    def material(cls,content,child):
+    @staticmethod
+    def material(content,child):
         lineinput=[]
         materials=[]
+        matlist=[]
         UnitS = child.GetAttribute("unitS", "kN/m2")
-        scaleden=child.GetAttribute("den","kN/m3")
-        if UnitS == "default-value":
-            scaleS = 1.0
-        else:
-            scaleS = Unit.TokNperM2(UnitS)
-        if scaleden=="default-value":
-            toknm2=1.0
-        else:
-            toknm3=Unit.TokNperM3(scaleden)
+        UnitD=child.GetAttribute("den","kN/m3")
+        if UnitS == "default-value": scaleS = 1.0
+        else: scaleS = Unit.TokNperM2(UnitS)
+        if UnitD=="default-value": scaleV=1.0
+        else: scaleV=Unit.TokNperM3(UnitD)
         lines=content.splitlines()     
         for line in lines:
             line = line.replace("=", " ")
             lineinput = line.split()
             i=0
-            StruMod.matlist.append(lineinput[0])
+            matlist.append(lineinput[0])
             matid = lineinput[0]
             matype=lineinput[1]
             if matype=='General':
                 while i<len(lineinput):
                     if lineinput[i]=="E":
-                        global emod
                         emod=float(lineinput[i+1])*scaleS
                     elif lineinput[i]=="Density":
-                        global matden
-                        matden=float(lineinput[i+1])*toknm3
+                        matden=float(lineinput[i+1])*scaleV
                     elif lineinput[i]=="Poisson":
-                        global poisson
                         poisson=float(lineinput[i+1])
                     i +=1
-                #material=(matype,emod,matden,poisson)
-                material = (emod, matden, poisson)
-                return materials.append(material)
+                material=('',matype,emod,matden,poisson)
+                y = list(material)
+                y[0]=matid
+                material=tuple(y)
+                materials.append(material)
             elif matype=='Steel':
-                y=list(cls.steel)
+                steel = ('', 'Steel', 200e+06, 78.5, 0.28)
+                y=list(steel)
                 y[0] = matid
                 material=tuple(y)
-                return materials.append(material)
+                materials.append(material)
             elif matype=='Titanium':
-                y = list(cls.titanium)
+                titanium = ('', 'Titaniun', 113e+06, 44.13, 0.3)
+                y = list(titanium)
                 y[0] = matid
                 material = tuple(y)
-                return materials.append(material)        
+                materials.append(material)
+        return matlist,materials                
     
     @classmethod
     def section(cls,content,child):
@@ -265,29 +259,29 @@ class StruMod(Unit):
                         item = tuple(y)
                         cls.sections.append(item)
  
-    @classmethod
-    def nodes(cls,content,child):
+    @staticmethod
+    def nodes(content,child):
+        coor=[]
+        nodelist=[]
         UnitL = child.GetAttribute("unitL", "m")
-        if UnitL == "default-value":
-            scaleL = 1.0
-        else:
-            scaleL = Unit.ToMeter(UnitL)
+        if UnitL == "default-value": scaleL = 1.0
+        else: scaleL = Unit.ToMeter(UnitL)
         lines = content.splitlines()
-        global n
-        n=len(lines)*cls.ndf
+        nn=len(lines)
+        n=nn*StruMod.ndf
         for line in lines:
             #line = line.replace("=", " ")
             lineinput = line.split()
-            StruMod.nodelist.append(lineinput[0])
-            nodex=float(lineinput[1])
-            nodey=float(lineinput[2])
+            nodelist.append(lineinput[0])
+            nodex=float(lineinput[1])*scaleL
+            nodey=float(lineinput[2])*scaleL
             if len(lineinput) >3:
-                nodez=float(lineinput[3])
+                nodez=float(lineinput[3])*scaleL
             else: 
                 nodez=0.0
             nodes = (nodex, nodey, nodez)
-            cls.coor.append(nodes)  
-    
+            coor.append(nodes)  
+        return nn,n,coor,nodelist
     @classmethod
     def elements(cls,content,child):
         lines = content.splitlines()
@@ -381,23 +375,25 @@ class StruMod(Unit):
         strutype = doc.GetRoot().GetName()
 
         StruMod.ndf=cls.structure(strutype)
-        fileout.write('{0} ndf= {1}\n'.format(strutype,StruMod.ndf))
+        fileout.write('{0} Degrees of Freedom per node: {1}\n'.format(strutype,StruMod.ndf))
         child = doc.GetRoot().GetChildren()
         while child:
             tagname = child.GetName()
             content = child.GetNodeContent()  # process text enclosed by tag1/tag1
             if tagname == "title":
                 projName=content
-                fileout.write('{0}\n'.format(projName))
+                fileout.write('Project Name: {0}\n'.format(projName))
             elif tagname == "code":
-                StruMod.fyield=cls.code(content,child)
-                fileout.write('Fy= {0:.2f}\n'.format(StruMod.fyield))
+                (code, StruMod.fyield)=cls.code(content,child)
+                fileout.write('Code {0} Fy= {1:.2f}\n'.format(code,StruMod.fyield))
             elif tagname == "material":
-                cls.material(content,child)
+                (cls.matlist,  cls.materials)=cls.material(content,child)
+                fileout.write('{0}\n {1}\n'.format("Material",StruMod.materials))
             elif tagname == "section":
                 cls.section(content,child)
             elif tagname == "nodes":
-                cls.nodes(content,child)
+                (StruMod.nn,StruMod.n,StruMod.coor,StruMod.nodelist)=cls.nodes(content,child)
+                fileout.write('Number of Nodes: {0}\t\n Number of Equations: {1}\t\n'.format(StruMod.nn,StruMod.n))
             elif tagname == "elements": cls.elements(content,child)
             elif tagname == "boundary":cls.boundary(content,child)
             elif tagname == "loading": cls.loading(content,child,fileout)
