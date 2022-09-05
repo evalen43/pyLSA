@@ -290,7 +290,7 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		pystruct.nne = StruMod.nne
 		pystruct.strutype = StruMod.strutype
 		pystruct.elem_prop = StruMod.elem_prop_arr
-		pystruct.tk=np.array((StruMod.n,StruMod.ms))
+		pystruct.tk=np.zeros((StruMod.n,StruMod.ms))
 		print('nn= {0}\n ne= {1}\n nbn= {2}\n n= {3}\n ms= {4}\n ndf= {5}\n nne= {6}\n {7}\n'.format
         	(pystruct.nn,pystruct.ne,pystruct.nbn,pystruct.n,
           	pystruct.ms,pystruct.ndf,pystruct.nne,pystruct.elem_prop))
