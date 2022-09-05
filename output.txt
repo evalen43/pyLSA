@@ -3,11 +3,5 @@ Project Name: Ferrante Example
 Code AISC Fy= 248211.26
 Number of Nodes: 8
  Number of Equations: 24
-Material
+[('W24X68', 0.99212, 0.012967716, 0.60198, 0.0007617035088479998, 0.002900510328, 0.002523607856, 0.24257, 2.9302692362239997e-05, 0.000401483068, 0.0002572769048, 0.047498, 7.783527658719999e-07)]Material
  [('400', 'General', 199947.96112000002, 76.9771, 0.3)]
-case 1
-loaded-nodes
-['nodeid=node2 Px=30000.', 'nodeid=node3 Py=-40000.', 'nodeid=6 Py=-40000.']
-case 2
-loaded-members
-['memid=elem1 loadtype=pload P=30000. a=0.5  sysref=globx']

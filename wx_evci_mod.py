@@ -203,21 +203,22 @@ class StruMod(Unit):
                 materials.append(material)
         return matlist,materials                
     
-    @classmethod
-    def section(cls,content,child):
+    @staticmethod
+    def section(content,child):
+        seclist=[]
+        sections=[]
         UnitL = child.GetAttribute("unitL", "m")
         if UnitL == "default-value":
             scaleL = 1.0
         else:
             scaleL = Unit.ToMeter(UnitL)
         lines = content.splitlines()
-        #global sections
+
         for line in lines:
             line = line.replace("=", " ")
             lineinput = line.split()
             i = 0
-            #print(lineinput)
-            cls.seclist.append(lineinput[0])
+            seclist.append(lineinput[0])
             sectype = lineinput[1]
             if sectype == 'Tube':
                 while i < len(lineinput):
@@ -226,11 +227,11 @@ class StruMod(Unit):
                     elif lineinput[i] == 'WTH':
                         wth = float(lineinput[i+1])*scaleL
                     i += 1
-                section = cls.pipeparam(od, wth)
+                section = StruMod.pipeparam(od, wth)
                 #y=list(section)
                 #y[0]=secid
                 #section=tuple(y)
-                cls.sections.append(section)
+                sections.append(section)
             elif sectype == 'EDI':
                 edi = lineinput[2]
                 # Connecto to database
@@ -257,7 +258,8 @@ class StruMod(Unit):
                         y[11] = y[11]*scaleL  # ry
                         y[12] = y[12]*scaleL**4  # J
                         item = tuple(y)
-                        cls.sections.append(item)
+                        sections.append(item)
+            return seclist,sections
  
     @staticmethod
     def nodes(content,child):
@@ -390,12 +392,15 @@ class StruMod(Unit):
                 (cls.matlist,  cls.materials)=cls.material(content,child)
                 fileout.write('{0}\n {1}\n'.format("Material",StruMod.materials))
             elif tagname == "section":
-                cls.section(content,child)
+                (cls.seclist,cls.sections)=cls.section(content,child)
+                fileout.write('{0}'.format(cls.sections))
             elif tagname == "nodes":
                 (StruMod.nn,StruMod.n,StruMod.coor,StruMod.nodelist)=cls.nodes(content,child)
                 fileout.write('Number of Nodes: {0}\n Number of Equations: {1}\n'.format(cls.nn,StruMod.n))
-            elif tagname == "elements": cls.elements(content,child)
-            elif tagname == "boundary":cls.boundary(content,child)
+            elif tagname == "elements": 
+                cls.elements(content,child)
+            elif tagname == "boundary":
+                cls.boundary(content,child)
             elif tagname == "loading": cls.loading(content,child,fileout)
             child = child.GetNext()
         fileout.close()        
