@@ -77,6 +77,7 @@ class StruMod(Unit):
     n = 0
     nn=0
     nne = 2
+    nbn=0
     fyield = 0.0
 
     strutype = ''
@@ -111,6 +112,7 @@ class StruMod(Unit):
         J=2*iner
         section=(w,ax,od,iner,Zx,Sx,radius,iner,Zx,Sx,radius,J)
         return section  
+    
     @classmethod
     def bndparam(cls,bndid,bntype):
         j=cls.bndlist.index(bndid)
@@ -213,7 +215,6 @@ class StruMod(Unit):
         else:
             scaleL = Unit.ToMeter(UnitL)
         lines = content.splitlines()
-
         for line in lines:
             line = line.replace("=", " ")
             lineinput = line.split()
@@ -244,7 +245,6 @@ class StruMod(Unit):
                 # Query the database
                 c.execute("SELECT * FROM shapesv15_US WHERE EDI=edi")
                 items = c.fetchall()
-                #print(items)
                 for item in items:
                     if item[0] == edi:
                         y = list(item)
@@ -263,7 +263,6 @@ class StruMod(Unit):
                         y.insert(0,secid)
                         item = tuple(y)
                         cls.sections.append(item)
-            #return seclist,sections
  
     @staticmethod
     def nodes(content,child):
@@ -320,6 +319,7 @@ class StruMod(Unit):
     @classmethod
     def boundary(cls,content,child):
         lines = content.splitlines()
+        cls.nbn=len(lines)
         for line in lines:
             lineinput = line.split()
             bnodeid=lineinput[0]
@@ -408,6 +408,7 @@ class StruMod(Unit):
                 fileout.write('Number of Elements: {0}\n Bandwidth: {1}\n'.format(cls.ne,StruMod.ms))
             elif tagname == "boundary":
                 cls.boundary(content,child)
+                fileout.write('Number of Boundaries: {0}\n {1}\n'.format(cls.nbn,cls.boundaries))
             elif tagname == "loading": cls.loading(content,child,fileout)
             child = child.GetNext()
         fileout.close()        
