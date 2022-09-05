@@ -203,10 +203,10 @@ class StruMod(Unit):
                 materials.append(material)
         return matlist,materials                
     
-    @staticmethod
-    def section(content,child):
-        seclist=[]
-        sections=[]
+    @classmethod
+    def section(cls,content,child):
+        #seclist=[]
+        #sections=[]
         UnitL = child.GetAttribute("unitL", "m")
         if UnitL == "default-value":
             scaleL = 1.0
@@ -218,7 +218,8 @@ class StruMod(Unit):
             line = line.replace("=", " ")
             lineinput = line.split()
             i = 0
-            seclist.append(lineinput[0])
+            cls.seclist.append(lineinput[0])
+            secid=lineinput[0]
             sectype = lineinput[1]
             if sectype == 'Tube':
                 while i < len(lineinput):
@@ -228,10 +229,11 @@ class StruMod(Unit):
                         wth = float(lineinput[i+1])*scaleL
                     i += 1
                 section = StruMod.pipeparam(od, wth)
-                #y=list(section)
-                #y[0]=secid
-                #section=tuple(y)
-                sections.append(section)
+                y=list(section)
+                y.insert(0,secid)
+                y.insert(1,"Tube")
+                section=tuple(y)
+                cls.sections.append(section)
             elif sectype == 'EDI':
                 edi = lineinput[2]
                 # Connecto to database
@@ -242,6 +244,7 @@ class StruMod(Unit):
                 # Query the database
                 c.execute("SELECT * FROM shapesv15_US WHERE EDI=edi")
                 items = c.fetchall()
+                #print(items)
                 for item in items:
                     if item[0] == edi:
                         y = list(item)
@@ -257,9 +260,10 @@ class StruMod(Unit):
                         y[10] = y[10]*scaleL**3  # Sy
                         y[11] = y[11]*scaleL  # ry
                         y[12] = y[12]*scaleL**4  # J
+                        y.insert(0,secid)
                         item = tuple(y)
-                        sections.append(item)
-            return seclist,sections
+                        cls.sections.append(item)
+            #return seclist,sections
  
     @staticmethod
     def nodes(content,child):
@@ -284,6 +288,7 @@ class StruMod(Unit):
             nodes = (nodex, nodey, nodez)
             coor.append(nodes)  
         return nn,n,coor,nodelist
+    
     @classmethod
     def elements(cls,content,child):
         lines = content.splitlines()
@@ -392,13 +397,15 @@ class StruMod(Unit):
                 (cls.matlist,  cls.materials)=cls.material(content,child)
                 fileout.write('{0}\n {1}\n'.format("Material",StruMod.materials))
             elif tagname == "section":
-                (cls.seclist,cls.sections)=cls.section(content,child)
-                fileout.write('{0}'.format(cls.sections))
+                #(cls.seclist,cls.sections)=cls.section(content,child)
+                cls.section(content, child)
+                fileout.write('{0}\n {1}\n'.format("Sections",cls.sections))
             elif tagname == "nodes":
                 (StruMod.nn,StruMod.n,StruMod.coor,StruMod.nodelist)=cls.nodes(content,child)
-                fileout.write('Number of Nodes: {0}\n Number of Equations: {1}\n'.format(cls.nn,StruMod.n))
+                fileout.write('Number of Nodes: {0}\nNumber of Equations: {1}\n'.format(cls.nn,StruMod.n))
             elif tagname == "elements": 
                 cls.elements(content,child)
+                fileout.write('Number of Elements: {0}\n Bandwidth: {1}\n'.format(cls.ne,StruMod.ms))
             elif tagname == "boundary":
                 cls.boundary(content,child)
             elif tagname == "loading": cls.loading(content,child,fileout)
