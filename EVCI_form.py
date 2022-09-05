@@ -289,9 +289,12 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		pystruct.ndf = StruMod.ndf
 		pystruct.nne = StruMod.nne
 		pystruct.strutype = StruMod.strutype
-		print('nn= {0}\n ne= {1}\n nbn= {2}\n n= {3}\n ms= {4}\n ndf= {5}\n nne= {6}\n'.format
-        	(pystruct.nn,pystruct.ne,pystruct.nbn,pystruct.n,pystruct.ms,pystruct.ndf,pystruct.nne))
-		#event.Skip()
+		pystruct.elem_prop = StruMod.elem_prop_arr
+		pystruct.tk=np.array((StruMod.n,StruMod.ms))
+		print('nn= {0}\n ne= {1}\n nbn= {2}\n n= {3}\n ms= {4}\n ndf= {5}\n nne= {6}\n {7}\n'.format
+        	(pystruct.nn,pystruct.ne,pystruct.nbn,pystruct.n,
+          	pystruct.ms,pystruct.ndf,pystruct.nne,pystruct.elem_prop))
+
 
 	def Help_click( self, event ):
 		event.Skip()

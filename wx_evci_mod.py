@@ -78,6 +78,7 @@ class StruMod(Unit):
     nn=0
     nne = 2
     nbn=0
+    ndfel=0
     fyield = 0.0
 
     strutype = ''
@@ -93,11 +94,12 @@ class StruMod(Unit):
     seclist = []
     matlist = []
     elemlist = []
-    elements = []
+    elem_prop = []
     bndlist = []
     boundaries = []
     nodeloads = []
     loadcaseslist = []
+    elem_prop_arr = np.zeros((1, 1))
  
 
     @staticmethod
@@ -289,9 +291,9 @@ class StruMod(Unit):
         return nn,n,coor,nodelist
     
     @classmethod
-    def elements(cls,content,child):
+    def elem_prop(cls,content,child):
         lines = content.splitlines()
-        elements=[]
+        elem_prop=[]
         ms=0
         StruMod.ne=len(lines)
         for line in lines:
@@ -312,9 +314,11 @@ class StruMod(Unit):
             cosx=np.dot(temp,axis_x.T)/elemlen
             sinx = np.dot(temp, axis_y.T)/elemlen
             element=(inc1,inc2,secid,matid,elemlen,cosx,sinx)
-            elements.append(element)
+            elem_prop.append(element)
         StruMod.ms=cls.ndf*(ms+1)
-        StruMod.elements=elements    
+        StruMod.ndfel=cls.nne*cls.ndf
+        cls.elem_prop=elem_prop
+        cls.elem_prop_arr=np.reshape(elem_prop,newshape=(cls.ne,7))    
     
     @classmethod
     def boundary(cls,content,child):
@@ -404,8 +408,8 @@ class StruMod(Unit):
                 (StruMod.nn,StruMod.n,StruMod.coor,StruMod.nodelist)=cls.nodes(content,child)
                 fileout.write('Number of Nodes: {0}\nNumber of Equations: {1}\n'.format(cls.nn,StruMod.n))
             elif tagname == "elements": 
-                cls.elements(content,child)
-                fileout.write('Number of Elements: {0}\n Bandwidth: {1}\n'.format(cls.ne,StruMod.ms))
+                cls.elem_prop(content,child)
+                fileout.write('Number of Elements: {0}\n Bandwidth: {1}\n{2}\n'.format(cls.ne,cls.ms,cls.elem_prop_arr))
             elif tagname == "boundary":
                 cls.boundary(content,child)
                 fileout.write('Number of Boundaries: {0}\n {1}\n'.format(cls.nbn,cls.boundaries))
