@@ -276,7 +276,6 @@ class EVCI_Form ( wx.Frame,StruMod ):
 			wx.MessageBox("No file selected","Try again: select input file",wx.ICON_QUESTION |wx.OK)
 			return
 		dlg.Destroy()
-		#return fname
 
 	def SaveFile_click( self, event ):
 		event.Skip()
