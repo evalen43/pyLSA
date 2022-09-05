@@ -393,7 +393,7 @@ class StruMod(Unit):
                 cls.section(content,child)
             elif tagname == "nodes":
                 (StruMod.nn,StruMod.n,StruMod.coor,StruMod.nodelist)=cls.nodes(content,child)
-                fileout.write('Number of Nodes: {0}\t\n Number of Equations: {1}\t\n'.format(StruMod.nn,StruMod.n))
+                fileout.write('Number of Nodes: {0}\n Number of Equations: {1}\n'.format(cls.nn,StruMod.n))
             elif tagname == "elements": cls.elements(content,child)
             elif tagname == "boundary":cls.boundary(content,child)
             elif tagname == "loading": cls.loading(content,child,fileout)
