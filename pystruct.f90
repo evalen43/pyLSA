@@ -1,4 +1,4 @@
-module pystruct
+module stru3d
 implicit none
 
 character(len=10), public :: strutype
@@ -19,7 +19,8 @@ integer :: nel
 !real(kind=8), intent(in) :: mat_table(:,:),sec_table(:,:)
 real(kind=8), allocatable :: rot(:,:),elst(:,:)
 integer(kind=4) ::con(2)
-allocate(rot(ndfel,ndfel),elst(ndfel,ndfel),tk(n,ms))
+!allocate(rot(ndfel,ndfel),elst(ndfel,ndfel),tk(n,ms))
+allocate(rot(ndfel,ndfel),elst(ndfel,ndfel)   )
 do nel=1,ne
     elst=0.0
     rot=0.0
@@ -430,4 +431,4 @@ deallocate(d)
 RETURN
 END SUBROUTINE bgaussgen
 
-end module pystruct
+end module stru3d

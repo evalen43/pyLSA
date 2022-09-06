@@ -85,6 +85,7 @@ class StruMod(Unit):
     projName=''
     materials = []
     sections = []
+
     x = []
     y = []
     z = []
@@ -100,6 +101,8 @@ class StruMod(Unit):
     nodeloads = []
     loadcaseslist = []
     elem_prop_arr = np.zeros((1, 1))
+    sections_arr=np.zeros((1,1))
+    mat_table=np.zeros((1,1))
  
 
     @staticmethod
@@ -171,7 +174,8 @@ class StruMod(Unit):
         else: scaleS = Unit.TokNperM2(UnitS)
         if UnitD=="default-value": scaleV=1.0
         else: scaleV=Unit.TokNperM3(UnitD)
-        lines=content.splitlines()     
+        lines=content.splitlines()
+        nmat=len(lines)     
         for line in lines:
             line = line.replace("=", " ")
             lineinput = line.split()
@@ -188,23 +192,27 @@ class StruMod(Unit):
                     elif lineinput[i]=="Poisson":
                         poisson=float(lineinput[i+1])
                     i +=1
-                material=('',matype,emod,matden,poisson)
+                #material=('',matype,emod,matden,poisson)
+                material = (emod, matden, poisson)
                 y = list(material)
-                y[0]=matid
+                #y[0]=matid
                 material=tuple(y)
                 materials.append(material)
             elif matype=='Steel':
-                steel = ('', 'Steel', 200e+06, 78.5, 0.28)
+                #steel = ('', 'Steel', 200e+06, 78.5, 0.28)
+                steel = (200e+06, 78.5, 0.28)
                 y=list(steel)
-                y[0] = matid
+                #y[0] = matid
                 material=tuple(y)
                 materials.append(material)
             elif matype=='Titanium':
-                titanium = ('', 'Titaniun', 113e+06, 44.13, 0.3)
+                #titanium = ('', 'Titaniun', 113e+06, 44.13, 0.3)
+                titanium = (113e+06, 44.13, 0.3)
                 y = list(titanium)
-                y[0] = matid
+                #y[0] = matid
                 material = tuple(y)
                 materials.append(material)
+        StruMod.mat_table=np.reshape(materials,newshape=(nmat,3))
         return matlist,materials                
     
     @classmethod
@@ -217,6 +225,7 @@ class StruMod(Unit):
         else:
             scaleL = Unit.ToMeter(UnitL)
         lines = content.splitlines()
+        nsec=len(lines)
         for line in lines:
             line = line.replace("=", " ")
             lineinput = line.split()
@@ -233,8 +242,8 @@ class StruMod(Unit):
                     i += 1
                 section = StruMod.pipeparam(od, wth)
                 y=list(section)
-                y.insert(0,secid)
-                y.insert(1,"Tube")
+                #y.insert(0,secid)
+                #y.insert(1,"Tube")
                 section=tuple(y)
                 cls.sections.append(section)
             elif sectype == 'EDI':
@@ -262,10 +271,10 @@ class StruMod(Unit):
                         y[10] = y[10]*scaleL**3  # Sy
                         y[11] = y[11]*scaleL  # ry
                         y[12] = y[12]*scaleL**4  # J
-                        y.insert(0,secid)
+                        y.pop(0)
                         item = tuple(y)
                         cls.sections.append(item)
- 
+        cls.sections_arr=np.reshape(cls.sections,newshape=(nsec,12))
     @staticmethod
     def nodes(content,child):
         coor=[]
@@ -313,7 +322,7 @@ class StruMod(Unit):
             axis_y = np.array((0, 1, 0))
             cosx=np.dot(temp,axis_x.T)/elemlen
             sinx = np.dot(temp, axis_y.T)/elemlen
-            element=(inc1,inc2,secid,matid,elemlen,cosx,sinx)
+            element=(inc1+1,inc2+1,secid+1,matid+1,elemlen,cosx,sinx)
             elem_prop.append(element)
         StruMod.ms=cls.ndf*(ms+1)
         StruMod.ndfel=cls.nne*cls.ndf
@@ -399,11 +408,11 @@ class StruMod(Unit):
                 fileout.write('Code {0} Fy= {1:.2f}\n'.format(code,StruMod.fyield))
             elif tagname == "material":
                 (cls.matlist,  cls.materials)=cls.material(content,child)
-                fileout.write('{0}\n {1}\n'.format("Material",StruMod.materials))
+                fileout.write('{0}\n {1}\n'.format("Material",StruMod.mat_table))
             elif tagname == "section":
                 #(cls.seclist,cls.sections)=cls.section(content,child)
                 cls.section(content, child)
-                fileout.write('{0}\n {1}\n'.format("Sections",cls.sections))
+                fileout.write('{0}\n {1}\n'.format("Sections",cls.sections_arr))
             elif tagname == "nodes":
                 (StruMod.nn,StruMod.n,StruMod.coor,StruMod.nodelist)=cls.nodes(content,child)
                 fileout.write('Number of Nodes: {0}\nNumber of Equations: {1}\n'.format(cls.nn,StruMod.n))
