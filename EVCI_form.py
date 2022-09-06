@@ -5,13 +5,13 @@
 ## PLEASE DO *NOT* EDIT THIS FILE!
 ###########################################################################
 
+
 import wx
 import wx.xrc
 import wx.dataview as dv
 #from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 import os
 from wx_evci_mod import * 
-  
 
 
 
