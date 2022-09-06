@@ -12,7 +12,7 @@ import wx.dataview as dv
 #from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 import os
 from wx_evci_mod import * 
-
+import pylsa
 
 
 ###########################################################################
@@ -282,24 +282,24 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		event.Skip()
 
 	def RunSolver_click( self, event ):
-		pylsa.pystruct.nn=StruMod.nn
-		pystruct.pystruct.ne = StruMod.ne
-		pystruct.pystruct.nbn = StruMod.nbn
-		pystruct.pystruct.n = StruMod.n
-		pystruct.pystruct.ms = StruMod.ms
-		pystruct.pystruct.ndf = StruMod.ndf
-		pystruct.pystruct.nne = StruMod.nne
-		pystruct.pystruct.ndfel=StruMod.ndfel
-		#pystruct.pystruct.strutype = StruMod.strutype
-		pystruct.pystruct.elem_prop = StruMod.elem_prop_arr
-		pystruct.pystruct.sec_table=StruMod.sections_arr
-		pystruct.pystruct.mat_table=StruMod.mat_table
-		pystruct.pystruct.tk=np.zeros((StruMod.n,StruMod.ms))
+		pylsa.stru3d.nn=StruMod.nn
+		pylsa.stru3d.ne = StruMod.ne
+		pylsa.stru3d.nbn = StruMod.nbn
+		pylsa.stru3d.n = StruMod.n
+		pylsa.stru3d.ms = StruMod.ms
+		pylsa.stru3d.ndf = StruMod.ndf
+		pylsa.stru3d.nne = StruMod.nne
+		pylsa.stru3d.ndfel=StruMod.ndfel
+		pylsa.stru3d.strutype = StruMod.strutype
+		pylsa.stru3d.elem_prop = StruMod.elem_prop_arr
+		pylsa.stru3d.sec_table=StruMod.sections_arr
+		pylsa.stru3d.mat_table=StruMod.mat_table
+		pylsa.stru3d.tk=np.zeros((StruMod.n,StruMod.ms))
 		# print('nn= {0}\n ne= {1}\n nbn= {2}\n n= {3}\n ms= {4}\n ndf= {5}\n nne= {6}\n {7}\n'.format
         # 	(pystruct.nn,pystruct.ne,pystruct.nbn,pystruct.n,
         #   	pystruct.ms,pystruct.ndf,pystruct.nne,pystruct.elem_prop))
-		pystruct.pystruct.k_assem()
-		print (pystruct.pystruct.__doc__)
+		pylsa.stru3d.k_assem()
+		print (pylsa.stru3d.__doc__)
 
 
 	def Help_click( self, event ):

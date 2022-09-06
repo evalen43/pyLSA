@@ -392,10 +392,11 @@ class StruMod(Unit):
         doc = wx.xml.XmlDocument()
         if not doc.Load(filein):
             return False
-        strutype = doc.GetRoot().GetName()
+        cls.strutype = str(doc.GetRoot().GetName()).ljust(10)
+        
 
-        StruMod.ndf=cls.structure(strutype)
-        fileout.write('{0} Degrees of Freedom per node: {1}\n'.format(strutype,StruMod.ndf))
+        StruMod.ndf=cls.structure(cls.strutype)
+        fileout.write('{0} Degrees of Freedom per node: {1}\n'.format(cls.strutype,StruMod.ndf))
         child = doc.GetRoot().GetChildren()
         while child:
             tagname = child.GetName()

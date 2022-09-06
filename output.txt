@@ -1,4 +1,4 @@
-Frame2D Degrees of Freedom per node: 3
+Frame2D    Degrees of Freedom per node: 3
 Project Name: Ferrante Example
 Code AISC Fy= 248211.26
 Number of Nodes: 8
