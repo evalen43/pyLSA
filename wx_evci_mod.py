@@ -79,6 +79,9 @@ class StruMod(Unit):
     nne = 2
     nbn=0
     ndfel=0
+    nlc=0
+    nmat=0
+    nsec=0
     fyield = 0.0
 
     strutype = ''
@@ -103,6 +106,7 @@ class StruMod(Unit):
     elem_prop_arr = np.zeros((1, 1))
     sections_arr=np.zeros((1,1))
     mat_table=np.zeros((1,1))
+    al=np.zeros((1,1))
  
 
     @staticmethod
@@ -175,7 +179,7 @@ class StruMod(Unit):
         if UnitD=="default-value": scaleV=1.0
         else: scaleV=Unit.TokNperM3(UnitD)
         lines=content.splitlines()
-        nmat=len(lines)     
+        StruMod.nmat=len(lines)     
         for line in lines:
             line = line.replace("=", " ")
             lineinput = line.split()
@@ -212,7 +216,7 @@ class StruMod(Unit):
                 #y[0] = matid
                 material = tuple(y)
                 materials.append(material)
-        StruMod.mat_table=np.reshape(materials,newshape=(nmat,3))
+        StruMod.mat_table=np.reshape(materials,newshape=(StruMod.nmat,3))
         return matlist,materials                
     
     @classmethod
@@ -225,7 +229,7 @@ class StruMod(Unit):
         else:
             scaleL = Unit.ToMeter(UnitL)
         lines = content.splitlines()
-        nsec=len(lines)
+        cls.nsec=len(lines)
         for line in lines:
             line = line.replace("=", " ")
             lineinput = line.split()
@@ -274,7 +278,7 @@ class StruMod(Unit):
                         y.pop(0)
                         item = tuple(y)
                         cls.sections.append(item)
-        cls.sections_arr=np.reshape(cls.sections,newshape=(nsec,12))
+        cls.sections_arr=np.reshape(cls.sections,newshape=(cls.nsec,12))
     @staticmethod
     def nodes(content,child):
         coor=[]
@@ -355,21 +359,22 @@ class StruMod(Unit):
             tagchild=load.GetName()
             tagattrib=load.GetAttribute("id",'')
             if tagchild=='case':
-                fileout.write('{0} {1}\n'.format(tagchild, tagattrib))
+                #fileout.write('{0} {1}\n'.format(tagchild, tagattrib))
                 load2 = load.GetChildren()
                 tag2=load2.GetName()
-                fileout.write('{0}\n'.format(tag2))
+                #fileout.write('{0}\n'.format(tag2))
                 cls.loadcaseslist.append(tagattrib)
                 if tag2=='loaded-nodes':
                     content2 = load2.GetNodeContent()
                     lines = content2.splitlines()
-                    fileout.write('{0}\n'.format(lines))
+                    #fileout.write('{0}\n'.format(lines))
                     for line in lines:
                         px = 0.0;py = 0.0;mz = 0.0
                         line = line.replace("=", " ")
                         lineinput = line.split()
                         nodeid = lineinput[1]
-                        if lineinput[2]=='Px': px=float(lineinput[3])*scaleF
+                        if lineinput[2]=='Px': 
+                            px=float(lineinput[3])*scaleF
                         elif lineinput[2] == 'Py':
                             py = float(lineinput[3])*scaleF
                         elif lineinput[2] == 'Mz':
@@ -380,10 +385,11 @@ class StruMod(Unit):
                 elif tag2 == 'loaded-members':
                     content2 = load2.GetNodeContent()
                     lines = content2.splitlines()
-                    fileout.write('{0}\n'.format(lines))
+                    
                 i +=1    
                 load2=load2.GetNext()    
             load=load.GetNext()
+        cls.nlc=i    
     
     @classmethod
     def XML_reader(cls,filein):
@@ -409,20 +415,26 @@ class StruMod(Unit):
                 fileout.write('Code {0} Fy= {1:.2f}\n'.format(code,StruMod.fyield))
             elif tagname == "material":
                 (cls.matlist,  cls.materials)=cls.material(content,child)
-                fileout.write('{0}\n {1}\n'.format("Material",StruMod.mat_table))
+                #fileout.write('{0}\n {1}\n'.format("Material",StruMod.mat_table))
+                fileout.write('Number of Materials: {0}\n'.format(cls.nmat))
             elif tagname == "section":
                 #(cls.seclist,cls.sections)=cls.section(content,child)
                 cls.section(content, child)
-                fileout.write('{0}\n {1}\n'.format("Sections",cls.sections_arr))
+                #fileout.write('{0}\n {1}\n'.format("Sections",cls.sections_arr))
+                fileout.write('Number of Sections: {0}\n'.format(cls.nsec))
             elif tagname == "nodes":
                 (StruMod.nn,StruMod.n,StruMod.coor,StruMod.nodelist)=cls.nodes(content,child)
-                fileout.write('Number of Nodes: {0}\nNumber of Equations: {1}\n'.format(cls.nn,StruMod.n))
+                #fileout.write('Number of Nodes: {0}\nNumber of Equations: {1}\n'.format(cls.nn,StruMod.n))
+                fileout.write('Number of Nodes: {0}\n'.format(cls.nn))
             elif tagname == "elements": 
                 cls.elem_prop(content,child)
-                fileout.write('Number of Elements: {0}\n Bandwidth: {1}\n{2}\n'.format(cls.ne,cls.ms,cls.elem_prop_arr))
+                #fileout.write('Number of Elements: {0}\n Bandwidth: {1}\n{2}\n'.format(cls.ne,cls.ms,cls.elem_prop_arr))
+                fileout.write('Number of Elements: {0}\n'.format(cls.ne))
             elif tagname == "boundary":
                 cls.boundary(content,child)
                 fileout.write('Number of Boundaries: {0}\n {1}\n'.format(cls.nbn,cls.boundaries))
-            elif tagname == "loading": cls.loading(content,child,fileout)
+            elif tagname == "loading": 
+                cls.loading(content,child,fileout)
+                fileout.write('Number of Loading Cases: {0}\n {1}\n'.format(cls.nlc,cls.nodeloads))
             child = child.GetNext()
         fileout.close()        

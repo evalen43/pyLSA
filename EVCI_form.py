@@ -295,11 +295,12 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		pylsa.stru3d.sec_table=StruMod.sections_arr
 		pylsa.stru3d.mat_table=StruMod.mat_table
 		pylsa.stru3d.tk=np.zeros((StruMod.n,StruMod.ms))
+		pylsa.stru3d.fm_dload=np.zeros((StruMod.ne,StruMod.ndfel))
 		# print('nn= {0}\n ne= {1}\n nbn= {2}\n n= {3}\n ms= {4}\n ndf= {5}\n nne= {6}\n {7}\n'.format
         # 	(pystruct.nn,pystruct.ne,pystruct.nbn,pystruct.n,
         #   	pystruct.ms,pystruct.ndf,pystruct.nne,pystruct.elem_prop))
 		pylsa.stru3d.k_assem()
-		print (pylsa.stru3d.__doc__)
+		#print (pylsa.stru3d.__doc__)
 
 
 	def Help_click( self, event ):

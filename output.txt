@@ -2,35 +2,10 @@ Frame2D    Degrees of Freedom per node: 3
 Project Name: Ferrante Example
 Code AISC Fy= 248211.26
 Number of Nodes: 8
-Number of Equations: 24
-Sections
- [[0.         0.04446358 0.762      0.00306986 0.         0.00805738
-  0.26275883 0.00306986 0.         0.00805738 0.26275883 0.00613973]
- [0.         0.02989574 0.762      0.00209873 0.         0.00550846
-  0.2649556  0.00209873 0.         0.00550846 0.2649556  0.00419745]]
-Material
- [[2.00e+08 7.85e+01 2.80e-01]]
+Number of Sections: 2
+Number of Materials: 1
 Number of Elements: 7
- Bandwidth: 9
-[[ 1.          2.          1.          1.          6.          0.
-  -1.        ]
- [ 5.          4.          2.          1.          6.          0.
-  -1.        ]
- [ 8.          7.          1.          1.          6.          0.
-  -1.        ]
- [ 2.          3.          2.          1.         10.30776406 -0.9701425
-  -0.24253563]
- [ 3.          4.          2.          1.         10.30776406 -0.9701425
-   0.24253563]
- [ 4.          6.          2.          1.         10.30776406 -0.9701425
-  -0.24253563]
- [ 6.          7.          2.          1.         10.30776406 -0.9701425
-   0.24253563]]
 Number of Boundaries: 3
  [(0, 0, 0, 0), (1, 0, 0, 0), (2, 0, 0, 0)]
-case 1
-loaded-nodes
-['nodeid=node2 Px=30000.', 'nodeid=node3 Py=-40000.', 'nodeid=6 Py=-40000.']
-case 2
-loaded-members
-['memid=elem1 loadtype=pload P=30000. a=0.5  sysref=globx']
+Number of Loading Cases: 2
+ [(0, 1, 30.0, 0.0, 0.0), (0, 2, 0.0, -40.0, 0.0), (0, 5, 0.0, -40.0, 0.0)]

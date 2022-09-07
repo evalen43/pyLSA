@@ -2,11 +2,15 @@ module stru3d
 implicit none
 
 character(len=10), public :: strutype
-integer(kind=4), public :: ndfel,ne,ndf,nne,n,ms,nbn,fileout_unit
+integer(kind=4), public :: ndfel,ne,ndf,nne,n,ms,nbn,nlc,fileout_unit
 real(kind=8), allocatable :: tk(:,:),elem_prop(:,:),mat_table(:,:), &
-  sec_table(:,:),al(:,:),reac(:,:)
+  sec_table(:,:),al(:,:),reac(:,:),fem_dload(:,:)
 integer(kind=4),allocatable :: ib(:) 
 logical, public :: kerr 
+
+! interface operator(.mv.)
+! module procedure matvec
+! end interface
 
 contains
 
@@ -33,7 +37,8 @@ do nel=1,ne
     elst=matmul(transpose(rot),matmul(elst,rot))
     call elassgen(elst,con)           
 enddo
-deallocate(rot,elst) 
+deallocate(rot,elst)
+write(*,'(a35,2x,a10)') "Stiffness Matrix Assembeld for:",strutype 
 end subroutine k_assem 
 
 ! -----------------------
@@ -430,5 +435,108 @@ deallocate(d)
 
 RETURN
 END SUBROUTINE bgaussgen
+
+
+SUBROUTINE dloadgen()
+!use structvarsgen
+implicit none
+INTEGER(kind=4) :: klc
+
+integer(kind=4) :: mn,j,isec,imat,inc1,inc2,kdsp1,kdsp2
+real(kind=8) :: f(ndfel),vlocal(ndfel),vglob(ndfel),wload,ra,rma,dl,totalwht
+real(kind=8), dimension(ndfel,ndfel) :: rot
+
+
+totalwht=0.0
+DO  mn=1,NE
+  rot=0.0
+  !fem_dload(mn)%fem=0.0
+  isec=int(elem_prop(mn,3))!%sec_no
+  imat=int(elem_prop(mn,4))!%mat_no
+  inc1=int(elem_prop(mn,1))!%inc1
+  inc2=int(elem_prop(mn,2))!%inc2
+  dl=elem_prop(mn,5)!%elem_len
+  if(sec_table(isec,1)==0) then
+    wload=sec_table(isec,2)*mat_table(imat,2)!%matden 
+  else
+    wload=sec_table(isec,1)
+  endif
+
+
+!---- COMPUTE MOMENTS VECTOR ORIENTATION (Cross Product)---
+  totalwht=totalwht+wload*dl
+
+  kdsp1=ndf*(inc1-1) 
+  kdsp2=ndf*(inc2-1) 
+  ra=wload*dl/2.
+  rma=wload*dl*dl/12.
+
+  IF(strutype == '3DFrame') then 
+    f(1)=0.0; f(2)=-1.0; f(3)=0.0 ;f(4)=0.0; f(5)=0.0 ; f(6)=0.0
+    f(7)=0.0; f(8)=-1.0; f(9)=0.0 ;f(10)=0.0; f(11)=0.0 ; f(12)=0.0 
+    !rot=rotmatgen(mn)
+    call rotmatgen(mn,rot)    
+!    vlocal=rot .mv. f
+    vlocal=matmul(rot , f   ) 
+    vlocal(1)=ra*vlocal(1)
+    vlocal(2)=ra*vlocal(2)   
+    vlocal(3)=ra*vlocal(3)
+    vlocal(4)=-rma*vlocal(4)
+    vlocal(5)=-rma*vlocal(5)
+    vlocal(6)=-rma*vlocal(6)
+    vlocal(7)=ra*vlocal(7)
+    vlocal(8)=ra*vlocal(8)
+    vlocal(9)=ra*vlocal(9)
+    vlocal(10)=rma*vlocal(10)
+    vlocal(11)=rma*vlocal(11)
+    vlocal(12)=rma*vlocal(12)
+  else if(strutype == '2DFrame') then
+    f(1)=0.0; f(2)=-1.0; f(3)=0.0 ;f(4)=0.0; f(5)=-1.00 ; f(6)=0.0! dload unit Y vector    
+    !rot=rotmatgen(mn)
+    call rotmatgen(mn,rot)
+    !vlocal=rot .mv. f
+    vlocal=matmul(rot , f)
+    vlocal(1)=ra*vlocal(1)
+    vlocal(2)=ra*vlocal(2)    
+    vlocal(3)=-rma*vlocal(3)
+    vlocal(4)=ra*vlocal(4)
+    vlocal(5)=ra*vlocal(5)
+    vlocal(6)=rma*vlocal(6)
+  end if 
+  
+  !vglob=transpose(rot) .mv. vlocal
+  vglob=matmul(transpose(rot) , vlocal)
+  !fem_dload(mn:%fem(1:ndfel)=fem_dload(mn)%fem(1:ndfel)-vlocal(1:ndfel)
+  fem_dload(mn,1:ndfel)=fem_dload(mn,1:ndfel)-vlocal(1:ndfel)
+  do klc=1,nlc
+    DO  j=1,ndf
+      al(kdsp1+j,klc)=al(kdsp1+j,klc)+vglob(j)
+      al(kdsp2+j,klc)=al(kdsp2+j,klc)+vglob(j+ndf)
+    END DO
+  end do
+END DO
+RETURN
+END SUBROUTINE dloadgen
+
+! ! -----------------------
+! ! Multiply Matrix * Vector
+! ! -----------------------
+! FUNCTION matvec (mat, v) result (r)
+! implicit none
+
+! real(kind=8), dimension(:,:), INTENT(IN) :: mat
+! real(kind=8), dimension(:), INTENT(IN) :: v
+! real(kind=8), dimension( SIZE(mat,1) ) :: r
+
+! integer :: i
+! integer :: m
+
+! m = SIZE(v)
+
+! r = 0.0       !! clear whole vector
+! DO i = 1, m
+!     r = r + v(i) * mat( :, i )
+! END DO
+! END FUNCTION
 
 end module stru3d
