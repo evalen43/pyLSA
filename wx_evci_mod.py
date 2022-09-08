@@ -101,6 +101,7 @@ class StruMod(Unit):
     elem_prop = []
     bndlist = []
     boundaries = []
+    
     nodeloads = []
     loadcaseslist = []
     elem_prop_arr = np.zeros((1, 1))
@@ -422,31 +423,31 @@ class StruMod(Unit):
                 #(cls.seclist,cls.sections)=cls.section(content,child)
                 cls.section(content, child)
                 #fileout.write('{0}\n {1}\n'.format("Sections",cls.sections_arr))
-                fileout.write('{0}\t\t{1}\n'.format('Number of Sections:',cls.nsec).expandtabs(10))
+                fileout.write('{0}\t{1}\n'.format('Number of Sections:',cls.nsec).expandtabs(10))
             elif tagname == "nodes":
                 (StruMod.nn,StruMod.n,StruMod.coor,StruMod.nodelist)=cls.nodes(content,child)
                 #fileout.write('Number of Nodes: {0}\nNumber of Equations: {1}\n'.format(cls.nn,StruMod.n))
-                fileout.write('{0}\t\t{1}\n'.format('Number of Nodes:',cls.nn).expandtabs(10))
+                fileout.write('{0}\t{1}\n'.format('Number of Nodes:',cls.nn).expandtabs(10))
             elif tagname == "elements": 
                 cls.elem_prop(content,child)
                 #fileout.write('Number of Elements: {0}\n Bandwidth: {1}\n{2}\n'.format(cls.ne,cls.ms,cls.elem_prop_arr))
-                fileout.write('{0}\t\t{1}\n'.format('Number of Elements:',cls.ne).expandtabs(10))
+                fileout.write('{0}\t{1}\n'.format('Number of Elements:',cls.ne).expandtabs(10))
             elif tagname == "boundary":
                 cls.boundary(content,child)
                 #fileout.write('Number of Boundaries: {0}\n {1}\n'.format(cls.nbn,cls.boundaries))
-                fileout.write('{0}\t\t{1}\n'.format('Number of Boundaries:',cls.nbn).expandtabs(10))
+                fileout.write('{0}\t{1}\n'.format('Number of Boundaries:',cls.nbn).expandtabs(10))
             elif tagname == "loading": 
                 cls.loading(content,child,fileout)
                 fileout.write('Number of Loading Cases: {0}\n {1}\n'.format(cls.nlc,cls.nodeloads))
                 cls.al=np.zeros((cls.n,cls.nlc))
-                
-                for i in range (cls.nlc):
-                    for nload in cls.nodeloads:
-                        n1=nload[1]
-                        kdsp=cls.ndf*(n1-1)
-                        cls.al[kdsp+1,i] = nload[2]
-                        cls.al[kdsp+2,i] = nload[3]
-                        cls.al[kdsp+3,i] = nload[4]
+
+                for nload in cls.nodeloads:
+                    n1=nload[1]
+                    klc=nload[0]
+                    kdsp=cls.ndf*(n1)
+                    cls.al[kdsp][klc] = nload[2]
+                    cls.al[kdsp+1][klc] = nload[3]
+                    cls.al[kdsp+2][klc] = nload[4]
                 print(cls.al)    
             child = child.GetNext()
         fileout.close()        
