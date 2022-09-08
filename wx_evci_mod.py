@@ -103,6 +103,7 @@ class StruMod(Unit):
     boundaries = []
     
     nodeloads = []
+    memloads=[]
     loadcaseslist = []
     elem_prop_arr = np.zeros((1, 1))
     sections_arr=np.zeros((1,1))
@@ -355,39 +356,58 @@ class StruMod(Unit):
         UnitF=child.GetAttribute("unitF","kN")
         if UnitF=="default-value": scaleF=1.0
         else: scaleF=Unit.TokN(UnitF)
-        i=0
+
         load = child.GetChildren()
         while load:
             tagchild=load.GetName()
             tagattrib=load.GetAttribute("id",'')
+            i=0
             if tagchild=='case':
                 #fileout.write('{0} {1}\n'.format(tagchild, tagattrib))
                 load2 = load.GetChildren()
+                content2 = load2.GetNodeContent()
                 tag2=load2.GetName()
                 #fileout.write('{0}\n'.format(tag2))
                 cls.loadcaseslist.append(tagattrib)
                 if tag2=='loaded-nodes':
-                    content2 = load2.GetNodeContent()
+                    
                     lines = content2.splitlines()
                     #fileout.write('{0}\n'.format(lines))
                     for line in lines:
                         px = 0.0;py = 0.0;mz = 0.0
                         line = line.replace("=", " ")
                         lineinput = line.split()
-                        nodeid = lineinput[1]
-                        if lineinput[2]=='Px': 
-                            px=float(lineinput[3])*scaleF
-                        elif lineinput[2] == 'Py':
-                            py = float(lineinput[3])*scaleF
-                        elif lineinput[2] == 'Mz':
-                            mz = float(lineinput[3])*scaleL*scaleF
-                        j=cls.nodelist.index(nodeid)    
-                        ldtuple=(i,j,px,py,mz)
+                        for j in range(len(lineinput)):
+                            if  lineinput[j] =='nodeid':
+                                nodeid = lineinput[j+1]
+                            elif lineinput[j]=='Px': 
+                                px=float(lineinput[j+1])*scaleF
+                            elif lineinput[j] == 'Py':
+                                py = float(lineinput[j+1])*scaleF
+                            elif lineinput[j] == 'Mz':
+                                mz = float(lineinput[j+1])*scaleL*scaleF
+                        k=cls.nodelist.index(nodeid)    
+                        ldtuple=(i,k,px,py,mz)
                         cls.nodeloads.append(ldtuple)    
-                elif tag2 == 'loaded-members':
-                    content2 = load2.GetNodeContent()
-                    lines = content2.splitlines()
-                    
+                # elif tag2 == 'loaded-members':
+                #     content3 = load2.GetNodeContent()
+                #     lines = content3.splitlines()
+                #     for line in lines:
+                #         p = 0.0;a = 0.0;mz = 0.0
+                #         line = line.replace("=", " ")
+                #         lineinput = line.split()
+                #         for i in range(len(lineinput)):
+                #             if lineinput[i]=='memid':
+                #                 memid = lineinput[i+1]
+                #             elif lineinput[i]=='P': 
+                #                 p=float(lineinput[i+1])*scaleF
+                #             elif lineinput[i] == 'a':
+                #                 a = float(lineinput[i+1])*scaleL
+                #             elif lineinput[i] == 'loadtype':
+                #                 ldtype = lineinput[i+1]
+                #    j=cls.elemlist.index(memid)    
+                    # ldtuple=(i,j,ldtype,p,a)
+                    # cls.memloads.append(ldtuple)                        
                 i +=1    
                 load2=load2.GetNext()    
             load=load.GetNext()
@@ -438,7 +458,7 @@ class StruMod(Unit):
                 fileout.write('{0}\t{1}\n'.format('Number of Boundaries:',cls.nbn).expandtabs(10))
             elif tagname == "loading": 
                 cls.loading(content,child,fileout)
-                fileout.write('Number of Loading Cases: {0}\n {1}\n'.format(cls.nlc,cls.nodeloads))
+                fileout.write('Number of Loading Cases: {0}\n {1}\n {2}\n'.format(cls.nlc,cls.nodeloads,cls.memloads))
                 cls.al=np.zeros((cls.n,cls.nlc))
 
                 for nload in cls.nodeloads:
