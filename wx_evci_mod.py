@@ -370,7 +370,6 @@ class StruMod(Unit):
                 #fileout.write('{0}\n'.format(tag2))
                 cls.loadcaseslist.append(tagattrib)
                 if tag2=='loaded-nodes':
-                    
                     lines = content2.splitlines()
                     #fileout.write('{0}\n'.format(lines))
                     for line in lines:
@@ -389,25 +388,25 @@ class StruMod(Unit):
                         k=cls.nodelist.index(nodeid)    
                         ldtuple=(i,k,px,py,mz)
                         cls.nodeloads.append(ldtuple)    
-                # elif tag2 == 'loaded-members':
-                #     content3 = load2.GetNodeContent()
-                #     lines = content3.splitlines()
-                #     for line in lines:
-                #         p = 0.0;a = 0.0;mz = 0.0
-                #         line = line.replace("=", " ")
-                #         lineinput = line.split()
-                #         for i in range(len(lineinput)):
-                #             if lineinput[i]=='memid':
-                #                 memid = lineinput[i+1]
-                #             elif lineinput[i]=='P': 
-                #                 p=float(lineinput[i+1])*scaleF
-                #             elif lineinput[i] == 'a':
-                #                 a = float(lineinput[i+1])*scaleL
-                #             elif lineinput[i] == 'loadtype':
-                #                 ldtype = lineinput[i+1]
-                #    j=cls.elemlist.index(memid)    
-                    # ldtuple=(i,j,ldtype,p,a)
-                    # cls.memloads.append(ldtuple)                        
+                if tag2 == 'loaded-members':
+                    content2 = load2.GetNodeContent()
+                    lines = content2.splitlines()
+                    for line in lines:
+                        p = 0.0;a = 0.0;mz = 0.0
+                        line = line.replace("=", " ")
+                        lineinput = line.split()
+                        for j in range(len(lineinput)):
+                            if lineinput[j]=='memid':
+                                memid = lineinput[j+1]
+                            elif lineinput[j]=='P': 
+                                p=float(lineinput[j+1])*scaleF
+                            elif lineinput[j] == 'a':
+                                a = float(lineinput[j+1])*scaleL
+                            elif lineinput[j] == 'loadtype':
+                                ldtype = lineinput[j+1]
+                        k=cls.elemlist.index(memid)    
+                        ldtuple=(i,k,ldtype,p,a)
+                        cls.memloads.append(ldtuple)                        
                 i +=1    
                 load2=load2.GetNext()    
             load=load.GetNext()
