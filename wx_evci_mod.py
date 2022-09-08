@@ -348,7 +348,7 @@ class StruMod(Unit):
             cls.boundaries.append(cls.bndparam(bnodeid,bntype))
     
     @classmethod
-    def loading(cls,content,child,fileout):
+    def loading(cls,content,child):
         lineinput=[]
         UnitL = child.GetAttribute("unitL", "m")
         if UnitL == "default-value": scaleL = 1.0
@@ -356,22 +356,18 @@ class StruMod(Unit):
         UnitF=child.GetAttribute("unitF","kN")
         if UnitF=="default-value": scaleF=1.0
         else: scaleF=Unit.TokN(UnitF)
-
+        i=0
         load = child.GetChildren()
         while load:
             tagchild=load.GetName()
             tagattrib=load.GetAttribute("id",'')
-            i=0
             if tagchild=='case':
-                #fileout.write('{0} {1}\n'.format(tagchild, tagattrib))
                 load2 = load.GetChildren()
                 content2 = load2.GetNodeContent()
                 tag2=load2.GetName()
-                #fileout.write('{0}\n'.format(tag2))
                 cls.loadcaseslist.append(tagattrib)
                 if tag2=='loaded-nodes':
                     lines = content2.splitlines()
-                    #fileout.write('{0}\n'.format(lines))
                     for line in lines:
                         px = 0.0;py = 0.0;mz = 0.0
                         line = line.replace("=", " ")
@@ -389,7 +385,6 @@ class StruMod(Unit):
                         ldtuple=(i,k,px,py,mz)
                         cls.nodeloads.append(ldtuple)    
                 if tag2 == 'loaded-members':
-                    content2 = load2.GetNodeContent()
                     lines = content2.splitlines()
                     for line in lines:
                         p = 0.0;a = 0.0;mz = 0.0
@@ -407,8 +402,7 @@ class StruMod(Unit):
                         k=cls.elemlist.index(memid)    
                         ldtuple=(i,k,ldtype,p,a)
                         cls.memloads.append(ldtuple)                        
-                i +=1    
-                load2=load2.GetNext()    
+            i +=1    
             load=load.GetNext()
         cls.nlc=i    
     
@@ -456,7 +450,7 @@ class StruMod(Unit):
                 #fileout.write('Number of Boundaries: {0}\n {1}\n'.format(cls.nbn,cls.boundaries))
                 fileout.write('{0}\t{1}\n'.format('Number of Boundaries:',cls.nbn).expandtabs(10))
             elif tagname == "loading": 
-                cls.loading(content,child,fileout)
+                cls.loading(content,child)
                 fileout.write('Number of Loading Cases: {0}\n {1}\n {2}\n'.format(cls.nlc,cls.nodeloads,cls.memloads))
                 cls.al=np.zeros((cls.n,cls.nlc))
 
