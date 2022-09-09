@@ -385,50 +385,6 @@ class EVCI_Form ( wx.Frame,StruMod ):
 	def wxmnu_2rd( self, event ):
 		event.Skip()
 
-
-
-	# def XML_reader(m_dataViewTreeCtrl3):
-    # # start processing the XML file
-	# 	doc = wx.XmlDocument(fname)
-	# 	if not doc.Load(fname):
-	# 		return False
-
-
-
-    # #     if child.GetType() == wx.xml.XML_PI_NODE and child.GetName() == "target":
-
-    # #         # process Process Instruction contents
-    # #         pi = child.GetContent()
-
-    #     # Other code here...
-	# 	child = doc.GetRoot().GetChildren()
-	# 	m_dataViewTreeCtrl3=dv.DataViewCtrl()
-	# 	rootID=wx.DataViewModel()
-	# 	m_dataViewTreeCtrl3.AssociateModel(rootID)
-	# 	#rootId = m_dataViewTreeCtrl3.AppendContainer(wx.dataview.wxDataViewItem(0), strutype, 0)
-	# 	while child:
-	# 		tagname = child.GetName()
-	# 		content = child.GetNodeContent()  # process text enclosed by tag1/tag1
-
-	# 		if tagname == "title":
-	# 			projName = content
-	# 			#project = m_dataViewTreeCtrl3.AppendContainer(rootId,"Project Name",1)
-	# 			#m_dataViewTreeCtrl3.AppendItem(project,projName,1)
-	# 			# attrvalue1 = child.GetAttribute("attr1", "default-value")
-	# 			#attrvalue2 = child.GetAttribute("attr2", "default-value")
-	# 		elif tagname == "code":
-	# 			# UnitS: stress unit ...
-	# 			UnitS = child.GetAttribute("unitS", "kN/m2")
-	# 			if UnitS == "default-value": 	scaleS = 1.0
-	# 		else:     			scaleS =TokNperM2(UnitS)
-	# 		tokens = tokenize.generate_tokens(content)
-	# 		for token in tokens:
-	# 			lineinput.append(token)
-	# 		for x in lineinput:
-	# 			if x == "AISC": Code = x
-	# 			elif x == "fy": fyield = float(x)*scaleS
-	# 		child = child.GetNext()
-  
 if __name__ == '__main__':
 # When this module is run (not imported) then create the app, the
 # frame, show it, and start the event loop.

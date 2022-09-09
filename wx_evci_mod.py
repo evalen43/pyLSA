@@ -109,6 +109,7 @@ class StruMod(Unit):
     sections_arr=np.zeros((1,1))
     mat_table=np.zeros((1,1))
     al=np.zeros((1,1))
+    ib=np.zeros((1), dtype=int)
  
 
     @staticmethod
@@ -414,7 +415,6 @@ class StruMod(Unit):
         if not doc.Load(filein):
             return False
         cls.strutype = str(doc.GetRoot().GetName()).ljust(10)
-        
 
         StruMod.ndf=cls.structure(cls.strutype)
         fileout.write('{0} Degrees of Freedom per node: {1}\n'.format(cls.strutype,StruMod.ndf))
@@ -447,8 +447,10 @@ class StruMod(Unit):
                 fileout.write('{0}\t{1}\n'.format('Number of Elements:',cls.ne).expandtabs(10))
             elif tagname == "boundary":
                 cls.boundary(content,child)
+                cls.ib=np.reshape(cls.boundaries,newshape=((cls.ndf+1)*cls.nbn))
                 #fileout.write('Number of Boundaries: {0}\n {1}\n'.format(cls.nbn,cls.boundaries))
                 fileout.write('{0}\t{1}\n'.format('Number of Boundaries:',cls.nbn).expandtabs(10))
+                print(cls.ib)
             elif tagname == "loading": 
                 cls.loading(content,child)
                 fileout.write('Number of Loading Cases: {0}\n {1}\n {2}\n'.format(cls.nlc,cls.nodeloads,cls.memloads))
