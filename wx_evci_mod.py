@@ -68,7 +68,7 @@ class Unit:
         elif unitF == 'te':
             factor = 1.0*StruMod.grav
         return factor    
-  
+
 class StruMod(Unit):
     grav = 9.806
     ndf = 0
@@ -110,7 +110,6 @@ class StruMod(Unit):
     mat_table=np.zeros((1,1))
     al=np.zeros((1,1))
     ib=np.zeros((1), dtype=int)
- 
 
     @staticmethod
     def pipeparam(od,wth):

@@ -2,9 +2,9 @@ module stru3d
 implicit none
 
 character(len=10), public :: strutype
-integer(kind=4), public :: ndfel,ne,ndf,nne,n,ms,nbn,nlc,fileout_unit
+integer(kind=4), public :: ndfel,ne,ndf,nne,n,ms,nbn,nlc,nlmem,fileout_unit
 real(kind=8), allocatable :: tk(:,:),elem_prop(:,:),mat_table(:,:), &
-  sec_table(:,:),al(:,:),reac(:,:),fem_dload(:,:)
+  sec_table(:,:),al(:,:),reac(:,:),fem_dload(:,:),mfem_load(:,:),mfem_param(:,:)
 integer(kind=4),allocatable :: ib(:) 
 logical, public :: kerr 
 
