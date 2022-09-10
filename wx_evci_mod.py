@@ -400,7 +400,7 @@ class StruMod(Unit):
                             elif lineinput[j] == 'loadtype':
                                 ldtype = lineinput[j+1]
                         k=cls.elemlist.index(memid)    
-                        ldtuple=(i,k,ldtype,p,a)
+                        ldtuple=(2,i,k,p,a,0)
                         cls.memloads.append(ldtuple)                        
             i +=1    
             load=load.GetNext()

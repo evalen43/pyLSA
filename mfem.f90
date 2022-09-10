@@ -3,7 +3,7 @@ use structvarsgen
 implicit none
 
 real(kind=8) ::  vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel)
-real(kind=8) :: wa,wb,a,dl,ra,rb,rma,rmb,p
+real(kind=8) :: wa,wb,a,dl,ra,rb,rma,rmb,p,b
 integer(kind=4) :: n1,n2,kdsp1,kdsp2,mn,i,j,mltype
 integer(kind=4),INTENT(IN) :: klc
 real(kind=8),INTENT(IN), dimension(:) :: f
@@ -30,16 +30,19 @@ dl=elem_prop(i,5)!%elem_len
 
   kdsp1=ndf*(n1-1)
   kdsp2=ndf*(n2-1)
+!----- mltype=1 trapezoidal load
+!----- mltype=2 concentrated load    
   if(mltype==1) then
     ra=wa*((dl-a)**3)*(dl+a)/(2.*dl**3)
     rb=((wa+wb)*(dl-a)/2.)- ra
     rma=wa*((dl-a)**3)*(dl+3.*a)/(12.*dl*dl)
     rmb=(ra*dl)-((wa*(dl-a)**2)/2.)-((wb-wa)*(dl-a)*(dl-a)/6.)+rma
   elseif(mltype==2) then
-    ra=0
-    rb=0
-    rma=0
-    rmb=0
+    b=dl-a
+    ra=p*(3*a+b)*b**2/dl**3
+    rb=p*(a+3*b)*a**2/dl**3
+    rma=p*a*b**2/dl**2
+    rmb=p*b*a**2/dl**2
   endif  
 
   IF(strutype == '3DFrame') then !GO TO 12
