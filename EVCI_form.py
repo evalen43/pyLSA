@@ -290,6 +290,7 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		pylsa.stru3d.ndf = StruMod.ndf
 		pylsa.stru3d.nne = StruMod.nne
 		pylsa.stru3d.ndfel=StruMod.ndfel
+		pylsa.stru3d.nlmem=StruMod.nlmem
 		pylsa.stru3d.strutype = StruMod.strutype
 		pylsa.stru3d.elem_prop = StruMod.elem_prop_arr
 		pylsa.stru3d.sec_table=StruMod.sections_arr
@@ -298,6 +299,10 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		pylsa.stru3d.fm_dload=np.zeros((StruMod.ne,StruMod.ndfel))
 		pylsa.stru3d.al=StruMod.al
 		pylsa.stru3d.mfem_param=StruMod.mfemload
+		pylsa.stru3d.ib=StruMod.ib
+		if(StruMod.nlmem>0): 
+			pylsa.stru3d.mfemgen()
+			print(pylsa.stru3d.al)
 		# print('nn= {0}\n ne= {1}\n nbn= {2}\n n= {3}\n ms= {4}\n ndf= {5}\n nne= {6}\n {7}\n'.format
         # 	(pystruct.nn,pystruct.ne,pystruct.nbn,pystruct.n,
         #   	pystruct.ms,pystruct.ndf,pystruct.nne,pystruct.elem_prop))
