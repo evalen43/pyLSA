@@ -1,11 +1,11 @@
 SUBROUTINE mfem(f)
-use structvarsgen
+!use structvarsgen
 implicit none
 
 real(kind=8) ::  vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel)
 real(kind=8) :: wa,wb,a,dl,ra,rb,rma,rmb,p,b
-integer(kind=4) :: n1,n2,kdsp1,kdsp2,mn,i,j,mltype
-integer(kind=4),INTENT(IN) :: klc
+integer(kind=4) :: n1,n2,kdsp1,kdsp2,mn,i,j,mltype,klc
+!integer(kind=4),INTENT(IN) :: klc
 real(kind=8),INTENT(IN), dimension(:) :: f
 
 

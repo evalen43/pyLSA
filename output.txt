@@ -8,4 +8,4 @@ Number of Elements: 7
 Number of Boundaries:         3
 Number of Loading Cases: 2
  [(0, 1, 30.0, 0.0, 0.0), (0, 2, 0.0, -40.0, 0.0), (0, 5, 0.0, -40.0, 0.0)]
- [(1, 0, 'pload', 30.0, 0.5)]
+ [(2, 1, 0, 30.0, 0.5, 0)]
