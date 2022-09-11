@@ -82,6 +82,7 @@ class StruMod(Unit):
     nlc=0
     nmat=0
     nsec=0
+    nlnodes=0
     nlmem=0
     fyield = 0.0
 
@@ -110,8 +111,9 @@ class StruMod(Unit):
     sections_arr=np.zeros((1,1))
     mat_table=np.zeros((1,1))
     al=np.zeros((1,1))
+    reac=np.zeros((1,1))
     ib=np.zeros((1), dtype=int)
-    #mfemload=np.zeros((1,1))
+    mfemload=np.zeros((1,1))
 
     @staticmethod
     def pipeparam(od,wth):
@@ -370,6 +372,7 @@ class StruMod(Unit):
                 cls.loadcaseslist.append(tagattrib)
                 if tag2=='loaded-nodes':
                     lines = content2.splitlines()
+                    cls.nlnodes=len(lines)
                     for line in lines:
                         px = 0.0;py = 0.0;mz = 0.0
                         line = line.replace("=", " ")
@@ -405,15 +408,22 @@ class StruMod(Unit):
                             elif lineinput[j]=='wa': 
                                 wa=float(lineinput[j+1])*scaleF
                             elif lineinput[j]=='wb': 
-                                wb=float(lineinput[j+1])*scaleF                                                                
+                                wb=float(lineinput[j+1])*scaleF 
+                            elif lineinput[j] == 'sysref':
+                                sysref = lineinput[j+1]
+                                if(sysref=='globx'): kref=1
+                                if (sysref == 'globy'):
+                                    kref = 2
+                                if (sysref == 'globz'):
+                                    kref = 3
                         k=cls.elemlist.index(memid)
                         ltype=0
                         if(ldtype=='pload'):
                             ltype=2
-                            ldtuple=(ltype,i+1,k+1,p,a,0)                            
+                            ldtuple=(ltype,i+1,k+1,p,a,0,kref)                            
                         if(ldtype=='wload'):
                             ltype=1                                
-                            ldtuple=(ltype,i+1,k+1,wa,wb,a)
+                            ldtuple=(ltype,i+1,k+1,wa,wb,a,kref)
                         cls.memloads.append(ldtuple)                        
             i +=1    
             load=load.GetNext()
@@ -462,13 +472,15 @@ class StruMod(Unit):
                 cls.ib=np.reshape(cls.boundaries,newshape=((cls.ndf+1)*cls.nbn))
                 #fileout.write('Number of Boundaries: {0}\n {1}\n'.format(cls.nbn,cls.boundaries))
                 fileout.write('{0}\t{1}\n'.format('Number of Boundaries:',cls.nbn).expandtabs(10))
-                print(cls.ib)
+                #print(cls.ib)
             elif tagname == "loading": 
                 cls.loading(content,child)
-                fileout.write('Number of Loading Cases: {0}\n {1}\n {2}\n'.format(cls.nlc,cls.nodeloads,cls.memloads))
+                #fileout.write('Number of Loading Cases: {0}\n {1}\n {2}\n'.format(cls.nlc,cls.nodeloads,cls.memloads))
+                fileout.write('Number of Loading Cases: {0}\n Loaded Nodes: {1}\n Loaded Members: {2}\n'.format(
+                    cls.nlc, cls.nlnodes, cls.nlmem))
                 cls.al=np.zeros((cls.n,cls.nlc))
-                cls.mfemload=np.reshape(cls.memloads,(cls.nlmem,6))
-                print(cls.mfemload)
+                cls.mfemload=np.reshape(cls.memloads,(cls.nlmem,7))
+                #print(cls.mfemload)
 
                 for nload in cls.nodeloads:
                     n1=nload[1]
@@ -477,6 +489,6 @@ class StruMod(Unit):
                     cls.al[kdsp][klc] = nload[2]
                     cls.al[kdsp+1][klc] = nload[3]
                     cls.al[kdsp+2][klc] = nload[4]
-                print(cls.al)    
+                #print(cls.al)    
             child = child.GetNext()
         fileout.close()        

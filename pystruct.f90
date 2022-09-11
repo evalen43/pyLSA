@@ -67,17 +67,17 @@ gix=mat_table(imat,1)*sec_table(isec,12)!%ix
 kelst=0.0
 select case (strutype )
 
-case('2dtruss')
+case('Truss2D')
     kelst(1, 1) = eax / d
     kelst(2, 1) = 0.0;
     kelst(1, 2) = -eax / d
     kelst(2, 2) = 0.0
-case('3dtruss')
+case('Truss3D')
     kelst(1, 1) = eax / d;
     kelst(4, 1) = -eax / d;
     kelst(1, 4) = -eax / d;
     kelst(4, 4) = eax / d;
-case('2dframe')
+case('Frame2D')
 
     kelst(1,1) =eax/d
     kelst(1,4) =-kelst(1,1)
@@ -99,7 +99,7 @@ case('2dframe')
     kelst(6,3) =kelst(3,6)
     kelst(6,5) =kelst(5,6)
     kelst(6,6) =kelst(3,3)
-case('3dframe')
+case('Frame3D')
     kelst(1, 1) = eax / d                 !(0,0)
     kelst(7, 1) = -eax / d                !(6,0) 
     kelst(2, 2) = 12.0 * eiz / d**3       !(1,1)
@@ -166,13 +166,14 @@ cx=elem_prop(nel,6)!%dx/dt !prop(kdsp+6)/dt
 cy=elem_prop(nel,7)!%dy/dt !prop(kdsp+7)/dt
 cz=0.0!elem_prop(nel)%dz/dt !prop(kdsp+8)/dt
 cxz=sqrt(cx*cx+cz*cz)
+!write(*,*) strutype,dt,cx,cy
 select case ( strutype )
-  case ('2dtruss')
+  case ('Truss2D')
     rot(1,1)=cx
     rot(1,2)=cy
     rot(2,1)=-cy
     rot(2,2)=cx
-  case ('3dtruss')
+  case ('Truss3D')
     if(cxz /= 0.) then
       rot(1, 1) = cx;
       rot(1, 2) = cy;
@@ -194,13 +195,13 @@ select case ( strutype )
       rot(3, 2) = 0.0;
       rot(3, 3) = 1.0;      
     end if
-  case ('2dframe')
+  case ('Frame2D')
     rot(1,1)=cx
     rot(1,2)=cy
     rot(2,1)=-cy
     rot(2,2)=cx
     rot(3,3)=1.0
-  case ('3dframe')
+  case ('Frame3D')
 
     if(cxz /= 0.) then 
     rot(1,1)=cx
@@ -471,7 +472,7 @@ DO  mn=1,NE
   ra=wload*dl/2.
   rma=wload*dl*dl/12.
 
-  IF(strutype == '3DFrame') then 
+  IF(strutype == 'Frame3D') then 
     f(1)=0.0; f(2)=-1.0; f(3)=0.0 ;f(4)=0.0; f(5)=0.0 ; f(6)=0.0
     f(7)=0.0; f(8)=-1.0; f(9)=0.0 ;f(10)=0.0; f(11)=0.0 ; f(12)=0.0 
     !rot=rotmatgen(mn)
@@ -490,7 +491,7 @@ DO  mn=1,NE
     vlocal(10)=rma*vlocal(10)
     vlocal(11)=rma*vlocal(11)
     vlocal(12)=rma*vlocal(12)
-  else if(strutype == '2DFrame') then
+  else if(strutype == 'Frame2D') then
     f(1)=0.0; f(2)=-1.0; f(3)=0.0 ;f(4)=0.0; f(5)=-1.00 ; f(6)=0.0! dload unit Y vector    
     !rot=rotmatgen(mn)
     call rotmatgen(mn,rot)
@@ -522,17 +523,20 @@ SUBROUTINE mfemgen()
 !use structvarsgen
 implicit none
 
-real(kind=8),allocatable ::  vlocal(:),vglob(:),rot(:,:),f(:)
+!real(kind=8),allocatable ::  vlocal(:),vglob(:),rot(:,:),f(:)
+real(kind=8) ::  vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel),f(ndfel)
 real(kind=8) :: wa=0,wb=0,a=0,dl,ra=0,rb=0,rma=0,rmb=0,p=0,b=0
-integer(kind=4) :: n1,n2,kdsp1,kdsp2,mn,i,j,mltype,klc,mkdsp
+integer(kind=4) :: n1,n2,kdsp1,kdsp2,mn,i,j,mltype,klc,mkdsp,kref
 !integer(kind=4),INTENT(IN) :: klc
 !real(kind=8),INTENT(IN), dimension(:) :: f
-allocate(vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel),f(ndfel))
+!allocate(vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel),f(ndfel))
 
 DO  i=1,nlmem
+  f=0.0
   mltype=int(mfem_param(i,1))
   klc=int(mfem_param(i,2))
   mn=int(mfem_param(i,3))!%mem_no
+  kref=int(mfem_param(i,7))
   if(mltype==1) then
     wa=mfem_param(i,4)!%wa 
     wb=mfem_param(i,5)!%wb 
@@ -540,13 +544,15 @@ DO  i=1,nlmem
   elseif(mltype==2) then
     p=mfem_param(i,4)
     a=mfem_param(i,5)
+  
+!    write(*,*) p,a
   endif
-write(*,*) p,a
+
 n1=int(elem_prop(mn,1))!%inc1 nne*(mn-1)
 n2=int(elem_prop(mn,2))!%inc2 
 dl=elem_prop(i,5)!%elem_len
 a=a*dl 
-write(*,*) n1,n2,dl
+!write(*,*) n1,n2,dl,a
 !---- COMPUTE MOMENTS VECTOR ORIENTATION ---
 
   kdsp1=ndf*(n1-1)
@@ -564,12 +570,13 @@ write(*,*) n1,n2,dl
     rb=p*(a+3*b)*a**2/dl**3
     rma=p*a*b**2/dl**2
     rmb=p*b*a**2/dl**2
+!    write(*,*) b,ra,rb,rma,rmb
   endif  
 
-  IF(strutype == '3DFrame') then !GO TO 12
+  IF(strutype == 'Frame3D') then !GO TO 12
 !    vlocal=rot .mv. f
-    f(1)=0.0; f(2)=-1.0; f(3)=0.0 ;f(4)=0.0; f(5)=0.0 ; f(6)=0.0
-    f(7)=0.0; f(8)=-1.0; f(9)=0.0 ;f(10)=0.0; f(11)=0.0 ; f(12)=0.0 
+    ! f(1)=0.0; f(2)=-1.0; f(3)=0.0 ;f(4)=0.0; f(5)=0.0 ; f(6)=0.0
+    ! f(7)=0.0; f(8)=-1.0; f(9)=0.0 ;f(10)=0.0; f(11)=0.0 ; f(12)=0.0 
     vlocal=matmul(rot , f  )  
     vlocal(1)=ra*vlocal(1)
     vlocal(2)=ra*vlocal(2)   
@@ -583,12 +590,19 @@ write(*,*) n1,n2,dl
     vlocal(10)=rmb*vlocal(10)
     vlocal(11)=rmb*vlocal(11)
     vlocal(12)=rmb*vlocal(12)
-  else if(strutype == '2DFrame') then!GO TO 41
+  else if(strutype == 'Frame2D') then!GO TO 41
 !    rot=rotmatgen(mn)
     call rotmatgen(mn,rot) 
-    write(*,*) rot   
+!    write(*,*) rot   
 !    vlocal=rot .mv. f
-    f(1)=0.0; f(2)=-1.0; f(3)=0.0 ;f(4)=0.0; f(5)=-1.00 ; f(6)=0.0
+!    f(1)=1.0; f(2)=0.0; f(3)=0.0 ;f(4)=1.0; f(5)=0.00 ; f(6)=0.0
+    if(kref==1)then
+      f(1)=1.0
+      f(4)=1.0
+    else if(kref==2)then
+      f(2)=1.0
+      f(5)=1.0
+    end if    
     vlocal=matmul(rot , f )   
     vlocal(1)=ra*vlocal(1)
     vlocal(2)=ra*vlocal(2)    
@@ -600,15 +614,15 @@ write(*,*) n1,n2,dl
   mkdsp=ne*(klc-1)
 !  vglob=transpose(rot) .mv. vlocal
   vglob=matmul(transpose(rot) , vlocal )
-  write(*,*) vlocal
-  write(*,*) vglob 
+  ! write(*,*) 'vlocal ',vlocal
+  ! write(*,*) 'vglob', vglob 
   mfem_load(mkdsp+mn,1:ndfel)=mfem_load(mkdsp+mn,1:ndfel)-vlocal(1:ndfel)
   DO  j=1,ndf
     al(kdsp1+j,klc)=al(kdsp1+j,klc)+vglob(j)
     al(kdsp2+j,klc)=al(kdsp2+j,klc)+vglob(j+ndf)
   END DO
 END DO
-deallocate(vlocal,vglob,rot,f)
+!deallocate(vlocal,vglob,rot,f)
 RETURN
 END SUBROUTINE mfemgen
 
