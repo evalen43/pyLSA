@@ -518,15 +518,15 @@ END DO
 RETURN
 END SUBROUTINE dloadgen
 
-SUBROUTINE mfemgen(f)
+SUBROUTINE mfemgen()
 !use structvarsgen
 implicit none
 
-real(kind=8) ::  vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel)
+real(kind=8) ::  vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel),f(ndfel)
 real(kind=8) :: wa=0,wb=0,a=0,dl,ra=0,rb=0,rma=0,rmb=0,p=0,b=0
 integer(kind=4) :: n1,n2,kdsp1,kdsp2,mn,i,j,mltype,klc,mkdsp
 !integer(kind=4),INTENT(IN) :: klc
-real(kind=8),INTENT(IN), dimension(:) :: f
+!real(kind=8),INTENT(IN), dimension(:) :: f
 
 
 DO  i=1,nlmem
@@ -567,6 +567,8 @@ dl=elem_prop(i,5)!%elem_len
 
   IF(strutype == '3DFrame') then !GO TO 12
 !    vlocal=rot .mv. f
+    f(1)=0.0; f(2)=-1.0; f(3)=0.0 ;f(4)=0.0; f(5)=0.0 ; f(6)=0.0
+    f(7)=0.0; f(8)=-1.0; f(9)=0.0 ;f(10)=0.0; f(11)=0.0 ; f(12)=0.0 
     vlocal=matmul(rot , f  )  
     vlocal(1)=ra*vlocal(1)
     vlocal(2)=ra*vlocal(2)   
@@ -584,6 +586,7 @@ dl=elem_prop(i,5)!%elem_len
 !    rot=rotmatgen(mn)
     call rotmatgen(mn,rot)    
 !    vlocal=rot .mv. f
+    f(1)=0.0; f(2)=-1.0; f(3)=0.0 ;f(4)=0.0; f(5)=-1.00 ; f(6)=0.0
     vlocal=matmul(rot , f )   
     vlocal(1)=ra*vlocal(1)
     vlocal(2)=ra*vlocal(2)    
