@@ -110,6 +110,7 @@ class StruMod(Unit):
     mat_table=np.zeros((1,1))
     al=np.zeros((1,1))
     ib=np.zeros((1), dtype=int)
+    memload=np.zeros((1))
 
     @staticmethod
     def pipeparam(od,wth):
@@ -400,7 +401,7 @@ class StruMod(Unit):
                             elif lineinput[j] == 'loadtype':
                                 ldtype = lineinput[j+1]
                         k=cls.elemlist.index(memid)    
-                        ldtuple=(2,i,k,p,a,0)
+                        ldtuple=(2,i+1,k+1,p,a,0)
                         cls.memloads.append(ldtuple)                        
             i +=1    
             load=load.GetNext()
