@@ -111,7 +111,7 @@ class StruMod(Unit):
     mat_table=np.zeros((1,1))
     al=np.zeros((1,1))
     ib=np.zeros((1), dtype=int)
-    mfemload=np.zeros((1,1))
+    #mfemload=np.zeros((1,1))
 
     @staticmethod
     def pipeparam(od,wth):

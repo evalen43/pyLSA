@@ -11,7 +11,8 @@ import wx.xrc
 import wx.dataview as dv
 #from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 import os
-from wx_evci_mod import * 
+from wx_evci_mod import StruMod
+import numpy as np
 import pylsa
 
 
@@ -282,6 +283,7 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		event.Skip()
 
 	def RunSolver_click( self, event ):
+		#print (pylsa.stru3d.__doc__)
 		pylsa.stru3d.nn=StruMod.nn
 		pylsa.stru3d.ne = StruMod.ne
 		pylsa.stru3d.nbn = StruMod.nbn
@@ -297,6 +299,7 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		pylsa.stru3d.mat_table=StruMod.mat_table
 		pylsa.stru3d.tk=np.zeros((StruMod.n,StruMod.ms))
 		pylsa.stru3d.fm_dload=np.zeros((StruMod.ne,StruMod.ndfel))
+		pylsa.stru3d.mfem_load=np.zeros(StruMod.ne*StruMod.nlc)
 		pylsa.stru3d.al=StruMod.al
 		pylsa.stru3d.mfem_param=StruMod.mfemload
 		pylsa.stru3d.ib=StruMod.ib
@@ -307,7 +310,7 @@ class EVCI_Form ( wx.Frame,StruMod ):
         # 	(pystruct.nn,pystruct.ne,pystruct.nbn,pystruct.n,
         #   	pystruct.ms,pystruct.ndf,pystruct.nne,pystruct.elem_prop))
 		pylsa.stru3d.k_assem()
-		#print (pylsa.stru3d.__doc__)
+
 
 
 	def Help_click( self, event ):

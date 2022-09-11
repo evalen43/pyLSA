@@ -541,11 +541,11 @@ DO  i=1,nlmem
     p=mfem_param(i,4)
     a=mfem_param(i,5)
   endif
-
+write(*,*) p,a
 n1=int(elem_prop(mn,1))!%inc1 nne*(mn-1)
 n2=int(elem_prop(mn,2))!%inc2 
 dl=elem_prop(i,5)!%elem_len 
-
+write(*,*) n1,n2,dl
 !---- COMPUTE MOMENTS VECTOR ORIENTATION ---
 
   kdsp1=ndf*(n1-1)
@@ -595,7 +595,7 @@ dl=elem_prop(i,5)!%elem_len
     vlocal(5)=ra*vlocal(5)
     vlocal(6)=rmb
   end if !41    CONTINUE
-  mkdsp=ne*(nlc-1)
+  mkdsp=ne*(klc-1)
 !  vglob=transpose(rot) .mv. vlocal
   vglob=matmul(transpose(rot) , vlocal ) 
   mfem_load(mkdsp+mn,1:ndfel)=mfem_load(mkdsp+mn,1:ndfel)-vlocal(1:ndfel)
