@@ -522,12 +522,12 @@ SUBROUTINE mfemgen()
 !use structvarsgen
 implicit none
 
-real(kind=8) ::  vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel),f(ndfel)
+real(kind=8),allocatable ::  vlocal(:),vglob(:),rot(:,:),f(:)
 real(kind=8) :: wa=0,wb=0,a=0,dl,ra=0,rb=0,rma=0,rmb=0,p=0,b=0
 integer(kind=4) :: n1,n2,kdsp1,kdsp2,mn,i,j,mltype,klc,mkdsp
 !integer(kind=4),INTENT(IN) :: klc
 !real(kind=8),INTENT(IN), dimension(:) :: f
-
+allocate(vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel),f(ndfel))
 
 DO  i=1,nlmem
   mltype=int(mfem_param(i,1))
@@ -544,7 +544,8 @@ DO  i=1,nlmem
 write(*,*) p,a
 n1=int(elem_prop(mn,1))!%inc1 nne*(mn-1)
 n2=int(elem_prop(mn,2))!%inc2 
-dl=elem_prop(i,5)!%elem_len 
+dl=elem_prop(i,5)!%elem_len
+a=a*dl 
 write(*,*) n1,n2,dl
 !---- COMPUTE MOMENTS VECTOR ORIENTATION ---
 
@@ -584,26 +585,30 @@ write(*,*) n1,n2,dl
     vlocal(12)=rmb*vlocal(12)
   else if(strutype == '2DFrame') then!GO TO 41
 !    rot=rotmatgen(mn)
-    call rotmatgen(mn,rot)    
+    call rotmatgen(mn,rot) 
+    write(*,*) rot   
 !    vlocal=rot .mv. f
     f(1)=0.0; f(2)=-1.0; f(3)=0.0 ;f(4)=0.0; f(5)=-1.00 ; f(6)=0.0
     vlocal=matmul(rot , f )   
     vlocal(1)=ra*vlocal(1)
     vlocal(2)=ra*vlocal(2)    
     vlocal(3)=-rma
-    vlocal(4)=ra*vlocal(4)
-    vlocal(5)=ra*vlocal(5)
+    vlocal(4)=rb*vlocal(4)
+    vlocal(5)=rb*vlocal(5)
     vlocal(6)=rmb
   end if !41    CONTINUE
   mkdsp=ne*(klc-1)
 !  vglob=transpose(rot) .mv. vlocal
-  vglob=matmul(transpose(rot) , vlocal ) 
+  vglob=matmul(transpose(rot) , vlocal )
+  write(*,*) vlocal
+  write(*,*) vglob 
   mfem_load(mkdsp+mn,1:ndfel)=mfem_load(mkdsp+mn,1:ndfel)-vlocal(1:ndfel)
   DO  j=1,ndf
     al(kdsp1+j,klc)=al(kdsp1+j,klc)+vglob(j)
     al(kdsp2+j,klc)=al(kdsp2+j,klc)+vglob(j+ndf)
   END DO
 END DO
+deallocate(vlocal,vglob,rot,f)
 RETURN
 END SUBROUTINE mfemgen
 

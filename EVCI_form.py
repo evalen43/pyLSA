@@ -310,6 +310,7 @@ class EVCI_Form ( wx.Frame,StruMod ):
         # 	(pystruct.nn,pystruct.ne,pystruct.nbn,pystruct.n,
         #   	pystruct.ms,pystruct.ndf,pystruct.nne,pystruct.elem_prop))
 		pylsa.stru3d.k_assem()
+		print(pylsa.stru3d.tk)
 
 
 
