@@ -10,9 +10,9 @@ real(kind=8),INTENT(IN), dimension(:) :: f
 
 
 DO  i=1,nlmem
-  mltype=fem_param(i,1)
-  klc=fem_param(i,2)
-  mn=mfem_param(i,3)!%mem_no
+  mltype=int(mfem_param(i,1))
+  klc=int(mfem_param(i,2))
+  mn=int(mfem_param(i,3))!%mem_no
   if(mltype==1) then
     wa=mfem_param(i,4)!%wa 
     wb=mfem_param(i,5)!%wb 

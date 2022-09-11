@@ -130,7 +130,7 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		self.m_menubar1 = wx.MenuBar( 0 )
 		self.m_menubar1.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNTEXT ) )
 		self.m_menubar1.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_ACTIVEBORDER ) )
-# Menu
+
 		self.File_mnu = wx.Menu()
 		self.m_Open = wx.MenuItem( self.File_mnu, wx.ID_ANY, u"Open", u"Open Input File", wx.ITEM_NORMAL )
 		self.m_Open.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_FILE_OPEN, wx.ART_MENU ) )
@@ -297,6 +297,7 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		pylsa.stru3d.tk=np.zeros((StruMod.n,StruMod.ms))
 		pylsa.stru3d.fm_dload=np.zeros((StruMod.ne,StruMod.ndfel))
 		pylsa.stru3d.al=StruMod.al
+		pylsa.stru3d.mfem_param=StruMod.mfemload
 		# print('nn= {0}\n ne= {1}\n nbn= {2}\n n= {3}\n ms= {4}\n ndf= {5}\n nne= {6}\n {7}\n'.format
         # 	(pystruct.nn,pystruct.ne,pystruct.nbn,pystruct.n,
         #   	pystruct.ms,pystruct.ndf,pystruct.nne,pystruct.elem_prop))

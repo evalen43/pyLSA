@@ -82,6 +82,7 @@ class StruMod(Unit):
     nlc=0
     nmat=0
     nsec=0
+    nlmem=0
     fyield = 0.0
 
     strutype = ''
@@ -110,7 +111,7 @@ class StruMod(Unit):
     mat_table=np.zeros((1,1))
     al=np.zeros((1,1))
     ib=np.zeros((1), dtype=int)
-    memload=np.zeros((1))
+    mfemload=np.zeros((1,1))
 
     @staticmethod
     def pipeparam(od,wth):
@@ -387,6 +388,7 @@ class StruMod(Unit):
                         cls.nodeloads.append(ldtuple)    
                 if tag2 == 'loaded-members':
                     lines = content2.splitlines()
+                    cls.nlmem=len(lines)
                     for line in lines:
                         p = 0.0;a = 0.0;mz = 0.0
                         line = line.replace("=", " ")
@@ -400,8 +402,18 @@ class StruMod(Unit):
                                 a = float(lineinput[j+1])*scaleL
                             elif lineinput[j] == 'loadtype':
                                 ldtype = lineinput[j+1]
-                        k=cls.elemlist.index(memid)    
-                        ldtuple=(2,i+1,k+1,p,a,0)
+                            elif lineinput[j]=='wa': 
+                                wa=float(lineinput[j+1])*scaleF
+                            elif lineinput[j]=='wb': 
+                                wb=float(lineinput[j+1])*scaleF                                                                
+                        k=cls.elemlist.index(memid)
+                        ltype=0
+                        if(ldtype=='pload'):
+                            ltype=2
+                            ldtuple=(ltype,i+1,k+1,p,a,0)                            
+                        if(ldtype=='wload'):
+                            ltype=1                                
+                            ldtuple=(ltype,i+1,k+1,wa,wb,a)
                         cls.memloads.append(ldtuple)                        
             i +=1    
             load=load.GetNext()
@@ -455,6 +467,8 @@ class StruMod(Unit):
                 cls.loading(content,child)
                 fileout.write('Number of Loading Cases: {0}\n {1}\n {2}\n'.format(cls.nlc,cls.nodeloads,cls.memloads))
                 cls.al=np.zeros((cls.n,cls.nlc))
+                cls.mfemload=np.reshape(cls.memloads,(cls.nlmem,6))
+                print(cls.mfemload)
 
                 for nload in cls.nodeloads:
                     n1=nload[1]

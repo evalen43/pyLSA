@@ -100,46 +100,46 @@ case('2dframe')
     kelst(6,5) =kelst(5,6)
     kelst(6,6) =kelst(3,3)
 case('3dframe')
-        kelst(1, 1) = eax / d                 !(0,0)
-        kelst(7, 1) = -eax / d                !(6,0) 
-        kelst(2, 2) = 12.0 * eiz / d**3       !(1,1)
-        kelst(6, 2) = 6.0 * eiz / d**2        !(5,1)
-        kelst(8, 2) = -12.0 * eiz / d ** 3    !(7,1)
-        kelst(12, 2) = 6.0 * eiz / d ** 2     !(11,1)
-        kelst(3, 3) = 12.0 * eiy / d ** 3     !(2,2)
-        kelst(5, 3) = -6.0 * eiy / d ** 2     !(4,2)
-        kelst(9, 3) = -12.0 * eiy / d ** 3    !(8,2)
-        kelst(11, 3) = -6.0 * eiy / d ** 2    !(10,2)
-        kelst(4, 4) = gix / d                 !(3,3)
-        kelst(10, 4) = -gix / d               !(9,3)
-        kelst(3, 5) = -6.0 * eiy / d ** 2     !(2,4)
-        kelst(5, 5) = 4.0 * eiy / d           !(4,4)
-        kelst(9, 5) = 6.0 * eiy / d ** 2      !(8,4)
-        kelst(11, 5) = 2.0 * eiy / d          !(10,4)
-        kelst(2, 6) = 6.0 * eiz / d ** 2      !(1,5)
-        kelst(6, 6) = 4.0 * eiz / d           !(5,5)
-        kelst(8, 6) = -6.0 * eiz / d ** 2     !(7,5)
-        kelst(12, 6) = 2.0 * eiz / d          !(11,5)
-        kelst(1, 7) = -eax / d                !(0,6)
-        kelst(7, 7) = eax / d                 !(6,6)
-        kelst(2, 8) = -12.0 * eiz / d ** 3    !(1,7)
-        kelst(6, 8) = -6.0 * eiz / d ** 2     !(5,7)
-        kelst(8, 8) = 12.0 * eiz / d ** 3     !(7,7)
-        kelst(12, 8) = -6.0 * eiz / d ** 2    !(11,7)
-        kelst(3, 9) = -12.0 * eiy / d ** 3    !(2,8)
-        kelst(5, 9) = 6.0 * eiy / d ** 2      !(4,8)
-        kelst(9, 9) = 12.0 * eiy / d ** 3     !(8,8)
-        kelst(11, 9) = 6.0 * eiy / d ** 2     !(10,8)
-        kelst(4, 10) = -gix / d               !(3,9)
-        kelst(10, 10) = gix / d               !(9,9)
-        kelst(3, 11) = -6.0 * eiy / d ** 2    !(2,10)
-        kelst(5, 11) = 2.0 * eiy / d          !(4,10)
-        kelst(9, 11) = 6.0 * eiy / d ** 2     !(8,10)
-        kelst(11, 11) = 4.0 * eiy / d         !(10,10)
-        kelst(2, 12) = 6.0 * eiz / d ** 2     !(1,11)
-        kelst(6, 12) = 2.0 * eiz / d          !(5,11)
-        kelst(8, 12) = -6.0 * eiz / d ** 2    !(7,11)
-        kelst(12, 12) = 4.0 * eiz / d         !(11,11)   
+    kelst(1, 1) = eax / d                 !(0,0)
+    kelst(7, 1) = -eax / d                !(6,0) 
+    kelst(2, 2) = 12.0 * eiz / d**3       !(1,1)
+    kelst(6, 2) = 6.0 * eiz / d**2        !(5,1)
+    kelst(8, 2) = -12.0 * eiz / d ** 3    !(7,1)
+    kelst(12, 2) = 6.0 * eiz / d ** 2     !(11,1)
+    kelst(3, 3) = 12.0 * eiy / d ** 3     !(2,2)
+    kelst(5, 3) = -6.0 * eiy / d ** 2     !(4,2)
+    kelst(9, 3) = -12.0 * eiy / d ** 3    !(8,2)
+    kelst(11, 3) = -6.0 * eiy / d ** 2    !(10,2)
+    kelst(4, 4) = gix / d                 !(3,3)
+    kelst(10, 4) = -gix / d               !(9,3)
+    kelst(3, 5) = -6.0 * eiy / d ** 2     !(2,4)
+    kelst(5, 5) = 4.0 * eiy / d           !(4,4)
+    kelst(9, 5) = 6.0 * eiy / d ** 2      !(8,4)
+    kelst(11, 5) = 2.0 * eiy / d          !(10,4)
+    kelst(2, 6) = 6.0 * eiz / d ** 2      !(1,5)
+    kelst(6, 6) = 4.0 * eiz / d           !(5,5)
+    kelst(8, 6) = -6.0 * eiz / d ** 2     !(7,5)
+    kelst(12, 6) = 2.0 * eiz / d          !(11,5)
+    kelst(1, 7) = -eax / d                !(0,6)
+    kelst(7, 7) = eax / d                 !(6,6)
+    kelst(2, 8) = -12.0 * eiz / d ** 3    !(1,7)
+    kelst(6, 8) = -6.0 * eiz / d ** 2     !(5,7)
+    kelst(8, 8) = 12.0 * eiz / d ** 3     !(7,7)
+    kelst(12, 8) = -6.0 * eiz / d ** 2    !(11,7)
+    kelst(3, 9) = -12.0 * eiy / d ** 3    !(2,8)
+    kelst(5, 9) = 6.0 * eiy / d ** 2      !(4,8)
+    kelst(9, 9) = 12.0 * eiy / d ** 3     !(8,8)
+    kelst(11, 9) = 6.0 * eiy / d ** 2     !(10,8)
+    kelst(4, 10) = -gix / d               !(3,9)
+    kelst(10, 10) = gix / d               !(9,9)
+    kelst(3, 11) = -6.0 * eiy / d ** 2    !(2,10)
+    kelst(5, 11) = 2.0 * eiy / d          !(4,10)
+    kelst(9, 11) = 6.0 * eiy / d ** 2     !(8,10)
+    kelst(11, 11) = 4.0 * eiy / d         !(10,10)
+    kelst(2, 12) = 6.0 * eiz / d ** 2     !(1,11)
+    kelst(6, 12) = 2.0 * eiz / d          !(5,11)
+    kelst(8, 12) = -6.0 * eiz / d ** 2    !(7,11)
+    kelst(12, 12) = 4.0 * eiz / d         !(11,11)   
 !    call printmatrix(kelst,"kelst")
 end select
 
@@ -201,7 +201,7 @@ select case ( strutype )
     rot(2,2)=cx
     rot(3,3)=1.0
   case ('3dframe')
- 
+
     if(cxz /= 0.) then 
     rot(1,1)=cx
     rot(1,2)=cy
@@ -246,7 +246,7 @@ integer(kind=4) :: n1,n2,kc,kr,i1,i2,i,j1,j,j2,k,ic9,k2=0,k1=0, ki,l
 integer(kind=4),intent(in) :: con(:)
 real(kind=8),intent(in) :: elst(:,:)
 !real(kind=8), intent(inout) :: tk(:,:)
- 
+
 do  i=1,nne
   n1 =con(i)
   i1 =ndf*(i-1)
@@ -518,25 +518,91 @@ END DO
 RETURN
 END SUBROUTINE dloadgen
 
-! ! -----------------------
-! ! Multiply Matrix * Vector
-! ! -----------------------
-! FUNCTION matvec (mat, v) result (r)
-! implicit none
+SUBROUTINE mfemgen(f)
+!use structvarsgen
+implicit none
 
-! real(kind=8), dimension(:,:), INTENT(IN) :: mat
-! real(kind=8), dimension(:), INTENT(IN) :: v
-! real(kind=8), dimension( SIZE(mat,1) ) :: r
+real(kind=8) ::  vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel)
+real(kind=8) :: wa=0,wb=0,a=0,dl,ra=0,rb=0,rma=0,rmb=0,p=0,b=0
+integer(kind=4) :: n1,n2,kdsp1,kdsp2,mn,i,j,mltype,klc,mkdsp
+!integer(kind=4),INTENT(IN) :: klc
+real(kind=8),INTENT(IN), dimension(:) :: f
 
-! integer :: i
-! integer :: m
 
-! m = SIZE(v)
+DO  i=1,nlmem
+  mltype=int(mfem_param(i,1))
+  klc=int(mfem_param(i,2))
+  mn=int(mfem_param(i,3))!%mem_no
+  if(mltype==1) then
+    wa=mfem_param(i,4)!%wa 
+    wb=mfem_param(i,5)!%wb 
+    a=mfem_param(i,6)!%a
+  elseif(mltype==2) then
+    p=mfem_param(i,4)
+    a=mfem_param(i,5)
+  endif
 
-! r = 0.0       !! clear whole vector
-! DO i = 1, m
-!     r = r + v(i) * mat( :, i )
-! END DO
-! END FUNCTION
+n1=int(elem_prop(mn,1))!%inc1 nne*(mn-1)
+n2=int(elem_prop(mn,2))!%inc2 
+dl=elem_prop(i,5)!%elem_len 
+
+!---- COMPUTE MOMENTS VECTOR ORIENTATION ---
+
+  kdsp1=ndf*(n1-1)
+  kdsp2=ndf*(n2-1)
+!----- mltype=1 trapezoidal load
+!----- mltype=2 concentrated load    
+  if(mltype==1) then
+    ra=wa*((dl-a)**3)*(dl+a)/(2.*dl**3)
+    rb=((wa+wb)*(dl-a)/2.)- ra
+    rma=wa*((dl-a)**3)*(dl+3.*a)/(12.*dl*dl)
+    rmb=(ra*dl)-((wa*(dl-a)**2)/2.)-((wb-wa)*(dl-a)*(dl-a)/6.)+rma
+  elseif(mltype==2) then
+    b=dl-a
+    ra=p*(3*a+b)*b**2/dl**3
+    rb=p*(a+3*b)*a**2/dl**3
+    rma=p*a*b**2/dl**2
+    rmb=p*b*a**2/dl**2
+  endif  
+
+  IF(strutype == '3DFrame') then !GO TO 12
+!    vlocal=rot .mv. f
+    vlocal=matmul(rot , f  )  
+    vlocal(1)=ra*vlocal(1)
+    vlocal(2)=ra*vlocal(2)   
+    vlocal(3)=ra*vlocal(3)
+    vlocal(4)=-rma*vlocal(4)
+    vlocal(5)=-rma*vlocal(5)
+    vlocal(6)=-rma*vlocal(6)
+    vlocal(7)=ra*vlocal(7)
+    vlocal(8)=ra*vlocal(8)
+    vlocal(9)=ra*vlocal(9)
+    vlocal(10)=rmb*vlocal(10)
+    vlocal(11)=rmb*vlocal(11)
+    vlocal(12)=rmb*vlocal(12)
+  else if(strutype == '2DFrame') then!GO TO 41
+!    rot=rotmatgen(mn)
+    call rotmatgen(mn,rot)    
+!    vlocal=rot .mv. f
+    vlocal=matmul(rot , f )   
+    vlocal(1)=ra*vlocal(1)
+    vlocal(2)=ra*vlocal(2)    
+    vlocal(3)=-rma
+    vlocal(4)=ra*vlocal(4)
+    vlocal(5)=ra*vlocal(5)
+    vlocal(6)=rmb
+  end if !41    CONTINUE
+  mkdsp=ne*(nlc-1)
+!  vglob=transpose(rot) .mv. vlocal
+  vglob=matmul(transpose(rot) , vlocal ) 
+  mfem_load(mkdsp+mn,1:ndfel)=mfem_load(mkdsp+mn,1:ndfel)-vlocal(1:ndfel)
+  DO  j=1,ndf
+    al(kdsp1+j,klc)=al(kdsp1+j,klc)+vglob(j)
+    al(kdsp2+j,klc)=al(kdsp2+j,klc)+vglob(j+ndf)
+  END DO
+END DO
+RETURN
+END SUBROUTINE mfemgen
+
 
 end module stru3d
