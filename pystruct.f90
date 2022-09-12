@@ -408,7 +408,7 @@ END DO
 !---COMPUTE LAST UNKNOWN
 
 IF(ABS(tk(n,1))-.000001 <= 0.0) THEN
-  WRITE(fileout_unit,'("**** SINGULARITY IN ROW",i5,1X,"****")') n
+  WRITE(fileout_unit,'("**** Back substitution: SINGULARITY IN ROW",i5,1X,"****")') n
   kerr=.false.
   !call printmatrix(tk,"Stiff")  
 !  call exit(1)

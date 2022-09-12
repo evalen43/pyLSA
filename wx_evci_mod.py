@@ -337,7 +337,8 @@ class StruMod(Unit):
         StruMod.ms=cls.ndf*(ms+1)
         StruMod.ndfel=cls.nne*cls.ndf
         cls.elem_prop=elem_prop
-        cls.elem_prop_arr=np.reshape(elem_prop,newshape=(cls.ne,7))    
+        cls.elem_prop_arr=np.reshape(elem_prop,newshape=(cls.ne,7))
+        print(cls.elem_prop_arr)    
     
     @classmethod
     def boundary(cls,content,child):
@@ -479,6 +480,7 @@ class StruMod(Unit):
                 fileout.write('Number of Loading Cases: {0}\n Loaded Nodes: {1}\n Loaded Members: {2}\n'.format(
                     cls.nlc, cls.nlnodes, cls.nlmem))
                 cls.al=np.zeros((cls.n,cls.nlc))
+                cls.reac=np.zeros((cls.n,cls.nlc))
                 cls.mfemload=np.reshape(cls.memloads,(cls.nlmem,7))
                 #print(cls.mfemload)
 
