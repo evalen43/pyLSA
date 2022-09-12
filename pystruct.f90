@@ -58,7 +58,7 @@ imat=int(elem_prop(nel,4))!%mat_no
 isec=int(elem_prop(nel,3))!%sec_no
 d=elem_prop(nel,5)!%elem_len
 
-eax=mat_table(imat,1)*sec_table(isec,1)!%emod*sec_table(isec,1)!%ax
+eax=mat_table(imat,1)*sec_table(isec,2)!%emod*sec_table(isec,1)!%ax
 eiz=mat_table(imat,1)*sec_table(isec,4)!%iz
 eiy=mat_table(imat,1)*sec_table(isec,8)!%iy
 gix=mat_table(imat,1)*sec_table(isec,12)!%ix

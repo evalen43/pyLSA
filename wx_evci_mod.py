@@ -285,6 +285,7 @@ class StruMod(Unit):
                         item = tuple(y)
                         cls.sections.append(item)
         cls.sections_arr=np.reshape(cls.sections,newshape=(cls.nsec,12))
+        print(cls.sections_arr)
     @staticmethod
     def nodes(content,child):
         coor=[]
