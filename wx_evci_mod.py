@@ -1,9 +1,11 @@
-from os.path import abspath,expanduser
-import xml.etree.ElementTree as ET
-import wx.xml
-import sqlite3
 import math
+import sqlite3
+import xml.etree.ElementTree as ET
+from os.path import abspath, expanduser
+
 import numpy as np
+import wx.xml
+
 #import scipy
 #import wx.dataview
 
@@ -255,7 +257,7 @@ class StruMod(Unit):
                 #y.insert(0,secid)
                 #y.insert(1,"Tube")
                 #section=tuple(y)
-                print(section)
+                #print(section)
                 cls.sections.append(tuple(section))
             elif sectype == 'EDI':
                 edi = lineinput[2]
@@ -286,7 +288,7 @@ class StruMod(Unit):
                         item = tuple(y)
                         cls.sections.append(item)
         cls.sections_arr=np.reshape(cls.sections,newshape=(cls.nsec,12))
-        print(cls.sections_arr)
+        #print(cls.sections_arr)
     @staticmethod
     def nodes(content,child):
         coor=[]
@@ -340,7 +342,7 @@ class StruMod(Unit):
         StruMod.ndfel=cls.nne*cls.ndf
         cls.elem_prop=elem_prop
         cls.elem_prop_arr=np.reshape(elem_prop,newshape=(cls.ne,7))
-        print(cls.elem_prop_arr)    
+        #print(cls.elem_prop_arr)    
     
     @classmethod
     def boundary(cls,content,child):

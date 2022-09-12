@@ -6,15 +6,16 @@
 ###########################################################################
 
 
-import wx
-import wx.xrc
-import wx.dataview as dv
 #from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 import os
-from wx_evci_mod import StruMod
-import numpy as np
-import pylsa
 
+import numpy as np
+import wx
+import wx.dataview as dv
+import wx.xrc
+
+import pylsa
+from wx_evci_mod import StruMod
 
 ###########################################################################
 ## Class EVCI_Form
@@ -299,8 +300,10 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		pylsa.stru3d.sec_table=StruMod.sections_arr
 		pylsa.stru3d.mat_table=StruMod.mat_table
 		pylsa.stru3d.tk=np.zeros((StruMod.n,StruMod.ms))
-		pylsa.stru3d.fm_dload=np.zeros((StruMod.ne,StruMod.ndfel))
+		pylsa.stru3d.fem_dload=np.zeros((StruMod.ne,StruMod.ndfel))
 		pylsa.stru3d.mfem_load=np.zeros(StruMod.ne*StruMod.nlc)
+		pylsa.stru3d.intforc=np.zeros(StruMod.ne*StruMod.nlc*StruMod.ndfel)
+
 		pylsa.stru3d.al=StruMod.al
 		pylsa.stru3d.reac=StruMod.reac
 		pylsa.stru3d.mfem_param=StruMod.mfemload
@@ -314,6 +317,7 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		pylsa.stru3d.k_assem()
 		pylsa.stru3d.boundgen()
 		pylsa.stru3d.bgaussgen()
+		pylsa.stru3d.forcegen()
 		print(pylsa.stru3d.al)
 		#print(pylsa.stru3d.tk)
 
