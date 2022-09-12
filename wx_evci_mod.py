@@ -251,11 +251,12 @@ class StruMod(Unit):
                         wth = float(lineinput[i+1])*scaleL
                     i += 1
                 section = StruMod.pipeparam(od, wth)
-                y=list(section)
+                #y=list(section)
                 #y.insert(0,secid)
                 #y.insert(1,"Tube")
-                section=tuple(y)
-                cls.sections.append(section)
+                #section=tuple(y)
+                print(section)
+                cls.sections.append(tuple(section))
             elif sectype == 'EDI':
                 edi = lineinput[2]
                 # Connecto to database
