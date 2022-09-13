@@ -90,6 +90,7 @@ class StruMod(Unit):
 
     strutype = ''
     projName=''
+    exampletitle=''
     materials = []
     sections = []
 
@@ -450,8 +451,8 @@ class StruMod(Unit):
             tagname = child.GetName()
             content = child.GetNodeContent()  # process text enclosed by tag1/tag1
             if tagname == "title":
-                projName=content
-                fileout.write('Project Name: {0}\n'.format(projName))
+                cls.exampletitle=str(content).ljust(80)
+                fileout.write('Project Name: {0}\n'.format(cls.exampletitle))
             elif tagname == "code":
                 (code, StruMod.fyield)=cls.code(content,child)
                 fileout.write('Code {0} Fy= {1:.2f}\n'.format(code,StruMod.fyield))
