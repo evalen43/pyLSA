@@ -296,6 +296,7 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		pylsa.stru3d.nlmem=StruMod.nlmem
 		pylsa.stru3d.nlc=StruMod.nlc
 		pylsa.stru3d.strutype = StruMod.strutype
+		pylsa.stru3d.nodelist=np.array(StruMod.nodelist)
 		pylsa.stru3d.elem_prop = StruMod.elem_prop_arr
 		pylsa.stru3d.sec_table=StruMod.sections_arr
 		pylsa.stru3d.mat_table=StruMod.mat_table

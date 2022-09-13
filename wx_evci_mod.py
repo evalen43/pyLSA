@@ -302,7 +302,7 @@ class StruMod(Unit):
         for line in lines:
             #line = line.replace("=", " ")
             lineinput = line.split()
-            nodelist.append(lineinput[0])
+            nodelist.append(str(lineinput[0]).ljust(10))
             nodex=float(lineinput[1])*scaleL
             nodey=float(lineinput[2])*scaleL
             if len(lineinput) >3:
@@ -322,8 +322,8 @@ class StruMod(Unit):
         for line in lines:
             lineinput = line.split()
             cls.elemlist.append(lineinput[0])
-            inc1=cls.nodelist.index(lineinput[1])
-            inc2=cls.nodelist.index(lineinput[2])
+            inc1=cls.nodelist.index(str(lineinput[1]).ljust(10))
+            inc2=cls.nodelist.index(str(lineinput[2]).ljust(10))
             j=abs(inc1-inc2)
             if ms<j: ms=j
             secid=cls.seclist.index(lineinput[3])
@@ -350,7 +350,7 @@ class StruMod(Unit):
         cls.nbn=len(lines)
         for line in lines:
             lineinput = line.split()
-            bnodeid=lineinput[0]
+            bnodeid=str(lineinput[0]).ljust(10)
             #jbn=cls.nodelist.index(bnodeid)
             cls.bndlist.append(bnodeid)
             bntype=lineinput[1]
@@ -384,7 +384,7 @@ class StruMod(Unit):
                         lineinput = line.split()
                         for j in range(len(lineinput)):
                             if  lineinput[j] =='nodeid':
-                                nodeid = lineinput[j+1]
+                                nodeid = str(lineinput[j+1]).ljust(10)
                             elif lineinput[j]=='Px': 
                                 px=float(lineinput[j+1])*scaleF
                             elif lineinput[j] == 'Py':

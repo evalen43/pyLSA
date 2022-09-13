@@ -7,6 +7,7 @@ real(kind=8), allocatable :: tk(:,:),elem_prop(:,:),mat_table(:,:), &
   sec_table(:,:),al(:,:),reac(:,:),fem_dload(:,:),mfem_load(:,:), &
   mfem_param(:,:),intforc(:)
 integer(kind=4),allocatable :: ib(:) 
+character(len=10), public, dimension(:), allocatable :: nodelist
 logical, public :: kerr 
 
 ! interface operator(.mv.)
