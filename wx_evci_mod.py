@@ -117,7 +117,7 @@ class StruMod(Unit):
     reac=np.zeros((1,1))
     ib=np.zeros((1), dtype=int)
     mfem_param=np.zeros((1,1))
-    node_list=np.empty((1,10))
+    node_list=np.empty((1,10), dtype='S10')
 
     @staticmethod
     def pipeparam(od,wth):

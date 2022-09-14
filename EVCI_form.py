@@ -300,8 +300,10 @@ class EVCI_Form ( wx.Frame,sm ):
 		pylsa.stru3d.kip=1
 		pylsa.stru3d.strutype = sm.strutype
 		pylsa.stru3d.exampletitle=sm.exampletitle
-		pylsa.stru3d.nodelist=sm.node_list #np.array(sm.nodelist)#,newshape=(sm.nn,10))
+		#pylsa.stru3d.nodelist=sm.node_list #np.array(sm.nodelist)#,newshape=(sm.nn,10))
 
+
+		pylsa.stru3d.nodelist=np.core.defchararray.asarray(sm.nodelist,itemsize=10,unicode=True)
 		#pylsa.stru3d.nodelist = sm.nodelist
 		print(np.array(sm.nodelist))
 		pylsa.stru3d.elem_prop = sm.elem_prop_arr

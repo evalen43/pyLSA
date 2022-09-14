@@ -46,12 +46,9 @@ end subroutine k_assem
 ! -----------------------
 ! element stiffness matrix
 ! -----------------------
-!function elem_stiff(nel,ndfel,elem_prop,mat_table,sec_table) result(kelst) !bind(c,name='elem_stiff')
-subroutine elem_stiff(nel,kelst)!,mat_table,sec_table,kelst)
+subroutine elem_stiff(nel,kelst)
 implicit none
-
 integer(kind=4),intent(in) :: nel
-!real(kind=8), intent(in) :: mat_table(:,:),sec_table(:,:)
 integer(kind=4) :: isec,imat
 real(kind=8) :: eiz,eax,d,eiy,gix
 real(kind=8),intent(inout) :: kelst(:,:) 
@@ -146,16 +143,13 @@ case('Frame3D')
 end select
 
 return
-!end function elem_stiff
 end subroutine elem_stiff
 
 ! -----------------------
 ! Element Rotation Matrix
 ! -----------------------
-!function rotmatgen(nel,ndfel,elem_prop) result(rot) !bind(c,name='rotmatgen')
-subroutine rotmatgen(nel,rot) !bind(c,name='rotmatgen')
+subroutine rotmatgen(nel,rot) 
 implicit none
-!real(kind=8), intent(in) :: elem_prop(:,:)
 real(kind=8), intent(inout)  :: rot(:,:)
 integer(kind=4), intent(in) :: nel
 real(kind=8) :: dt,beta,cx,cy,cz,cxz
@@ -230,7 +224,6 @@ do  i=1,ndf
   end do
 end do
 
-!end function rotmatgen
 end subroutine rotmatgen
 
 ! -----------------------
@@ -630,7 +623,7 @@ SUBROUTINE forcegen()
 IMPLICIT NONE
 REAL(kind=8), DIMENSION(ndfel) :: u,f,ul,fg
 REAL(kind=8), DIMENSION(ndfel,ndfel) :: rot,elst
-INTEGER(kind=4) :: klc,n1,n2,lc,nel,k1,k2,j1,j2,i,i1,i2,j,mkdsp
+INTEGER(kind=4) :: klc,n1,n2,lc,nel,k1,k2,j1,j2,i,i1,i2,mkdsp
 
 !lc=size(al,2)
 
@@ -644,9 +637,7 @@ mkdsp=ne*(klc-1)
     !rot=rotmatgen(nel)
     call rotmatgen(nel,rot)
     !call printmatrix(rot,"rot")
-    ! do i=1,ndfel
-    !   write(fileout_unit,'(*(f15.2))') (rot(i,j),j=1,ndfel)
-    ! enddo
+
     k1=ndf*(n1-1)
     k2=ndf*(n2-1)
     DO  i=1,ndf
