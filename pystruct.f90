@@ -701,12 +701,9 @@ END SUBROUTINE forcegen
 
 SUBROUTINE outptgen()
 use iso_fortran_env
-!use structvarsgen, nodename => nodestring
 IMPLICIT NONE
-
 INTEGER(kind=4) :: k,k2,k1,klc
-INTEGER(kind=4) :: i,j,nel,j1,l1,no,n1,kip,slen,kiter
-!CHARACTER*80 :: line
+INTEGER(kind=4) :: i,j,nel,j1,l1,no,n1!,kip,slen,kiter
 CHARACTER(LEN=8), DIMENSION(4,2) ::  dat
 
 
