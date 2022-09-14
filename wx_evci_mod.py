@@ -117,6 +117,7 @@ class StruMod(Unit):
     reac=np.zeros((1,1))
     ib=np.zeros((1), dtype=int)
     mfem_param=np.zeros((1,1))
+    node_list=np.empty((1,10))
 
     @staticmethod
     def pipeparam(od,wth):
@@ -311,7 +312,10 @@ class StruMod(Unit):
             else: 
                 nodez=0.0
             nodes = (nodex, nodey, nodez)
-            coor.append(nodes)  
+            coor.append(nodes)
+        StruMod.node_list=np.array((StruMod.nn,10))
+        for i in range(StruMod.nn):
+            StruMod.node_list[i]=nodelist[i]      
         return nn,n,coor,nodelist
     
     @classmethod

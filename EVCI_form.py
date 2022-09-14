@@ -15,13 +15,13 @@ import wx.dataview as dv
 import wx.xrc
 
 import pylsa
-from wx_evci_mod import StruMod
+from wx_evci_mod import StruMod as sm
 
 ###########################################################################
 ## Class EVCI_Form
 ###########################################################################
 
-class EVCI_Form ( wx.Frame,StruMod ):
+class EVCI_Form ( wx.Frame,sm ):
     
 
 
@@ -270,7 +270,7 @@ class EVCI_Form ( wx.Frame,StruMod ):
 			fname = f.name
 			self.SetStatusText(fname)
 			self.m_statusBar1.SetStatusText(fname)
-			StruMod.XML_reader(fname)
+			sm.XML_reader(fname)
 			fileout = open("output.txt", 'r')
 			self.m_textlog.SetValue(fileout.read())
 			fileout.close()
@@ -285,38 +285,38 @@ class EVCI_Form ( wx.Frame,StruMod ):
 
 	def RunSolver_click( self, event ):
 		#print (pylsa.stru3d.__doc__)
-		pylsa.stru3d.nn=StruMod.nn
-		pylsa.stru3d.ne = StruMod.ne
-		pylsa.stru3d.nbn = StruMod.nbn
-		pylsa.stru3d.n = StruMod.n
-		pylsa.stru3d.ms = StruMod.ms
-		pylsa.stru3d.ndf = StruMod.ndf
-		pylsa.stru3d.nne = StruMod.nne
-		pylsa.stru3d.ndfel=StruMod.ndfel
-		pylsa.stru3d.nlmem=StruMod.nlmem
-		pylsa.stru3d.nlc=StruMod.nlc
+		pylsa.stru3d.nn=sm.nn
+		pylsa.stru3d.ne = sm.ne
+		pylsa.stru3d.nbn = sm.nbn
+		pylsa.stru3d.n = sm.n
+		pylsa.stru3d.ms = sm.ms
+		pylsa.stru3d.ndf = sm.ndf
+		pylsa.stru3d.nne = sm.nne
+		pylsa.stru3d.ndfel=sm.ndfel
+		pylsa.stru3d.nlmem=sm.nlmem
+		pylsa.stru3d.nlc=sm.nlc
 		pylsa.stru3d.kiter=1
 		pylsa.stru3d.slen=1
 		pylsa.stru3d.kip=1
-		pylsa.stru3d.strutype = StruMod.strutype
-		pylsa.stru3d.exampletitle=StruMod.exampletitle
-		pylsa.stru3d.nodelist=np.reshape(StruMod.nodelist,newshape=StruMod.nn)
+		pylsa.stru3d.strutype = sm.strutype
+		pylsa.stru3d.exampletitle=sm.exampletitle
+		pylsa.stru3d.nodelist=sm.node_list #np.array(sm.nodelist)#,newshape=(sm.nn,10))
 
-		#pylsa.stru3d.nodelist = StruMod.nodelist
-		print(np.array(StruMod.nodelist))
-		pylsa.stru3d.elem_prop = StruMod.elem_prop_arr
-		pylsa.stru3d.sec_table=StruMod.sections_arr
-		pylsa.stru3d.mat_table=StruMod.mat_table
-		pylsa.stru3d.tk=np.zeros((StruMod.n,StruMod.ms))
-		pylsa.stru3d.fem_dload=np.zeros((StruMod.ne,StruMod.ndfel))
-		pylsa.stru3d.mfem_load=np.zeros((StruMod.ne*StruMod.nlc,StruMod.ndfel))
-		pylsa.stru3d.intforc=np.zeros(StruMod.ne*StruMod.nlc*StruMod.ndfel)
+		#pylsa.stru3d.nodelist = sm.nodelist
+		print(np.array(sm.nodelist))
+		pylsa.stru3d.elem_prop = sm.elem_prop_arr
+		pylsa.stru3d.sec_table=sm.sections_arr
+		pylsa.stru3d.mat_table=sm.mat_table
+		pylsa.stru3d.tk=np.zeros((sm.n,sm.ms))
+		pylsa.stru3d.fem_dload=np.zeros((sm.ne,sm.ndfel))
+		pylsa.stru3d.mfem_load=np.zeros((sm.ne*sm.nlc,sm.ndfel))
+		pylsa.stru3d.intforc=np.zeros(sm.ne*sm.nlc*sm.ndfel)
 
-		pylsa.stru3d.al=StruMod.al
-		pylsa.stru3d.reac=StruMod.reac
-		pylsa.stru3d.mfem_param=StruMod.mfem_param
-		pylsa.stru3d.ib=StruMod.ib
-		if(StruMod.nlmem>0): 
+		pylsa.stru3d.al=sm.al
+		pylsa.stru3d.reac=sm.reac
+		pylsa.stru3d.mfem_param=sm.mfem_param
+		pylsa.stru3d.ib=sm.ib
+		if(sm.nlmem>0): 
 			pylsa.stru3d.mfemgen()
 		pylsa.stru3d.k_assem()
 		pylsa.stru3d.boundgen()
@@ -353,7 +353,7 @@ class EVCI_Form ( wx.Frame,StruMod ):
 			fname=f.name 
 			#self.SetStatusText(self,fname)
 			self.m_statusBar1.SetStatusText(fname)
-			StruMod.XML_reader(fname)
+			sm.XML_reader(fname)
 			fileout = open("output.txt", 'r')
 			self.m_textlog.SetValue(fileout.read())
 			fileout.close()
