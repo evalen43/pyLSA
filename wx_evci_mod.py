@@ -116,7 +116,7 @@ class StruMod(Unit):
     al=np.zeros((1,1))
     reac=np.zeros((1,1))
     ib=np.zeros((1), dtype=int)
-    mfemload=np.zeros((1,1))
+    mfem_param=np.zeros((1,1))
 
     @staticmethod
     def pipeparam(od,wth):
@@ -303,7 +303,7 @@ class StruMod(Unit):
         for line in lines:
             #line = line.replace("=", " ")
             lineinput = line.split()
-            nodelist.append(str(lineinput[0]).ljust(10))
+            nodelist.append(lineinput[0].ljust(10))
             nodex=float(lineinput[1])*scaleL
             nodey=float(lineinput[2])*scaleL
             if len(lineinput) >3:
@@ -486,8 +486,8 @@ class StruMod(Unit):
                     cls.nlc, cls.nlnodes, cls.nlmem))
                 cls.al=np.zeros((cls.n,cls.nlc))
                 cls.reac=np.zeros((cls.n,cls.nlc))
-                cls.mfemload=np.reshape(cls.memloads,(cls.nlmem,7))
-                #print(cls.mfemload)
+                cls.mfem_param=np.reshape(cls.memloads,(cls.nlmem,7))
+                #print(cls.mfem_param)
 
                 for nload in cls.nodeloads:
                     n1=nload[1]

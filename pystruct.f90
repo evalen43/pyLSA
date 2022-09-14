@@ -4,7 +4,8 @@ implicit none
 character(len=10), public :: strutype
 character(len=20), public :: PNAME
 character(len=80), public :: exampletitle
-integer(kind=4), public :: ndfel,nn,ne,ndf,nne,n,ms,nbn,nlc,nlmem,fileout_unit
+integer(kind=4), public :: ndfel,nn,ne,ndf,nne,n,ms,nbn,nlc,nlmem, &
+fileout_unit,kiter,slen,kip
 real(kind=8), allocatable :: tk(:,:),elem_prop(:,:),mat_table(:,:), &
   sec_table(:,:),al(:,:),reac(:,:),fem_dload(:,:),mfem_load(:,:), &
   mfem_param(:,:),intforc(:)
@@ -20,30 +21,26 @@ logical, public :: kerr
 contains
 
 !-----------------------
-!K Assem
+!Assembly of Stiffness Matrix
 !-----------------------
-subroutine k_assem()!mat_table,sec_table) !bind(c,name='k_assem')
+subroutine k_assem()
 implicit none
 integer :: nel
-!real(kind=8), intent(in) :: mat_table(:,:),sec_table(:,:)
 real(kind=8), allocatable :: rot(:,:),elst(:,:)
 integer(kind=4) ::con(2)
-!allocate(rot(ndfel,ndfel),elst(ndfel,ndfel),tk(n,ms))
 allocate(rot(ndfel,ndfel),elst(ndfel,ndfel)   )
 do nel=1,ne
     elst=0.0
     rot=0.0
     con(1)=int(elem_prop(nel,1))!%inc1
     con(2) =int(elem_prop(nel,2))!%inc2
-    !elst=elem_stiff(nel,ndfel,mat_table,sec_table)
     call elem_stiff(nel,elst)
-    !rot=rotmatgen(nel,elem_prop)
     call rotmatgen(nel,rot)
     elst=matmul(transpose(rot),matmul(elst,rot))
     call elassgen(elst,con)           
 enddo
 deallocate(rot,elst)
-write(*,'(a35,2x,a10)') "Stiffness Matrix Assembeld for:",strutype 
+!write(*,'(a35,2x,a10)') "Stiffness Matrix Assembeld for:",strutype 
 end subroutine k_assem 
 
 ! -----------------------
@@ -523,18 +520,14 @@ DO  mn=1,NE
 END DO
 RETURN
 END SUBROUTINE dloadgen
-
+!----------- Elements Fixed End Moments
 SUBROUTINE mfemgen()
-!use structvarsgen
 implicit none
 
-!real(kind=8),allocatable ::  vlocal(:),vglob(:),rot(:,:),f(:)
 real(kind=8) ::  vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel),f(ndfel)
 real(kind=8) :: wa=0,wb=0,a=0,dl,ra=0,rb=0,rma=0,rmb=0,p=0,b=0
 integer(kind=4) :: n1,n2,kdsp1,kdsp2,mn,i,j,mltype,klc,mkdsp,kref
-!integer(kind=4),INTENT(IN) :: klc
-!real(kind=8),INTENT(IN), dimension(:) :: f
-!allocate(vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel),f(ndfel))
+
 
 DO  i=1,nlmem
   f=0.0
@@ -630,17 +623,20 @@ END DO
 !deallocate(vlocal,vglob,rot,f)
 RETURN
 END SUBROUTINE mfemgen
-
+!------------------------------------
+!Internal Forces
+!-------------------------------------
 SUBROUTINE forcegen()
 IMPLICIT NONE
 REAL(kind=8), DIMENSION(ndfel) :: u,f,ul,fg
 REAL(kind=8), DIMENSION(ndfel,ndfel) :: rot,elst
-INTEGER(kind=4) :: klc,n1,n2,lc,nel,k1,k2,j1,j2,i,i1,i2,j
+INTEGER(kind=4) :: klc,n1,n2,lc,nel,k1,k2,j1,j2,i,i1,i2,j,mkdsp
 
 !lc=size(al,2)
 
 reac=0.0
 DO klc=1,nlc
+mkdsp=ne*(klc-1)
   DO nel=1,NE
     rot=0.0
     n1=int(elem_prop(nel,1))!%inc1
@@ -675,7 +671,11 @@ DO klc=1,nlc
       intforc(i2)=f(i)
     END DO
 !-------------    ROTATE MEMBER FORCES TO THE GLOBAL REFERENCE FRAME AND STORE IN ARRAY FG
-    f(1:ndfel)=f(1:ndfel)+fem_dload(nel,1:ndfel)
+    if(nlmem==0) then
+      f(1:ndfel)=f(1:ndfel)+fem_dload(nel,1:ndfel)
+    else  
+      f(1:ndfel)=f(1:ndfel)+fem_dload(nel,1:ndfel)+mfem_load(nel+mkdsp,1:ndfel)
+    end if
     !fg=transpose(rot) .mv. f
     fg=matmul(transpose(rot), f)
     ! write(fileout_unit,'(*(f15.2))') (fg(i),i=1,ndfel)

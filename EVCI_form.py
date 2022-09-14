@@ -295,7 +295,9 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		pylsa.stru3d.ndfel=StruMod.ndfel
 		pylsa.stru3d.nlmem=StruMod.nlmem
 		pylsa.stru3d.nlc=StruMod.nlc
-
+		pylsa.stru3d.kiter=1
+		pylsa.stru3d.slen=1
+		pylsa.stru3d.kip=1
 		pylsa.stru3d.strutype = StruMod.strutype
 		pylsa.stru3d.exampletitle=StruMod.exampletitle
 		pylsa.stru3d.nodelist=np.array(StruMod.nodelist)
@@ -304,24 +306,21 @@ class EVCI_Form ( wx.Frame,StruMod ):
 		pylsa.stru3d.mat_table=StruMod.mat_table
 		pylsa.stru3d.tk=np.zeros((StruMod.n,StruMod.ms))
 		pylsa.stru3d.fem_dload=np.zeros((StruMod.ne,StruMod.ndfel))
-		pylsa.stru3d.mfem_load=np.zeros(StruMod.ne*StruMod.nlc)
+		pylsa.stru3d.mfem_load=np.zeros((StruMod.ne*StruMod.nlc,StruMod.ndfel))
 		pylsa.stru3d.intforc=np.zeros(StruMod.ne*StruMod.nlc*StruMod.ndfel)
 
 		pylsa.stru3d.al=StruMod.al
 		pylsa.stru3d.reac=StruMod.reac
-		pylsa.stru3d.mfem_param=StruMod.mfemload
+		pylsa.stru3d.mfem_param=StruMod.mfem_param
 		pylsa.stru3d.ib=StruMod.ib
 		if(StruMod.nlmem>0): 
 			pylsa.stru3d.mfemgen()
-
-		# print('nn= {0}\n ne= {1}\n nbn= {2}\n n= {3}\n ms= {4}\n ndf= {5}\n nne= {6}\n {7}\n'.format
-        # 	(pystruct.nn,pystruct.ne,pystruct.nbn,pystruct.n,
-        #   	pystruct.ms,pystruct.ndf,pystruct.nne,pystruct.elem_prop))
 		pylsa.stru3d.k_assem()
 		pylsa.stru3d.boundgen()
 		pylsa.stru3d.bgaussgen()
 		pylsa.stru3d.forcegen()
-		print(pylsa.stru3d.al)
+		pylsa.stru3d.outptgen()
+		#print(pylsa.stru3d.al)
 		#print(pylsa.stru3d.tk)
 
 
