@@ -713,11 +713,11 @@ IF(kiter > 0) WRITE(fileout_unit,'("Number of Iterations ",i5)') kiter
 DO  klc=1,nlc
   WRITE(fileout_unit,14) klc,dat(slen,1),dat(kip,2)
 
-14      FORMAT('NODAL DISPLACEMENTS FOR LOADING',i3,2X,/,'ACTIVE UNITS :',2A8)
+14      FORMAT('Nodal Displacements for Loading',i3,2X,/,'Active Units :',2A8)
   IF(strutype == 'Frame3D') WRITE(fileout_unit,13)
-13     FORMAT('NODE',7X,'DX',10X,'DY',10X,'DZ',10X,'ROTX',10X,'ROTY',10X,'ROTZ',/)
+13     FORMAT('Node',7X,'Dx',10X,'Dy',10X,'Dz',10X,'Rotx',10X,'Roty',10X,'Rotz',/)
   IF(strutype == 'Frame2D') WRITE(fileout_unit,41)
-  41    FORMAT('NODE',15X,'DX',10X,'DY',10X,'ROTZ',/)
+  41    FORMAT('Node',15X,'Dx',10X,'Dy',10X,'Rotz',/)
   DO  i=1,nn
     k1=ndf*(i-1)+1
     k2=k1+ndf-1
@@ -731,11 +731,11 @@ END DO
 
 DO  klc=1,nlc
   WRITE(fileout_unit,3) klc,dat(kip,1),dat(slen,2)
-3       FORMAT('NODAL REACTION FOR LOADING',i3,2X,/,'ACTIVE UNITS :',2A8,/)
+3       FORMAT('Nodal Reaction for Loading',i3,2X,/,'Active Units :',2A8,/)
   IF(strutype == 'Frame3D') WRITE(fileout_unit,42)
-42    FORMAT('NODE',5X,'PX',10X,'PY',10X,'PZ',10X,'MX',10X,'MY',10X,'MZ',/)
+42    FORMAT('Node',5X,'Px',10X,'Py',10X,'Pz',10X,'Mx',10X,'My',10X,'Mz',/)
   IF(strutype == 'Frame2D') WRITE(fileout_unit,43)
-  43    FORMAT('NODE',15X,'PX',10X,'PY',15X,'MZ')
+  43    FORMAT('Node',15X,'Px',10X,'Py',15X,'Mz')
   DO  i=1,nbn
     l1=(ndf+1)*(i-1)+1
     no=ib(l1)
