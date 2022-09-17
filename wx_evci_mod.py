@@ -302,7 +302,6 @@ class StruMod(Unit):
         nn=len(lines)
         n=nn*StruMod.ndf
         for line in lines:
-            #line = line.replace("=", " ")
             lineinput = line.split()
             nodelist.append(lineinput[0].ljust(10))
             nodex=float(lineinput[1])*scaleL
@@ -313,9 +312,6 @@ class StruMod(Unit):
                 nodez=0.0
             nodes = (nodex, nodey, nodez)
             coor.append(nodes)
-        #StruMod.node_list=np.array((StruMod.nn,10))
-        # for i in range(StruMod.nn):
-        #     StruMod.node_list[i]=nodelist[i]      
         return nn,n,coor,nodelist
     
     @classmethod
@@ -326,7 +322,7 @@ class StruMod(Unit):
         StruMod.ne=len(lines)
         for line in lines:
             lineinput = line.split()
-            cls.elemlist.append(lineinput[0])
+            cls.elemlist.append(lineinput[0].ljust(10))
             inc1=cls.nodelist.index(str(lineinput[1]).ljust(10))
             inc2=cls.nodelist.index(str(lineinput[2]).ljust(10))
             j=abs(inc1-inc2)
@@ -426,7 +422,7 @@ class StruMod(Unit):
                                     kref = 2
                                 if (sysref == 'globz'):
                                     kref = 3
-                        k=cls.elemlist.index(memid)
+                        k=cls.elemlist.index(memid.ljust(10))
                         ltype=0
                         if(ldtype=='pload'):
                             ltype=2

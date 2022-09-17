@@ -12,6 +12,9 @@ real(kind=8), allocatable :: tk(:,:),elem_prop(:,:),mat_table(:,:), &
 real(kind=8) ::totalwht  
 integer(kind=4),allocatable :: ib(:) 
 character(len=10), public, dimension(:), allocatable :: nodelist
+character(len=1), dimension(:,:), allocatable :: nodebytes
+character(len=10), public, dimension(:), allocatable :: elemlist
+character(len=1), dimension(:,:), allocatable :: elembytes
 logical, public :: kerr 
 
 ! interface operator(.mv.)
@@ -697,7 +700,9 @@ INTEGER(kind=4) :: k,k2,k1,klc
 INTEGER(kind=4) :: i,j,nel,j1,l1,no,n1!,kip,slen,kiter
 CHARACTER(LEN=8), DIMENSION(4,2) ::  dat
 
-
+allocate(nodelist(nn),elemlist(ne))
+nodelist=transfer(nodebytes,nodelist)
+elemlist=transfer(elembytes,elemlist)
 nlc=size(al,2)
 ndfel=nne*ndf
 
@@ -757,7 +762,7 @@ DO  klc=1,nlc
     k1=ndfel*(nel-1)+1+NE*ndfel*(klc-1)
     k2=k1+2
     n1=nne*(nel-1)
-    WRITE(fileout_unit,'(i10,5X,a10,3F15.2)') nel,nodelist(int(elem_prop(nel,1))),(intforc(k),k=k1,k2)  
+    WRITE(fileout_unit,'(a10,5X,a10,3F15.2)') elemlist(nel),nodelist(int(elem_prop(nel,1))),(intforc(k),k=k1,k2)  
     k1=k2+1
     k2=k1+2
     WRITE(fileout_unit,'(i2,13X,a10, 3F15.2)') klc,nodelist(int(elem_prop(nel,2))),(intforc(k),k=k1,k2)    
