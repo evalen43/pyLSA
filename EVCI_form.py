@@ -328,16 +328,15 @@ class EVCI_Form ( wx.Frame,sm ):
 		pylsa.stru3d.bgaussgen()
 		pylsa.stru3d.forcegen()
 		pylsa.stru3d.outptgen()
-		#print(pylsa.stru3d.al)
-		#print(pylsa.stru3d.tk)
-
-
+		f = open("fortran_out.txt", "r")
+		with f:
+			data = f.read()
+			self.m_textfileout.SetValue(data)
 
 	def Help_click( self, event ):
 		event.Skip()
 
 	def Exit_click( self, e ):
-		#event.Skip()
 		if wx.MessageBox("Quit Program?","Please, confirm", wx.ICON_QUESTION | wx.YES_NO,self) == wx.NO:
 			return
 		self.Close()

@@ -17,10 +17,6 @@ character(len=10), public, dimension(:), allocatable :: elemlist
 character(len=1), dimension(:,:), allocatable :: elembytes
 logical, public :: kerr 
 
-! interface operator(.mv.)
-! module procedure matvec
-! end interface
-
 contains
 
 !-----------------------
@@ -700,6 +696,8 @@ INTEGER(kind=4) :: k,k2,k1,klc
 INTEGER(kind=4) :: i,j,nel,j1,l1,no,n1!,kip,slen,kiter
 CHARACTER(LEN=8), DIMENSION(4,2) ::  dat
 
+
+open(unit=fileout_unit,file="fortran_out.txt")
 allocate(nodelist(nn),elemlist(ne))
 nodelist=transfer(nodebytes,nodelist)
 elemlist=transfer(elembytes,elemlist)
@@ -762,7 +760,7 @@ DO  klc=1,nlc
     k1=ndfel*(nel-1)+1+NE*ndfel*(klc-1)
     k2=k1+2
     n1=nne*(nel-1)
-    WRITE(fileout_unit,'(a10,5X,a10,3F15.2)') elemlist(nel),nodelist(int(elem_prop(nel,1))),(intforc(k),k=k1,k2)  
+    WRITE(fileout_unit,'(5X,2a10,3F15.2)') elemlist(nel),nodelist(int(elem_prop(nel,1))),(intforc(k),k=k1,k2)  
     k1=k2+1
     k2=k1+2
     WRITE(fileout_unit,'(i2,13X,a10, 3F15.2)') klc,nodelist(int(elem_prop(nel,2))),(intforc(k),k=k1,k2)    
@@ -770,6 +768,7 @@ DO  klc=1,nlc
   WRITE(fileout_unit,'(80("-"))')
 END DO
 CALL time_now()
+close(fileout_unit)
 RETURN
 END SUBROUTINE outptgen
 
