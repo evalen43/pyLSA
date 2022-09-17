@@ -313,9 +313,9 @@ class StruMod(Unit):
                 nodez=0.0
             nodes = (nodex, nodey, nodez)
             coor.append(nodes)
-        StruMod.node_list=np.array((StruMod.nn,10))
-        for i in range(StruMod.nn):
-            StruMod.node_list[i]=nodelist[i]      
+        #StruMod.node_list=np.array((StruMod.nn,10))
+        # for i in range(StruMod.nn):
+        #     StruMod.node_list[i]=nodelist[i]      
         return nn,n,coor,nodelist
     
     @classmethod

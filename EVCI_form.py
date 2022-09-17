@@ -14,7 +14,7 @@ import wx
 import wx.dataview as dv
 import wx.xrc
 
-import pylsa
+import pylsa 
 from wx_evci_mod import StruMod as sm
 
 ###########################################################################
@@ -27,6 +27,9 @@ class EVCI_Form ( wx.Frame,sm ):
 
 	def __init__( self, parent ):
 		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Structural Analysis & Design ", pos = wx.DefaultPosition, size = wx.Size( 1100,700 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+
+	# def __init__(self):
+	# 	super().__init__(parent=None, tile='Structural Analysis & Design', size=wx.Size(1100, 700))
 
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		self.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNHIGHLIGHT ) )
@@ -302,10 +305,16 @@ class EVCI_Form ( wx.Frame,sm ):
 		pylsa.stru3d.exampletitle=sm.exampletitle
 		#pylsa.stru3d.nodelist=sm.node_list #np.array(sm.nodelist)#,newshape=(sm.nn,10))
 
+		#res=list(map(''.join,sm.nodelist))
+		#pylsa.stru3d.nodelist=np.core.defchararray.asarray(sm.nodelist,itemsize=10,unicode=True)
+		#pylsa.stru3d.nodelist = np.reshape(sm.nodelist,newshape=(sm.nn))
+		print(sm.nodelist)
 
-		pylsa.stru3d.nodelist=np.core.defchararray.asarray(sm.nodelist,itemsize=10,unicode=True)
-		#pylsa.stru3d.nodelist = sm.nodelist
-		print(np.array(sm.nodelist))
+		xstring=np.array((sm.nodelist),dtype='c').T
+		# for i in range(sm.nn):
+		# 	xstring[i]=str(sm.nodelist[i])
+		print(xstring)
+		pylsa.stru3d.nodelist=xstring
 		pylsa.stru3d.elem_prop = sm.elem_prop_arr
 		pylsa.stru3d.sec_table=sm.sections_arr
 		pylsa.stru3d.mat_table=sm.mat_table
