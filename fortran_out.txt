@@ -2,9 +2,9 @@
 Ferrante Example                                                                
 --------------------------------------------------------------------------------
 Number of Iterations     1
-NODAL DISPLACEMENTS FOR LOADING  1
-ACTIVE UNITS :kN      m       
-NODE               DX          DY          ROTZ
+Nodal Displacements for Loading  1
+Active Units :kN      m       
+Node               Dx          Dy          Rotz
 
 node1           0.000          0.000          0.000    
 node2         -0.1514E-03    -0.1285E-04     0.5925E-04
@@ -14,9 +14,9 @@ node5           0.000          0.000          0.000
 6              0.1109E-02    -0.2176E-02    -0.7730E-04
 7              0.1583E-02    -0.1475E-04     0.2024E-03
 8               0.000          0.000          0.000    
-NODAL DISPLACEMENTS FOR LOADING  2
-ACTIVE UNITS :kN      m       
-NODE               DX          DY          ROTZ
+Nodal Displacements for Loading  2
+Active Units :kN      m       
+Node               Dx          Dy          Rotz
 
 node1           0.000          0.000          0.000    
 node2          0.5956E-03     0.8455E-06     0.1414E-03
@@ -26,25 +26,25 @@ node5           0.000          0.000          0.000
 6              0.3728E-03     0.1990E-03    -0.3343E-04
 7              0.3163E-03    -0.5513E-06     0.6990E-04
 8               0.000          0.000          0.000    
-NODAL REACTION FOR LOADING  1
-ACTIVE UNITS :kN      m       
+Nodal Reaction for Loading  1
+Active Units :kN      m       
 
-NODE               PX          PY               MZ
+Node               Px          Py               Mz
 node1               11.23          19.05          27.62
 node5               -7.96          39.09         -30.84
 8                  -33.27          21.86        -120.52
-NODAL REACTION FOR LOADING  2
-ACTIVE UNITS :kN      m       
+Nodal Reaction for Loading  2
+Active Units :kN      m       
 
-NODE               PX          PY               MZ
+Node               Px          Py               Mz
 node1              -20.84          -1.25          -9.50
 node5               -5.52           0.44         -21.04
 8                   -3.63           0.82         -18.06
  Total Weight:            0.00   kN
-MEMBER END FORCES
-ACTIVE UNITS :kN      m       
+Member End Forces
+Active Units :kN      m       
 
-LC     MEMBER  NODE               FX               FY          MZ
+LC     Member  Node               Fx               Fy          Mz
 
      elem1     node1              -19.05          11.23          27.62
  1             node2               19.05         -11.23          39.75
@@ -77,4 +77,4 @@ LC     MEMBER  NODE               FX               FY          MZ
  2             7                    3.72           0.09           3.75
 --------------------------------------------------------------------------------
  9/17/2022
- 2:19:03 pm
+10:00:46 pm
