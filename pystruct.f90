@@ -749,12 +749,12 @@ write(fileout_unit,'(a15,f15.2,a5)')'Total Weight: ',totalwht,' kN'
 
 !---OUTPUT MEMBER END FORCES
 WRITE(fileout_unit,4) dat(slen,1),dat(kip,2)
-4       FORMAT('MEMBER END FORCES',2X,/,'ACTIVE UNITS :',2A8,/)
+4       FORMAT('Member End Forces',2X,/,'Active Units :',2A8,/)
 IF(strutype == 'Frame3D') WRITE(fileout_unit,44)
-44    FORMAT('LC',5X,'MEMBER',2X,'NODE',5X,'FX',10X,'FY',10X,  &
-    'FZ',10X,'MX',10X,'MY',10X,'MZ')
+44    FORMAT('LC',5X,'Member',2X,'Node',5X,'Fx',10X,'Fy',10X,  &
+    'Fz',10X,'Mx',10X,'My',10X,'Mz')
 IF(strutype == 'Frame2D') WRITE(fileout_unit,45)
-45    FORMAT('LC',5X,'MEMBER',2X,'NODE',15X,'FX',15X,'FY',10X, 'MZ',/)
+45    FORMAT('LC',5X,'Member',2X,'Node',15X,'Fx',15X,'Fy',10X, 'Mz',/)
 DO  klc=1,nlc
   DO  nel=1,NE
     k1=ndfel*(nel-1)+1+NE*ndfel*(klc-1)
