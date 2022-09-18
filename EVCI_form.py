@@ -324,6 +324,7 @@ class EVCI_Form ( wx.Frame,sm ):
 		if(sm.nlmem>0): 
 			pylsa.stru3d.mfemgen()
 		pylsa.stru3d.k_assem()
+		self.m_textlog.AppendText("Assembly of Stiffness Matrix ...Completed\n")
 		pylsa.stru3d.boundgen()
 		pylsa.stru3d.bgaussgen()
 		pylsa.stru3d.forcegen()
