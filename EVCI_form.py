@@ -13,7 +13,10 @@ import numpy as np
 import wx
 import wx.dataview as dv
 import wx.xrc
-
+import matplotlib.pyplot as plt
+#import mpl_toolkits.mplot3d as plot3d
+from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection,Line3D
 import pylsa 
 from wx_evci_mod import StruMod as sm
 
@@ -327,6 +330,7 @@ class EVCI_Form ( wx.Frame,sm ):
 		self.m_textlog.AppendText("Assembly of Stiffness Matrix ...Completed\n")
 		pylsa.stru3d.boundgen()
 		pylsa.stru3d.bgaussgen()
+		self.m_textlog.AppendText("Solver Solution of Equations ...Completed\n")
 		pylsa.stru3d.forcegen()
 		pylsa.stru3d.outptgen()
 		f = open("fortran_out.txt", "r")
@@ -403,7 +407,35 @@ class EVCI_Form ( wx.Frame,sm ):
 		event.Skip()
 
 	def wxmnu_clear( self, event ):
-		event.Skip()
+		fig = plt.figure()
+		fig.set_size_inches(9.5, 9.5)
+		ax = fig.add_subplot(111, projection='3d')  # , aspect='equal')
+		#ax=plt.axes(projection='3d')
+		ax.view_init(azim=120)
+		ax.set_xlabel('X Coordinate')
+		ax.set_ylabel('Y Coordinate')
+		ax.set_zlabel('Z Coordinate')
+		ax.set_title(sm.exampletitle)
+		xs=np.reshape(sm.x,newshape=sm.nn)
+		ys = np.reshape(sm.y, newshape=sm.nn)
+		zs = np.reshape(sm.z, newshape=sm.nn)
+		vertices=[list(zip(xs,ys,zs))]
+		poly=Poly3DCollection(vertices,alpha=0.8)
+		#plt.show()
+		ax.scatter(xs, ys, zs,color='red', marker='s') #, c=np.array(zz), cmap='Greens') #,rstride=10, cstride=10)
+		lines=[]
+		for i in range(sm.ne):
+			inc1=int(sm.elem_prop_arr[i][1])
+			inc2 = int(sm.elem_prop_arr[i][2])
+			xs=sm.coor[inc1][0],sm.coor[inc2][0]
+			ys = sm.coor[inc1][1], sm.coor[inc2][1]
+			zs = sm.coor[inc1][2], sm.coor[inc2][2]
+			line = Line3D(xs, ys, zs)
+			lines.append(line)
+		    #ax.add_line(line)
+		ax.add_collection3d(poly)
+		plt.show()
+		#event.Skip()
 
 	def wxmnu_asd( self, event ):
 		event.Skip()

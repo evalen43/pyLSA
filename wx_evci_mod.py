@@ -310,6 +310,9 @@ class StruMod(Unit):
                 nodez=float(lineinput[3])*scaleL
             else: 
                 nodez=0.0
+            StruMod.x.append(nodex)   
+            StruMod.y.append(nodey)
+            StruMod.z.append(nodez)
             nodes = (nodex, nodey, nodez)
             coor.append(nodes)
         return nn,n,coor,nodelist
