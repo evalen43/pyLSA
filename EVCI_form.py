@@ -14,9 +14,10 @@ import wx
 import wx.dataview as dv
 import wx.xrc
 import matplotlib.pyplot as plt
-#import mpl_toolkits.mplot3d as plot3d
-from mpl_toolkits.mplot3d import Axes3D
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection,Line3D
+import mpl_toolkits.mplot3d as plot3d
+from matplotlib.collections import LineCollection
+#from mpl_toolkits.mplot3d import Axes3D
+#from mpl_toolkits.mplot3d.art3d import Poly3DCollection,Line3DCollection
 import pylsa 
 from wx_evci_mod import StruMod as sm
 
@@ -416,26 +417,30 @@ class EVCI_Form ( wx.Frame,sm ):
 		ax.set_ylabel('Y Coordinate')
 		ax.set_zlabel('Z Coordinate')
 		ax.set_title(sm.exampletitle)
-		xs=np.reshape(sm.x,newshape=sm.nn)
-		ys = np.reshape(sm.y, newshape=sm.nn)
-		zs = np.reshape(sm.z, newshape=sm.nn)
-		vertices=[list(zip(xs,ys,zs))]
-		poly=Poly3DCollection(vertices,alpha=0.8)
+		x=np.reshape(sm.x,newshape=sm.nn)
+		y = np.reshape(sm.y, newshape=sm.nn)
+		z = np.reshape(sm.z, newshape=sm.nn)
+		#print('{0} {1} {2}'.format(x,y,z))
+		vertices=[list(zip(x,y,z))]
+		#poly=Poly3DCollection(vertices,alpha=0.8)
 		#plt.show()
-		ax.scatter(xs, ys, zs,color='red', marker='s') #, c=np.array(zz), cmap='Greens') #,rstride=10, cstride=10)
-		lines=[]
+		ax.scatter3D(x, y, z,color='red', marker='s') #, c=np.array(zz), cmap='Greens') #,rstride=10, cstride=10)
+		print(sm.elem_prop)
 		for i in range(sm.ne):
-			inc1=int(sm.elem_prop_arr[i][1])
-			inc2 = int(sm.elem_prop_arr[i][2])
-			xs=sm.coor[inc1][0],sm.coor[inc2][0]
-			ys = sm.coor[inc1][1], sm.coor[inc2][1]
-			zs = sm.coor[inc1][2], sm.coor[inc2][2]
-			line = Line3D(xs, ys, zs)
-			lines.append(line)
-		    #ax.add_line(line)
-		ax.add_collection3d(poly)
+			inc1=int(sm.elem_prop[i][0])
+			inc2 = int(sm.elem_prop[i][1])
+			#print('{0} {1} {2}'.format(i,inc1,inc2))
+			xs=x[inc1-1],x[inc2-1]
+			ys=y[inc1-1],y[inc2-1]
+			zs = z[inc1-1], z[inc2-1]
+			line = plot3d.art3d.Line3D(xs, ys, zs)
+			ax.add_line(line)
+		#line3d=[list(zip(lines))]
+		#poly1=Line3D(line3d)
+		#ax.plot(lines)
+		#ax.plot(xs,ys,zs,'-b')
 		plt.show()
-		#event.Skip()
+
 
 	def wxmnu_asd( self, event ):
 		event.Skip()
