@@ -20,12 +20,13 @@ from matplotlib.collections import LineCollection
 #from mpl_toolkits.mplot3d.art3d import Poly3DCollection,Line3DCollection
 import pylsa 
 from wx_evci_mod import StruMod as sm
+from wire3d_mod import Tkwireframe2D as tk2d
 
 ###########################################################################
 ## Class EVCI_Form
 ###########################################################################
 
-class EVCI_Form ( wx.Frame,sm ):
+class EVCI_Form ( wx.Frame,sm,tk2d ):
     
 
 
