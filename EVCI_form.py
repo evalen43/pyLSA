@@ -18,7 +18,8 @@ import mpl_toolkits.mplot3d as plot3d
 from matplotlib.collections import LineCollection
 #from mpl_toolkits.mplot3d import Axes3D
 #from mpl_toolkits.mplot3d.art3d import Poly3DCollection,Line3DCollection
-import pylsa 
+from ctypes import *
+#import pylsa 
 from wx_evci_mod import StruMod as sm
 from wire3d_mod import Tkwireframe2D as tk2d
 
@@ -211,7 +212,7 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 		self.m_lrfd = wx.MenuItem( self.AISC_mnu, wx.ID_ANY, u"LRFD", wx.EmptyString, wx.ITEM_NORMAL )
 
 		#self.m_lrfd.SetBitmap( wx.Bitmap( u"C:\\Users\\edval\\Dropbox\\wxFB\\resources\\exefile.xpm", wx.BITMAP_TYPE_ANY ) )
-		self.m_lrfd.SetBitmap(wx.Bitmap(u"/mnt/c/Users/edval/Dropbox/wxFB/resources/exefile.xpm", wx.BITMAP_TYPE_ANY) )
+		self.m_lrfd.SetBitmap(wx.Bitmap(u"E:\\pythoncode\\resources\\exefile.xpm", wx.BITMAP_TYPE_ANY) )
 		self.AISC_mnu.Append( self.m_lrfd )
 
 		self.Codes_mnu.AppendSubMenu( self.AISC_mnu, u"AISC" )
@@ -219,7 +220,7 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 		self.m_api = wx.Menu()
 		self.m_2rd = wx.MenuItem( self.m_api, wx.ID_ANY, u"2RD", wx.EmptyString, wx.ITEM_NORMAL )
 		#self.m_2rd.SetBitmap( wx.Bitmap( u"C:\\Users\\edval\\Dropbox\\wxFB\\resources\\state2.xpm", wx.BITMAP_TYPE_ANY ) )
-		self.m_2rd.SetBitmap( wx.Bitmap( u"/mnt/c/Users/edval/Dropbox/wxFB/resources/state2.xpm", wx.BITMAP_TYPE_ANY ) )  
+		self.m_2rd.SetBitmap( wx.Bitmap( u"E:\\pythoncode\\resources\\state2.xpm", wx.BITMAP_TYPE_ANY ) )  
 		self.m_api.Append( self.m_2rd )
 
 		self.Codes_mnu.AppendSubMenu( self.m_api, u"API" )
@@ -293,6 +294,7 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 
 	def RunSolver_click( self, event ):
 		#print (pylsa.stru3d.__doc__)
+		pylsa=cdll.LoadLibrary("pylsa.cpython-38-x86_64-linux-gnu.so")
 		pylsa.stru3d.nn=sm.nn
 		pylsa.stru3d.ne = sm.ne
 		pylsa.stru3d.nbn = sm.nbn
