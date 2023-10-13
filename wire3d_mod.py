@@ -35,8 +35,7 @@ class Tkwireframe2D(Frame):
         canvas.create_line(300, 35, 300, 200, dash=(4, 2))
         i = 0
         while i < self.ne:
-
             canvas.create_line(self.x[self.incidence[i][0]], self.y[self.incidence[i][0]],
-                               self.x[self.incidence[i][1]], self.y[self.incidence[i][1]])
+                self.x[self.incidence[i][1]], self.y[self.incidence[i][1]])
             i += 1
         canvas.pack(fill=BOTH, expand=1)

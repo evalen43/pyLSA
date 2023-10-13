@@ -109,7 +109,8 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 		self.m_panel2 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_RAISED|wx.TAB_TRAVERSAL )
 		bSizer7 = wx.BoxSizer( wx.HORIZONTAL )
 
-		self.m_dataViewTreeCtrl3 = wx.dataview.DataViewTreeCtrl( self.m_panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0|wx.HSCROLL|wx.VSCROLL )
+		# self.m_dataViewTreeCtrl3 = wx.dataview.DataViewTreeCtrl( self.m_panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0|wx.HSCROLL|wx.VSCROLL )
+		self.m_dataViewTreeCtrl3 = wx.TreeCtrl( self.m_panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0|wx.HSCROLL|wx.VSCROLL )  
 		self.m_dataViewTreeCtrl3.SetToolTip( u"Open File" )
 
 		bSizer7.Add( self.m_dataViewTreeCtrl3, 1, wx.EXPAND, 0 )
