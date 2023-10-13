@@ -265,7 +265,7 @@ class StruMod(Unit):
                 edi = lineinput[2]
                 # Connecto to database
                 conn = sqlite3.connect(
-                    abspath(expanduser('~/pyLSA/aisc_shapes_v15_US_R1.db')))
+                    abspath(expanduser('~/pythoncode/pyLSA/aisc_shapes_v15_US_R1.db')))
                 # Create cursor
                 c = conn.cursor()
                 # Query the database
