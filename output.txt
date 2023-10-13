@@ -2,3 +2,10 @@ Frame2D    Degrees of Freedom per node: 3
 Project Name: Ferrante Example                                                                
 Code AISC Fy= 248211.26
 Number of Nodes:    8
+Number of Sections: 2
+Number of Materials:                    1
+Number of Elements: 7
+Number of Boundaries:         3
+Number of Loading Cases: 2
+ Loaded Nodes: 3
+ Loaded Members: 1

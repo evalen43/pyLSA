@@ -18,8 +18,8 @@ import mpl_toolkits.mplot3d as plot3d
 from matplotlib.collections import LineCollection
 #from mpl_toolkits.mplot3d import Axes3D
 #from mpl_toolkits.mplot3d.art3d import Poly3DCollection,Line3DCollection
-from ctypes import *
-#import pylsa 
+#from ctypes import *
+import pylsa 
 from wx_evci_mod import StruMod as sm
 from wire3d_mod import Tkwireframe2D as tk2d
 
@@ -294,7 +294,7 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 
 	def RunSolver_click( self, event ):
 		#print (pylsa.stru3d.__doc__)
-		pylsa=cdll.LoadLibrary("pylsa.cpython-38-x86_64-linux-gnu.so")
+		#pylsa=cdll.LoadLibrary("pylsa.cpython-38-x86_64-linux-gnu.so")
 		pylsa.stru3d.nn=sm.nn
 		pylsa.stru3d.ne = sm.ne
 		pylsa.stru3d.nbn = sm.nbn
