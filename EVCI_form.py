@@ -197,7 +197,7 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 
 		self.Display_mnu.AppendSeparator()
 
-		self.m_clear = wx.MenuItem( self.Display_mnu, wx.ID_ANY, u"Clear", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_clear = wx.MenuItem( self.Display_mnu, wx.ID_ANY, u"Show Structure", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_clear.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_DELETE, wx.ART_MENU ) )
 		self.Display_mnu.Append( self.m_clear )
 
@@ -283,6 +283,20 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 			fileout = open("output.txt", 'r')
 			self.m_textlog.SetValue(fileout.read())
 			fileout.close()
+
+			self.root=self.m_dataViewTreeCtrl3.AddRoot(sm.strutype)
+			proj=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Project')
+			self.m_dataViewTreeCtrl3.AppendItem(proj,sm.exampletitle)
+			self.m_dataViewTreeCtrl3.AppendItem(self.root,'Code')
+			self.m_dataViewTreeCtrl3.AppendItem(self.root,'Material')
+			self.m_dataViewTreeCtrl3.AppendItem(self.root,'Sections')
+			self.m_dataViewTreeCtrl3.AppendItem(self.root,'Nodes')
+			elem=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Elements')
+			self.m_dataViewTreeCtrl3.AppendItem(elem,'Project')
+			self.m_dataViewTreeCtrl3.Expand(self.root)
+			self.Show()
+
+
 
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file",wx.ICON_QUESTION |wx.OK)
