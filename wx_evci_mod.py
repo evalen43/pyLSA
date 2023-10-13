@@ -49,6 +49,7 @@ class Unit:
 
     @staticmethod
     def ToMeter(unitL):
+        factor=0.0
         if unitL=="inch":
             factor=0.0254
         elif unitL=="feet":
@@ -61,6 +62,7 @@ class Unit:
 
     @staticmethod
     def TokN(unitF):
+        factor=0.0
         if unitF == 'lbf':
             factor = 0.454*StruMod.grav/1000.0
         elif unitF == 'kip':
@@ -97,13 +99,13 @@ class StruMod(Unit):
     x = []
     y = []
     z = []
-    nodes = []
+    #nodes = []
     coor = []
     nodelist = []
     seclist = []
     matlist = []
     elemlist = []
-    elem_prop = []
+    elem_proper = []
     bndlist = []
     boundaries = []
     
@@ -135,6 +137,7 @@ class StruMod(Unit):
     @classmethod
     def bndparam(cls,bndid,bntype):
         j=cls.nodelist.index(bndid)
+        ibnd=(0,0,0,0)
         if bntype=='ENCASTRE': ibnd=(j+1,0,0,0)
             #ib.append(ibnd)
         elif bntype=='HINGE':  ibnd=(j+1,0,0,1)
@@ -162,6 +165,8 @@ class StruMod(Unit):
     @classmethod
     def code(cls,content,child):
         lineinput=[]
+        Code=''
+        fyield=0.0
         UnitS = child.GetAttribute("unitS", "kN/m2")
         if UnitS == "default-value": scaleS=1.0
         else: scaleS=Unit.TokNperM2(UnitS)                    
@@ -189,7 +194,10 @@ class StruMod(Unit):
         if UnitD=="default-value": scaleV=1.0
         else: scaleV=Unit.TokNperM3(UnitD)
         lines=content.splitlines()
-        StruMod.nmat=len(lines)     
+        StruMod.nmat=len(lines)
+        emod=0.0
+        matden=0.0
+        poisson=0.0     
         for line in lines:
             line = line.replace("=", " ")
             lineinput = line.split()
@@ -233,6 +241,8 @@ class StruMod(Unit):
     def section(cls,content,child):
         #seclist=[]
         #sections=[]
+        od=0.0
+        wth=0.0
         UnitL = child.GetAttribute("unitL", "m")
         if UnitL == "default-value":
             scaleL = 1.0
@@ -313,14 +323,14 @@ class StruMod(Unit):
             StruMod.x.append(nodex)   
             StruMod.y.append(nodey)
             StruMod.z.append(nodez)
-            nodes = (nodex, nodey, nodez)
-            coor.append(nodes)
+            nodet = (nodex, nodey, nodez)
+            coor.append(nodet)
         return nn,n,coor,nodelist
     
     @classmethod
     def elem_prop(cls,content,child):
         lines = content.splitlines()
-        elem_prop=[]
+        elem_prp=[]
         ms=0
         StruMod.ne=len(lines)
         for line in lines:
@@ -341,11 +351,11 @@ class StruMod(Unit):
             cosx=np.dot(temp,axis_x.T)/elemlen
             sinx = np.dot(temp, axis_y.T)/elemlen
             element=(inc1+1,inc2+1,secid+1,matid+1,elemlen,cosx,sinx)
-            elem_prop.append(element)
+            elem_prp.append(element)
         StruMod.ms=cls.ndf*(ms+1)
         StruMod.ndfel=cls.nne*cls.ndf
-        cls.elem_prop=elem_prop
-        cls.elem_prop_arr=np.reshape(elem_prop,newshape=(cls.ne,7))
+        cls.elem_proper=elem_prp
+        cls.elem_prop_arr=np.reshape(elem_prp,newshape=(cls.ne,7))
         #print(cls.elem_prop_arr)    
     
     @classmethod
@@ -363,6 +373,13 @@ class StruMod(Unit):
     @classmethod
     def loading(cls,content,child):
         lineinput=[]
+        nodeid=''
+        memid=''
+        ldtype=''
+        kref=0
+        wa=0.0
+        wb=0.0
+        ldtuple=('',0,0,0.0,0.0,0.0,0)
         UnitL = child.GetAttribute("unitL", "m")
         if UnitL == "default-value": scaleL = 1.0
         else: scaleL = Unit.ToMeter(UnitL)

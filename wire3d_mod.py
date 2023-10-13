@@ -20,10 +20,13 @@ class Tkwireframe2D(Frame):
         self.pack(fill=BOTH, expand=1)
 
         canvas = Canvas(self)
+        #This creates a straight horizontal line of length 200
         canvas.create_line(15, 25, 200, 25)
+        #This creates a vertical dashed line of length 300
         canvas.create_line(300, 35, 300, 200, dash=(4, 2))
-        canvas.create_line(55, 85, 155, 85, 105, 180, 55, 85)
-
+        #This creates a triangle
+        #canvas.create_line(55, 85, 155, 85, 105, 180, 55, 85)
+        #This packs the canvas to the main window and makes
         canvas.pack(fill=BOTH, expand=1)
 
     def drawLines(self):

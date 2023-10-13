@@ -14,7 +14,7 @@ import wx
 import wx.dataview as dv
 import wx.xrc
 import matplotlib.pyplot as plt
-import mpl_toolkits.mplot3d as plot3d
+import mpl_toolkits.mplot3d.art3d as plot3d
 from matplotlib.collections import LineCollection
 #from mpl_toolkits.mplot3d import Axes3D
 #from mpl_toolkits.mplot3d.art3d import Poly3DCollection,Line3DCollection
@@ -429,13 +429,14 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 		ax.scatter3D(x, y, z,color='red', marker='s') #, c=np.array(zz), cmap='Greens') #,rstride=10, cstride=10)
 		print(sm.elem_prop)
 		for i in range(sm.ne):
-			inc1=int(sm.elem_prop[i][0])
-			inc2 = int(sm.elem_prop[i][1])
+			inc1=int(sm.elem_proper[i][0])
+			inc2 = int(sm.elem_proper[i][1])
 			#print('{0} {1} {2}'.format(i,inc1,inc2))
 			xs=x[inc1-1],x[inc2-1]
 			ys=y[inc1-1],y[inc2-1]
 			zs = z[inc1-1], z[inc2-1]
-			line = plot3d.art3d.Line3D(xs, ys, zs)
+			# line = plot3d.art3d.Line3D(xs, ys, zs)
+			line = plot3d.Line3D(xs, ys, zs)
 			ax.add_line(line)
 		#line3d=[list(zip(lines))]
 		#poly1=Line3D(line3d)
