@@ -263,6 +263,29 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 	def __del__( self ):
 		pass
 
+	def show_dv(self):
+		self.root=self.m_dataViewTreeCtrl3.AddRoot(sm.strutype)
+		proj=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Project')
+		self.m_dataViewTreeCtrl3.AppendItem(proj,sm.exampletitle)
+		code=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Code')
+		self.m_dataViewTreeCtrl3.AppendItem(code,sm.lines_code)
+		mat=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Material')
+		for line in sm.lines_mat:
+			self.m_dataViewTreeCtrl3.AppendItem(mat,line)
+		sec=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Sections')
+		for line in sm.lines_sec:
+			self.m_dataViewTreeCtrl3.AppendItem(sec,line)
+		nodes=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Nodes')
+		for i in range(len(sm.lines_nodes)):
+			self.m_dataViewTreeCtrl3.AppendItem(nodes,sm.lines_nodes[i])			
+		elem=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Elements')
+		for line in sm.lines_elem:
+			self.m_dataViewTreeCtrl3.AppendItem(elem,line)
+		bnd=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Boundary')
+		for line in sm.lines_bnd:
+			self.m_dataViewTreeCtrl3.AppendItem(bnd,line)
+		self.m_dataViewTreeCtrl3.Expand(self.root)
+		self.Show()
 
 	# Virtual event handlers, override them in your derived class
 	def OpenFile_click( self, e ):
@@ -284,28 +307,7 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 			self.m_textlog.SetValue(fileout.read())
 			fileout.close()
 
-			self.root=self.m_dataViewTreeCtrl3.AddRoot(sm.strutype)
-			proj=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Project')
-			self.m_dataViewTreeCtrl3.AppendItem(proj,sm.exampletitle)
-			code=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Code')
-			self.m_dataViewTreeCtrl3.AppendItem(code,sm.lines_code)
-			mat=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Material')
-			for line in sm.lines_mat:
-				self.m_dataViewTreeCtrl3.AppendItem(mat,line)
-			sec=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Sections')
-			for line in sm.lines_sec:
-				self.m_dataViewTreeCtrl3.AppendItem(sec,line)
-			nodes=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Nodes')
-			for i in range(len(sm.lines_nodes)):
-				self.m_dataViewTreeCtrl3.AppendItem(nodes,sm.lines_nodes[i])			
-			elem=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Elements')
-			for line in sm.lines_elem:
-				self.m_dataViewTreeCtrl3.AppendItem(elem,line)
-			self.m_dataViewTreeCtrl3.Expand(self.root)
-			self.Show()
-
-
-
+			self.show_dv()
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file",wx.ICON_QUESTION |wx.OK)
 			return
@@ -391,6 +393,7 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 			fileout = open("output.txt", 'r')
 			self.m_textlog.SetValue(fileout.read())
 			fileout.close()
+			self.show_dv()
 
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file", wx.ICON_QUESTION | wx.OK)

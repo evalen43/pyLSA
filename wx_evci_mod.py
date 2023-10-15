@@ -118,6 +118,7 @@ class StruMod(Unit):
     lines_elem=[]
     lines_mat=[]
     lines_sec=[]
+    lines_bnd=[]
     elem_prop_arr = np.zeros((1, 1))
     sections_arr=np.zeros((1,1))
     mat_table=np.zeros((1,1))
@@ -510,6 +511,7 @@ class StruMod(Unit):
                 cls.ib=np.reshape(cls.boundaries,newshape=((cls.ndf+1)*cls.nbn))
                 #fileout.write('Number of Boundaries: {0}\n {1}\n'.format(cls.nbn,cls.boundaries))
                 fileout.write('{0}\t{1}\n'.format('Number of Boundaries:',cls.nbn).expandtabs(10))
+                cls.lines_bnd=content.splitlines()
                 #print(cls.ib)
             elif tagname == "loading": 
                 cls.loading(content,child)
