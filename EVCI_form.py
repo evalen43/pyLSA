@@ -236,7 +236,7 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 		
 
 		self.Centre( wx.BOTH )
-
+		
 		# Connect Events
 		self.m_bOpenFile.Bind( wx.EVT_BUTTON, self.OpenFile_click )
 		self.m_bSaveFile.Bind( wx.EVT_BUTTON, self.SaveFile_click )
@@ -287,12 +287,20 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 			self.root=self.m_dataViewTreeCtrl3.AddRoot(sm.strutype)
 			proj=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Project')
 			self.m_dataViewTreeCtrl3.AppendItem(proj,sm.exampletitle)
-			self.m_dataViewTreeCtrl3.AppendItem(self.root,'Code')
-			self.m_dataViewTreeCtrl3.AppendItem(self.root,'Material')
-			self.m_dataViewTreeCtrl3.AppendItem(self.root,'Sections')
-			self.m_dataViewTreeCtrl3.AppendItem(self.root,'Nodes')
+			code=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Code')
+			self.m_dataViewTreeCtrl3.AppendItem(code,sm.lines_code)
+			mat=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Material')
+			for line in sm.lines_mat:
+				self.m_dataViewTreeCtrl3.AppendItem(mat,line)
+			sec=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Sections')
+			for line in sm.lines_sec:
+				self.m_dataViewTreeCtrl3.AppendItem(sec,line)
+			nodes=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Nodes')
+			for i in range(len(sm.lines_nodes)):
+				self.m_dataViewTreeCtrl3.AppendItem(nodes,sm.lines_nodes[i])			
 			elem=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Elements')
-			self.m_dataViewTreeCtrl3.AppendItem(elem,'Project')
+			for line in sm.lines_elem:
+				self.m_dataViewTreeCtrl3.AppendItem(elem,line)
 			self.m_dataViewTreeCtrl3.Expand(self.root)
 			self.Show()
 
