@@ -284,6 +284,11 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 		bnd=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Boundary')
 		for line in sm.lines_bnd:
 			self.m_dataViewTreeCtrl3.AppendItem(bnd,line)
+		loading=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Loading')
+		for line in sm.lines_loading:
+			self.m_dataViewTreeCtrl3.AppendItem(loading,line)
+
+
 		self.m_dataViewTreeCtrl3.Expand(self.root)
 		self.Show()
 
@@ -386,7 +391,8 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 			with f: 
 				data = f.read() 
 				self.m_textfilein.SetValue(data)       
-			fname=f.name 
+			fname=f.name
+			index=fname.index('.')
 			#self.SetStatusText(self,fname)
 			self.m_statusBar1.SetStatusText(fname)
 			sm.XML_reader(fname)

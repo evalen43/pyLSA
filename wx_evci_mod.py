@@ -119,6 +119,7 @@ class StruMod(Unit):
     lines_mat=[]
     lines_sec=[]
     lines_bnd=[]
+    lines_loading=[]
     elem_prop_arr = np.zeros((1, 1))
     sections_arr=np.zeros((1,1))
     mat_table=np.zeros((1,1))
@@ -404,10 +405,12 @@ class StruMod(Unit):
                 content2 = load2.GetNodeContent()
                 tag2=load2.GetName()
                 cls.loadcaseslist.append(tagattrib)
+                cls.lines_loading.append('Locad case '+ str(i+1))
                 if tag2=='loaded-nodes':
                     lines = content2.splitlines()
                     cls.nlnodes=len(lines)
                     for line in lines:
+                        cls.lines_loading.append(line)
                         px = 0.0;py = 0.0;mz = 0.0
                         line = line.replace("=", " ")
                         lineinput = line.split()
@@ -427,6 +430,7 @@ class StruMod(Unit):
                     lines = content2.splitlines()
                     cls.nlmem=len(lines)
                     for line in lines:
+                        cls.lines_loading.append(line)
                         p = 0.0;a = 0.0;mz = 0.0
                         line = line.replace("=", " ")
                         lineinput = line.split()
@@ -516,6 +520,7 @@ class StruMod(Unit):
             elif tagname == "loading": 
                 cls.loading(content,child)
                 #fileout.write('Number of Loading Cases: {0}\n {1}\n {2}\n'.format(cls.nlc,cls.nodeloads,cls.memloads))
+    
                 fileout.write('Number of Loading Cases: {0}\n Loaded Nodes: {1}\n Loaded Members: {2}\n'.format(
                     cls.nlc, cls.nlnodes, cls.nlmem))
                 cls.al=np.zeros((cls.n,cls.nlc))
