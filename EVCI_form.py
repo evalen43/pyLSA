@@ -311,11 +311,10 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 			fileout = open("output.txt", 'r')
 			self.m_textlog.SetValue(fileout.read())
 			fileout.close()
-
-			self.show_dv()
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file",wx.ICON_QUESTION |wx.OK)
 			return
+		self.show_dv()
 		dlg.Destroy()
 
 	def SaveFile_click( self, event ):
