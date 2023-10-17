@@ -15,21 +15,21 @@ import wx.dataview as dv
 import wx.xrc
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.art3d as plot3d
-from matplotlib.collections import LineCollection
+#from matplotlib.collections import LineCollection
 #from mpl_toolkits.mplot3d import Axes3D
 #from mpl_toolkits.mplot3d.art3d import Poly3DCollection,Line3DCollection
 import pylsa 
 from wx_evci_mod import StruMod as sm
-from wire3d_mod import Tkwireframe2D as tk2d
+#from wire3d_mod import Tkwireframe2D as tk2d
 import datetime
 
 ###########################################################################
 ## Class EVCI_Form
 ###########################################################################
 
-class EVCI_Form ( wx.Frame,sm,tk2d ):
-    
+# class EVCI_Form ( wx.Frame,sm,tk2d ):
 
+class EVCI_Form ( wx.Frame,sm ):
 
 	def __init__( self, parent ):
 		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Structural Analysis & Design ", pos = wx.DefaultPosition, size = wx.Size( 1100,700 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
@@ -447,7 +447,7 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 	def wxmnu_clear( self, event ):
 		fig = plt.figure()
 		fig.set_size_inches(9.5, 9.5)
-		ax = fig.add_subplot(111, projection='3d')  # , aspect='equal')
+		ax = fig.add_subplot(111, projection='3d')# , aspect='equal')
 		#ax=plt.axes(projection='3d')
 		ax.view_init(azim=120)
 		ax.set_xlabel('X Coordinate')
