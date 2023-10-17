@@ -358,17 +358,17 @@ class EVCI_Form ( wx.Frame,sm ):
 		pylsa.stru3d.ib=sm.ib
 		if(sm.nlmem>0): 
 			pylsa.stru3d.mfemgen()
+		dt1=datetime.datetime.now()
 		pylsa.stru3d.k_assem()
 		self.m_textlog.AppendText("Assembly of Stiffness Matrix ...Completed\n")
 		pylsa.stru3d.boundgen()
-		dt1=datetime.datetime.now()
 		pylsa.stru3d.bgaussgen()
-		dt2=datetime.datetime.now()
-		dt=dt2-dt1
-		txt="Solution of Equations Solver ..... Completed " + ' Elapsed Time: '+str(dt.microseconds) + ' microseconds\n'
-		self.m_textlog.AppendText(txt)
 		pylsa.stru3d.forcegen()
 		pylsa.stru3d.outptgen()
+		dt2=datetime.datetime.now()
+		dt=dt2-dt1
+		txt="Solution of Equations Solver ..... Completed " + ' Elapsed Time: '+str(float(dt.seconds)) + ' seconds\n'
+		self.m_textlog.AppendText(txt)
 		f = open("fortran_out.txt", "r")
 		with f:
 			data = f.read()
@@ -449,19 +449,29 @@ class EVCI_Form ( wx.Frame,sm ):
 		fig.set_size_inches(9.5, 9.5)
 		ax = fig.add_subplot(111, projection='3d')# , aspect='equal')
 		#ax=plt.axes(projection='3d')
-		ax.view_init(azim=120)
+		
+		if(sm.strutype=='Frame2D   '):
+			ax.view_init(elev=90,azim=-90,roll=0)
+		elif(sm.strutype=='Truss2D   '):
+			ax.view_init(elev=90,azim=-90,roll=0)
+		else:
+			ax.view_init(azim=120)
 		ax.set_xlabel('X Coordinate')
 		ax.set_ylabel('Y Coordinate')
 		ax.set_zlabel('Z Coordinate')
+		ax.set_box_aspect([1.0,1.0,1.0])
+		ax.set_aspect('auto')
 		ax.set_title(sm.exampletitle)
 		x=np.reshape(sm.x,newshape=sm.nn)
 		y = np.reshape(sm.y, newshape=sm.nn)
 		z = np.reshape(sm.z, newshape=sm.nn)
 		#print('{0} {1} {2}'.format(x,y,z))
-		vertices=[list(zip(x,y,z))]
+		#vertices=[list(zip(x,y,z))]
 		#poly=Poly3DCollection(vertices,alpha=0.8)
 		#plt.show()
+		
 		ax.scatter3D(x, y, z,color='red', marker='s') #, c=np.array(zz), cmap='Greens') #,rstride=10, cstride=10)
+		ax.set_aspect('equal',None)
 		print(sm.elem_prop)
 		for i in range(sm.ne):
 			inc1=int(sm.elem_proper[i][0])
@@ -470,6 +480,7 @@ class EVCI_Form ( wx.Frame,sm ):
 			xs=x[inc1-1],x[inc2-1]
 			ys=y[inc1-1],y[inc2-1]
 			zs = z[inc1-1], z[inc2-1]
+			
 			# line = plot3d.art3d.Line3D(xs, ys, zs)
 			line = plot3d.Line3D(xs, ys, zs)
 			ax.add_line(line)
