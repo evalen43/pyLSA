@@ -459,11 +459,11 @@ class EVCI_Form ( wx.Frame,sm ):
 			ax.view_init(elev=90,azim=-90,roll=0)
 		else:
 			ax.view_init(azim=120)
-		ax.set_xlabel('X Coordinate')
-		ax.set_ylabel('Y Coordinate')
-		ax.set_zlabel('Z Coordinate')
-		ax.set_box_aspect([1.0,1.0,1.0])
-		ax.set_aspect('auto')
+		ax.set_xlabel('X Coordinate (m)')
+		ax.set_ylabel('Y Coordinate (m)')
+		ax.set_zlabel('Z Coordinate (m)')
+		#ax.set_box_aspect([1.0,1.0,1.0])
+		#ax.set_aspect('auto')
 		ax.set_title(sm.exampletitle)
 		x=np.reshape(sm.x,newshape=sm.nn)
 		y = np.reshape(sm.y, newshape=sm.nn)
@@ -474,6 +474,8 @@ class EVCI_Form ( wx.Frame,sm ):
 		#plt.show()
 		
 		ax.scatter3D(x, y, z,color='red', marker='s') #, c=np.array(zz), cmap='Greens') #,rstride=10, cstride=10)
+		for i in range(sm.ne+1):
+			ax.text(x[i]+0.5,y[i],z[i],sm.nodelist[i],color='blue')
 		ax.set_aspect('equal',None)
 		print(sm.elem_prop)
 		for i in range(sm.ne):
