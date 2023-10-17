@@ -21,6 +21,7 @@ from matplotlib.collections import LineCollection
 import pylsa 
 from wx_evci_mod import StruMod as sm
 from wire3d_mod import Tkwireframe2D as tk2d
+import datetime
 
 ###########################################################################
 ## Class EVCI_Form
@@ -360,8 +361,12 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 		pylsa.stru3d.k_assem()
 		self.m_textlog.AppendText("Assembly of Stiffness Matrix ...Completed\n")
 		pylsa.stru3d.boundgen()
+		dt1=datetime.datetime.now()
 		pylsa.stru3d.bgaussgen()
-		self.m_textlog.AppendText("Solver Solution of Equations ...Completed\n")
+		dt2=datetime.datetime.now()
+		dt=dt2-dt1
+		txt="Solution of Equations Solver ..... Completed " + ' Elapsed Time: '+str(dt.microseconds) + ' microseconds\n'
+		self.m_textlog.AppendText(txt)
 		pylsa.stru3d.forcegen()
 		pylsa.stru3d.outptgen()
 		f = open("fortran_out.txt", "r")
