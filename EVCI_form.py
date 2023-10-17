@@ -445,6 +445,9 @@ class EVCI_Form ( wx.Frame,sm ):
 		event.Skip()
 
 	def wxmnu_clear( self, event ):
+		colors=['blue','green','purple','red','yellow']
+		for i in range(sm.nsec):
+			sm.sec_color.append(colors[i])
 		fig = plt.figure()
 		fig.set_size_inches(9.5, 9.5)
 		ax = fig.add_subplot(111, projection='3d')# , aspect='equal')
@@ -480,9 +483,9 @@ class EVCI_Form ( wx.Frame,sm ):
 			xs=x[inc1-1],x[inc2-1]
 			ys=y[inc1-1],y[inc2-1]
 			zs = z[inc1-1], z[inc2-1]
-			
+			index=int(sm.elem_prop_arr[i,2]-1)
 			# line = plot3d.art3d.Line3D(xs, ys, zs)
-			line = plot3d.Line3D(xs, ys, zs)
+			line = plot3d.Line3D(xs, ys, zs,color=sm.sec_color[index])
 			ax.add_line(line)
 		#line3d=[list(zip(lines))]
 		#poly1=Line3D(line3d)

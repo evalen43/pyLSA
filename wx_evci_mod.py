@@ -120,6 +120,7 @@ class StruMod(Unit):
     lines_sec=[]
     lines_bnd=[]
     lines_loading=[]
+    sec_color=[]
     elem_prop_arr = np.zeros((1, 1))
     sections_arr=np.zeros((1,1))
     mat_table=np.zeros((1,1))
