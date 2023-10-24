@@ -2,55 +2,52 @@ module stru3d
 implicit none
 
 character(len=10), public :: strutype
-integer(kind=4), public :: ndfel,ne,ndf,nne,n,ms,nbn,nlc,nlmem,fileout_unit
+character(len=20), public :: PNAME
+character(len=80), public :: exampletitle
+integer(kind=4), public :: ndfel,nn,ne,ndf,nne,n,ms,nbn,nlc,nlmem, &
+fileout_unit,kiter,slen,kip
 real(kind=8), allocatable :: tk(:,:),elem_prop(:,:),mat_table(:,:), &
   sec_table(:,:),al(:,:),reac(:,:),fem_dload(:,:),mfem_load(:,:), &
   mfem_param(:,:),intforc(:)
+real(kind=8) ::totalwht  
 integer(kind=4),allocatable :: ib(:) 
+character(len=10), public, dimension(:), allocatable :: nodelist
+character(len=1), dimension(:,:), allocatable :: nodebytes
+character(len=10), public, dimension(:), allocatable :: elemlist
+character(len=1), dimension(:,:), allocatable :: elembytes
 logical, public :: kerr 
-
-! interface operator(.mv.)
-! module procedure matvec
-! end interface
 
 contains
 
 !-----------------------
-!K Assem
+!Assembly of Stiffness Matrix
 !-----------------------
-subroutine k_assem()!mat_table,sec_table) !bind(c,name='k_assem')
+subroutine k_assem()
 implicit none
 integer :: nel
-!real(kind=8), intent(in) :: mat_table(:,:),sec_table(:,:)
 real(kind=8), allocatable :: rot(:,:),elst(:,:)
 integer(kind=4) ::con(2)
-!allocate(rot(ndfel,ndfel),elst(ndfel,ndfel),tk(n,ms))
 allocate(rot(ndfel,ndfel),elst(ndfel,ndfel)   )
 do nel=1,ne
     elst=0.0
     rot=0.0
     con(1)=int(elem_prop(nel,1))!%inc1
     con(2) =int(elem_prop(nel,2))!%inc2
-    !elst=elem_stiff(nel,ndfel,mat_table,sec_table)
     call elem_stiff(nel,elst)
-    !rot=rotmatgen(nel,elem_prop)
     call rotmatgen(nel,rot)
     elst=matmul(transpose(rot),matmul(elst,rot))
     call elassgen(elst,con)           
 enddo
 deallocate(rot,elst)
-write(*,'(a35,2x,a10)') "Stiffness Matrix Assembeld for:",strutype 
+!write(*,'(a35,2x,a10)') "Stiffness Matrix Assembeld for:",strutype 
 end subroutine k_assem 
 
 ! -----------------------
 ! element stiffness matrix
 ! -----------------------
-!function elem_stiff(nel,ndfel,elem_prop,mat_table,sec_table) result(kelst) !bind(c,name='elem_stiff')
-subroutine elem_stiff(nel,kelst)!,mat_table,sec_table,kelst)
+subroutine elem_stiff(nel,kelst)
 implicit none
-
 integer(kind=4),intent(in) :: nel
-!real(kind=8), intent(in) :: mat_table(:,:),sec_table(:,:)
 integer(kind=4) :: isec,imat
 real(kind=8) :: eiz,eax,d,eiy,gix
 real(kind=8),intent(inout) :: kelst(:,:) 
@@ -145,16 +142,13 @@ case('Frame3D')
 end select
 
 return
-!end function elem_stiff
 end subroutine elem_stiff
 
 ! -----------------------
 ! Element Rotation Matrix
 ! -----------------------
-!function rotmatgen(nel,ndfel,elem_prop) result(rot) !bind(c,name='rotmatgen')
-subroutine rotmatgen(nel,rot) !bind(c,name='rotmatgen')
+subroutine rotmatgen(nel,rot) 
 implicit none
-!real(kind=8), intent(in) :: elem_prop(:,:)
 real(kind=8), intent(inout)  :: rot(:,:)
 integer(kind=4), intent(in) :: nel
 real(kind=8) :: dt,beta,cx,cy,cz,cxz
@@ -229,7 +223,6 @@ do  i=1,ndf
   end do
 end do
 
-!end function rotmatgen
 end subroutine rotmatgen
 
 ! -----------------------
@@ -445,7 +438,7 @@ implicit none
 INTEGER(kind=4) :: klc
 
 integer(kind=4) :: mn,j,isec,imat,inc1,inc2,kdsp1,kdsp2
-real(kind=8) :: f(ndfel),vlocal(ndfel),vglob(ndfel),wload,ra,rma,dl,totalwht
+real(kind=8) :: f(ndfel),vlocal(ndfel),vglob(ndfel),wload,ra,rma,dl!,totalwht
 real(kind=8), dimension(ndfel,ndfel) :: rot
 
 
@@ -519,18 +512,14 @@ DO  mn=1,NE
 END DO
 RETURN
 END SUBROUTINE dloadgen
-
+!----------- Elements Fixed End Moments
 SUBROUTINE mfemgen()
-!use structvarsgen
 implicit none
 
-!real(kind=8),allocatable ::  vlocal(:),vglob(:),rot(:,:),f(:)
 real(kind=8) ::  vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel),f(ndfel)
 real(kind=8) :: wa=0,wb=0,a=0,dl,ra=0,rb=0,rma=0,rmb=0,p=0,b=0
 integer(kind=4) :: n1,n2,kdsp1,kdsp2,mn,i,j,mltype,klc,mkdsp,kref
-!integer(kind=4),INTENT(IN) :: klc
-!real(kind=8),INTENT(IN), dimension(:) :: f
-!allocate(vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel),f(ndfel))
+
 
 DO  i=1,nlmem
   f=0.0
@@ -626,17 +615,20 @@ END DO
 !deallocate(vlocal,vglob,rot,f)
 RETURN
 END SUBROUTINE mfemgen
-
+!------------------------------------
+!Internal Forces
+!-------------------------------------
 SUBROUTINE forcegen()
 IMPLICIT NONE
 REAL(kind=8), DIMENSION(ndfel) :: u,f,ul,fg
 REAL(kind=8), DIMENSION(ndfel,ndfel) :: rot,elst
-INTEGER(kind=4) :: klc,n1,n2,lc,nel,k1,k2,j1,j2,i,i1,i2,j
+INTEGER(kind=4) :: klc,n1,n2,lc,nel,k1,k2,j1,j2,i,i1,i2,mkdsp
 
 !lc=size(al,2)
 
 reac=0.0
 DO klc=1,nlc
+mkdsp=ne*(klc-1)
   DO nel=1,NE
     rot=0.0
     n1=int(elem_prop(nel,1))!%inc1
@@ -644,9 +636,7 @@ DO klc=1,nlc
     !rot=rotmatgen(nel)
     call rotmatgen(nel,rot)
     !call printmatrix(rot,"rot")
-    ! do i=1,ndfel
-    !   write(fileout_unit,'(*(f15.2))') (rot(i,j),j=1,ndfel)
-    ! enddo
+
     k1=ndf*(n1-1)
     k2=ndf*(n2-1)
     DO  i=1,ndf
@@ -671,7 +661,11 @@ DO klc=1,nlc
       intforc(i2)=f(i)
     END DO
 !-------------    ROTATE MEMBER FORCES TO THE GLOBAL REFERENCE FRAME AND STORE IN ARRAY FG
-    f(1:ndfel)=f(1:ndfel)+fem_dload(nel,1:ndfel)
+    if(nlmem==0) then
+      f(1:ndfel)=f(1:ndfel)+fem_dload(nel,1:ndfel)
+    else  
+      f(1:ndfel)=f(1:ndfel)+fem_dload(nel,1:ndfel)+mfem_load(nel+mkdsp,1:ndfel)
+    end if
     !fg=transpose(rot) .mv. f
     fg=matmul(transpose(rot), f)
     ! write(fileout_unit,'(*(f15.2))') (fg(i),i=1,ndfel)
@@ -688,5 +682,138 @@ DO klc=1,nlc
 END DO
 RETURN
 END SUBROUTINE forcegen
+
+!---------------------------------------------------------------------
+!       PROGRAM TO OUTPUT JOINT DISPLACEMENT,NODAL REACTION
+!       AND MEMBER FORCES
+!-----------------------------------------------------------------
+
+
+SUBROUTINE outptgen()
+use iso_fortran_env
+IMPLICIT NONE
+INTEGER(kind=4) :: k,k2,k1,klc
+INTEGER(kind=4) :: i,j,nel,j1,l1,no,n1!,kip,slen,kiter
+CHARACTER(LEN=8), DIMENSION(4,2) ::  dat
+
+
+open(unit=fileout_unit,file="fortran_out.txt")
+allocate(nodelist(nn),elemlist(ne))
+nodelist=transfer(nodebytes,nodelist)
+elemlist=transfer(elembytes,elemlist)
+nlc=size(al,2)
+ndfel=nne*ndf
+
+dat(1,1)="kN"
+dat(1,2)="m"
+
+CALL header()
+IF(kiter > 0) WRITE(fileout_unit,'("Number of Iterations ",i5)') kiter
+
+DO  klc=1,nlc
+  WRITE(fileout_unit,14) klc,dat(slen,1),dat(kip,2)
+
+14      FORMAT('Nodal Displacements for Loading',i3,2X,/,'Active Units :',2A8)
+  IF(strutype == 'Frame3D') WRITE(fileout_unit,13)
+13     FORMAT('Node',7X,'Dx',10X,'Dy',10X,'Dz',10X,'Rotx',10X,'Roty',10X,'Rotz',/)
+  IF(strutype == 'Frame2D') WRITE(fileout_unit,41)
+  41    FORMAT('Node',15X,'Dx',10X,'Dy',10X,'Rotz',/)
+  DO  i=1,nn
+    k1=ndf*(i-1)+1
+    k2=k1+ndf-1
+    DO  j=k1,k2
+      j1=j-ndf*(i-1)
+      al(j,klc)=al(j,klc)
+    END DO
+    WRITE(fileout_unit,'(a10,6g15.4)') nodelist(i),(al(j,klc),j=k1,k2)
+  END DO
+END DO
+
+DO  klc=1,nlc
+  WRITE(fileout_unit,3) klc,dat(kip,1),dat(slen,2)
+3       FORMAT('Nodal Reaction for Loading',i3,2X,/,'Active Units :',2A8,/)
+  IF(strutype == 'Frame3D') WRITE(fileout_unit,42)
+42    FORMAT('Node',5X,'Px',10X,'Py',10X,'Pz',10X,'Mx',10X,'My',10X,'Mz',/)
+  IF(strutype == 'Frame2D') WRITE(fileout_unit,43)
+  43    FORMAT('Node',15X,'Px',10X,'Py',15X,'Mz')
+  DO  i=1,nbn
+    l1=(ndf+1)*(i-1)+1
+    no=ib(l1)
+    k1=ndf*(no-1)+1
+    k2=k1+ndf-1
+    WRITE(fileout_unit,'(a10,6F15.2)') nodelist(no),(reac(j,klc),j=k1,k2)
+  END DO
+END DO
+
+write(fileout_unit,'(a15,f15.2,a5)')'Total Weight: ',totalwht,' kN'
+
+!---OUTPUT MEMBER END FORCES
+WRITE(fileout_unit,4) dat(slen,1),dat(kip,2)
+4       FORMAT('Member End Forces',2X,/,'Active Units :',2A8,/)
+IF(strutype == 'Frame3D') WRITE(fileout_unit,44)
+44    FORMAT('LC',5X,'Member',2X,'Node',5X,'Fx',10X,'Fy',10X,  &
+    'Fz',10X,'Mx',10X,'My',10X,'Mz')
+IF(strutype == 'Frame2D') WRITE(fileout_unit,45)
+45    FORMAT('LC',5X,'Member',2X,'Node',15X,'Fx',15X,'Fy',10X, 'Mz',/)
+DO  klc=1,nlc
+  DO  nel=1,NE
+    k1=ndfel*(nel-1)+1+NE*ndfel*(klc-1)
+    k2=k1+2
+    n1=nne*(nel-1)
+    WRITE(fileout_unit,'(5X,2a10,3F15.2)') elemlist(nel),nodelist(int(elem_prop(nel,1))),(intforc(k),k=k1,k2)  
+    k1=k2+1
+    k2=k1+2
+    WRITE(fileout_unit,'(i2,13X,a10, 3F15.2)') klc,nodelist(int(elem_prop(nel,2))),(intforc(k),k=k1,k2)    
+  END DO
+  WRITE(fileout_unit,'(80("-"))')
+END DO
+CALL time_now()
+close(fileout_unit)
+RETURN
+END SUBROUTINE outptgen
+
+! -----------------------
+! Prints date and time
+! -----------------------
+
+subroutine time_now()
+implicit none
+INTEGER(kind=4) :: tmphour, tmpminute, tmpsecond, tmphund,tmpyear,tmpmonth,tmpday
+INTEGER(kind=4) ::  values(8)
+CHARACTER (len=8)  :: date
+CHARACTER (len=10) :: time
+CHARACTER (len=5)  :: zone
+CHARACTER (len=1) :: mer
+CALL date_and_time(DATE=date,TIME=time,ZONE=zone,VALUES=values)
+tmpmonth=values(2)
+tmpday=values(3)
+tmpyear=values(1)
+tmphour=values(5)
+tmpminute=values(6)
+tmpsecond=values(7)
+tmphund=values(8)
+IF (tmphour .GT. 12) THEN
+    mer = 'p'
+    tmphour = tmphour - 12
+    ELSE
+    mer = 'a'
+END IF 
+
+WRITE (fileout_unit, '(i2,"/",i2.2,"/",i4.4)') tmpmonth, tmpday,tmpyear
+WRITE (fileout_unit, '(i2,":",i2.2,":",i2.2," ",a,"m")') tmphour, &
+    tmpminute, tmpsecond,  mer
+
+end subroutine time_now
+
+! -----------------------
+! Prints Page Header
+! -----------------------
+
+subroutine header()
+WRITE(fileout_unit,'(20x,A20)') strutype
+WRITE(fileout_unit,'(A80)') exampletitle
+WRITE(fileout_unit,'(80("-"))')
+
+end subroutine header
 
 end module stru3d
