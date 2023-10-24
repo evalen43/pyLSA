@@ -268,7 +268,7 @@ class StruMod(Unit):
             cls.seclist.append(lineinput[0])
             secid=lineinput[0]
             sectype = lineinput[1]
-            cls.sec_label.append(sectype)
+            cls.sec_label.append(lineinput[2])
             if sectype == 'Tube':
                 while i < len(lineinput):
                     if lineinput[i] == 'OD':

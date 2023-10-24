@@ -479,9 +479,11 @@ class EVCI_Form ( wx.Frame,sm ):
 		xmax=max(x)+5
 		ymax=max(y)+5
 		ax.scatter3D(x, y, z,color='red', marker='s') #, c=np.array(zz), cmap='Greens') #,rstride=10, cstride=10)
-		for i in range(sm.ne+1):
+		for i in range(sm.nn):
 			ax.text(x[i]+0.5,y[i],z[i],sm.nodelist[i],color='blue')
-		
+		ymax=max(y)
+		for i in range(sm.nsec):
+			ax.text(0.5,ymax+5-i*2,0,sm.sec_label)
 		#print(sm.elem_prop)
 
 		ax.set_xlim(0,xmax)
