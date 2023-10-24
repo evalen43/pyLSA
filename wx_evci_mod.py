@@ -49,6 +49,7 @@ class Unit:
 
     @staticmethod
     def ToMeter(unitL):
+        factor=0.0
         if unitL=="inch":
             factor=0.0254
         elif unitL=="feet":
@@ -61,6 +62,7 @@ class Unit:
 
     @staticmethod
     def TokN(unitF):
+        factor=0.0
         if unitF == 'lbf':
             factor = 0.454*StruMod.grav/1000.0
         elif unitF == 'kip':
@@ -91,25 +93,35 @@ class StruMod(Unit):
     strutype = ''
     projName=''
     exampletitle=''
+    
     materials = []
     sections = []
 
     x = []
     y = []
     z = []
-    nodes = []
+    #nodes = []
     coor = []
     nodelist = []
     seclist = []
     matlist = []
     elemlist = []
-    elem_prop = []
+    elem_proper = []
     bndlist = []
     boundaries = []
     
     nodeloads = []
     memloads=[]
     loadcaseslist = []
+    lines_code=''
+    lines_nodes=[]
+    lines_elem=[]
+    lines_mat=[]
+    lines_sec=[]
+    lines_bnd=[]
+    lines_loading=[]
+    sec_label=[]
+    sec_color=[]
     elem_prop_arr = np.zeros((1, 1))
     sections_arr=np.zeros((1,1))
     mat_table=np.zeros((1,1))
@@ -135,6 +147,7 @@ class StruMod(Unit):
     @classmethod
     def bndparam(cls,bndid,bntype):
         j=cls.nodelist.index(bndid)
+        ibnd=(0,0,0,0)
         if bntype=='ENCASTRE': ibnd=(j+1,0,0,0)
             #ib.append(ibnd)
         elif bntype=='HINGE':  ibnd=(j+1,0,0,1)
@@ -162,12 +175,15 @@ class StruMod(Unit):
     @classmethod
     def code(cls,content,child):
         lineinput=[]
+        Code=''
+        fyield=0.0
         UnitS = child.GetAttribute("unitS", "kN/m2")
         if UnitS == "default-value": scaleS=1.0
         else: scaleS=Unit.TokNperM2(UnitS)                    
         content=content.replace("="," ")
         content=content.replace("\n"," ")
         lineinput=content.split()
+        cls.lines_code=lineinput
         i=0
         while i<len(lineinput):
             if lineinput[i]=="code":
@@ -188,9 +204,12 @@ class StruMod(Unit):
         else: scaleS = Unit.TokNperM2(UnitS)
         if UnitD=="default-value": scaleV=1.0
         else: scaleV=Unit.TokNperM3(UnitD)
-        lines=content.splitlines()
-        StruMod.nmat=len(lines)     
-        for line in lines:
+        lines_mat=content.splitlines()
+        StruMod.nmat=len(lines_mat)
+        emod=0.0
+        matden=0.0
+        poisson=0.0     
+        for line in lines_mat:
             line = line.replace("=", " ")
             lineinput = line.split()
             i=0
@@ -233,20 +252,23 @@ class StruMod(Unit):
     def section(cls,content,child):
         #seclist=[]
         #sections=[]
+        od=0.0
+        wth=0.0
         UnitL = child.GetAttribute("unitL", "m")
         if UnitL == "default-value":
             scaleL = 1.0
         else:
             scaleL = Unit.ToMeter(UnitL)
-        lines = content.splitlines()
-        cls.nsec=len(lines)
-        for line in lines:
+        lines_sec = content.splitlines()
+        cls.nsec=len(lines_sec)
+        for line in lines_sec:
             line = line.replace("=", " ")
             lineinput = line.split()
             i = 0
             cls.seclist.append(lineinput[0])
             secid=lineinput[0]
             sectype = lineinput[1]
+            cls.sec_label.append(sectype)
             if sectype == 'Tube':
                 while i < len(lineinput):
                     if lineinput[i] == 'OD':
@@ -298,10 +320,10 @@ class StruMod(Unit):
         UnitL = child.GetAttribute("unitL", "m")
         if UnitL == "default-value": scaleL = 1.0
         else: scaleL = Unit.ToMeter(UnitL)
-        lines = content.splitlines()
-        nn=len(lines)
+        lines_nodes = content.splitlines()
+        nn=len(lines_nodes)
         n=nn*StruMod.ndf
-        for line in lines:
+        for line in lines_nodes:
             lineinput = line.split()
             nodelist.append(lineinput[0].ljust(10))
             nodex=float(lineinput[1])*scaleL
@@ -313,17 +335,17 @@ class StruMod(Unit):
             StruMod.x.append(nodex)   
             StruMod.y.append(nodey)
             StruMod.z.append(nodez)
-            nodes = (nodex, nodey, nodez)
-            coor.append(nodes)
+            nodet = (nodex, nodey, nodez)
+            coor.append(nodet)
         return nn,n,coor,nodelist
     
     @classmethod
     def elem_prop(cls,content,child):
-        lines = content.splitlines()
-        elem_prop=[]
+        lines_elem = content.splitlines()
+        elem_prp=[]
         ms=0
-        StruMod.ne=len(lines)
-        for line in lines:
+        StruMod.ne=len(lines_elem)
+        for line in lines_elem:
             lineinput = line.split()
             cls.elemlist.append(lineinput[0].ljust(10))
             inc1=cls.nodelist.index(str(lineinput[1]).ljust(10))
@@ -341,11 +363,11 @@ class StruMod(Unit):
             cosx=np.dot(temp,axis_x.T)/elemlen
             sinx = np.dot(temp, axis_y.T)/elemlen
             element=(inc1+1,inc2+1,secid+1,matid+1,elemlen,cosx,sinx)
-            elem_prop.append(element)
+            elem_prp.append(element)
         StruMod.ms=cls.ndf*(ms+1)
         StruMod.ndfel=cls.nne*cls.ndf
-        cls.elem_prop=elem_prop
-        cls.elem_prop_arr=np.reshape(elem_prop,newshape=(cls.ne,7))
+        cls.elem_proper=elem_prp
+        cls.elem_prop_arr=np.reshape(elem_prp,newshape=(cls.ne,7))
         #print(cls.elem_prop_arr)    
     
     @classmethod
@@ -363,6 +385,13 @@ class StruMod(Unit):
     @classmethod
     def loading(cls,content,child):
         lineinput=[]
+        nodeid=''
+        memid=''
+        ldtype=''
+        kref=0
+        wa=0.0
+        wb=0.0
+        ldtuple=('',0,0,0.0,0.0,0.0,0)
         UnitL = child.GetAttribute("unitL", "m")
         if UnitL == "default-value": scaleL = 1.0
         else: scaleL = Unit.ToMeter(UnitL)
@@ -379,10 +408,12 @@ class StruMod(Unit):
                 content2 = load2.GetNodeContent()
                 tag2=load2.GetName()
                 cls.loadcaseslist.append(tagattrib)
+                cls.lines_loading.append('Locad case '+ str(i+1))
                 if tag2=='loaded-nodes':
                     lines = content2.splitlines()
                     cls.nlnodes=len(lines)
                     for line in lines:
+                        cls.lines_loading.append(line)
                         px = 0.0;py = 0.0;mz = 0.0
                         line = line.replace("=", " ")
                         lineinput = line.split()
@@ -402,6 +433,7 @@ class StruMod(Unit):
                     lines = content2.splitlines()
                     cls.nlmem=len(lines)
                     for line in lines:
+                        cls.lines_loading.append(line)
                         p = 0.0;a = 0.0;mz = 0.0
                         line = line.replace("=", " ")
                         lineinput = line.split()
@@ -459,32 +491,39 @@ class StruMod(Unit):
             elif tagname == "code":
                 (code, StruMod.fyield)=cls.code(content,child)
                 fileout.write('Code {0} Fy= {1:.2f}\n'.format(code,StruMod.fyield))
+                cls.lines_code=content
             elif tagname == "material":
                 (cls.matlist,  cls.materials)=cls.material(content,child)
                 #fileout.write('{0}\n {1}\n'.format("Material",StruMod.mat_table))
                 fileout.write('{0}\t\t{1}\n'.format('Number of Materials:', cls.nmat).expandtabs(10))
+                cls.lines_mat=content.splitlines()
             elif tagname == "section":
                 #(cls.seclist,cls.sections)=cls.section(content,child)
                 cls.section(content, child)
                 #fileout.write('{0}\n {1}\n'.format("Sections",cls.sections_arr))
                 fileout.write('{0}\t{1}\n'.format('Number of Sections:',cls.nsec).expandtabs(10))
+                cls.lines_sec=content.splitlines()
             elif tagname == "nodes":
                 (StruMod.nn,StruMod.n,StruMod.coor,StruMod.nodelist)=cls.nodes(content,child)
                 #fileout.write('Number of Nodes: {0}\nNumber of Equations: {1}\n'.format(cls.nn,StruMod.n))
                 fileout.write('{0}\t{1}\n'.format('Number of Nodes:',cls.nn).expandtabs(10))
+                cls.lines_nodes=content.splitlines()
             elif tagname == "elements": 
                 cls.elem_prop(content,child)
                 #fileout.write('Number of Elements: {0}\n Bandwidth: {1}\n{2}\n'.format(cls.ne,cls.ms,cls.elem_prop_arr))
                 fileout.write('{0}\t{1}\n'.format('Number of Elements:',cls.ne).expandtabs(10))
+                cls.lines_elem=content.splitlines()
             elif tagname == "boundary":
                 cls.boundary(content,child)
                 cls.ib=np.reshape(cls.boundaries,newshape=((cls.ndf+1)*cls.nbn))
                 #fileout.write('Number of Boundaries: {0}\n {1}\n'.format(cls.nbn,cls.boundaries))
                 fileout.write('{0}\t{1}\n'.format('Number of Boundaries:',cls.nbn).expandtabs(10))
+                cls.lines_bnd=content.splitlines()
                 #print(cls.ib)
             elif tagname == "loading": 
                 cls.loading(content,child)
                 #fileout.write('Number of Loading Cases: {0}\n {1}\n {2}\n'.format(cls.nlc,cls.nodeloads,cls.memloads))
+    
                 fileout.write('Number of Loading Cases: {0}\n Loaded Nodes: {1}\n Loaded Members: {2}\n'.format(
                     cls.nlc, cls.nlnodes, cls.nlmem))
                 cls.al=np.zeros((cls.n,cls.nlc))

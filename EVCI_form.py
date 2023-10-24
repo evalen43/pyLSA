@@ -14,22 +14,23 @@ import wx
 import wx.dataview as dv
 import wx.xrc
 import matplotlib.pyplot as plt
-import mpl_toolkits.mplot3d as plot3d
-from matplotlib.collections import LineCollection
+import mpl_toolkits.mplot3d.art3d as plot3d
+#from matplotlib.collections import LineCollection
 #from mpl_toolkits.mplot3d import Axes3D
 #from mpl_toolkits.mplot3d.art3d import Poly3DCollection,Line3DCollection
 #from ctypes import *
 import pylsa 
 from wx_evci_mod import StruMod as sm
-from wire3d_mod import Tkwireframe2D as tk2d
+#from wire3d_mod import Tkwireframe2D as tk2d
+import datetime
 
 ###########################################################################
 ## Class EVCI_Form
 ###########################################################################
 
-class EVCI_Form ( wx.Frame,sm,tk2d ):
-    
+# class EVCI_Form ( wx.Frame,sm,tk2d ):
 
+class EVCI_Form ( wx.Frame,sm ):
 
 	def __init__( self, parent ):
 		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Structural Analysis & Design ", pos = wx.DefaultPosition, size = wx.Size( 1100,700 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
@@ -110,7 +111,8 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 		self.m_panel2 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.BORDER_RAISED|wx.TAB_TRAVERSAL )
 		bSizer7 = wx.BoxSizer( wx.HORIZONTAL )
 
-		self.m_dataViewTreeCtrl3 = wx.dataview.DataViewTreeCtrl( self.m_panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0|wx.HSCROLL|wx.VSCROLL )
+		# self.m_dataViewTreeCtrl3 = wx.dataview.DataViewTreeCtrl( self.m_panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0|wx.HSCROLL|wx.VSCROLL )
+		self.m_dataViewTreeCtrl3 = wx.TreeCtrl( self.m_panel2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0|wx.HSCROLL|wx.VSCROLL )  
 		self.m_dataViewTreeCtrl3.SetToolTip( u"Open File" )
 
 		bSizer7.Add( self.m_dataViewTreeCtrl3, 1, wx.EXPAND, 0 )
@@ -197,7 +199,7 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 
 		self.Display_mnu.AppendSeparator()
 
-		self.m_clear = wx.MenuItem( self.Display_mnu, wx.ID_ANY, u"Clear", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_clear = wx.MenuItem( self.Display_mnu, wx.ID_ANY, u"Show Structure", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_clear.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_DELETE, wx.ART_MENU ) )
 		self.Display_mnu.Append( self.m_clear )
 
@@ -236,7 +238,7 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 		
 
 		self.Centre( wx.BOTH )
-
+		
 		# Connect Events
 		self.m_bOpenFile.Bind( wx.EVT_BUTTON, self.OpenFile_click )
 		self.m_bSaveFile.Bind( wx.EVT_BUTTON, self.SaveFile_click )
@@ -263,10 +265,42 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 	def __del__( self ):
 		pass
 
+	def show_dv(self):
+		self.root=self.m_dataViewTreeCtrl3.AddRoot(sm.strutype)
+		proj=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Project')
+		self.m_dataViewTreeCtrl3.AppendItem(proj,sm.exampletitle)
+		code=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Code')
+		self.m_dataViewTreeCtrl3.AppendItem(code,sm.lines_code)
+		mat=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Material')
+		for line in sm.lines_mat:
+			self.m_dataViewTreeCtrl3.AppendItem(mat,line)
+		sec=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Sections')
+		for line in sm.lines_sec:
+			self.m_dataViewTreeCtrl3.AppendItem(sec,line)
+		nodes=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Nodes')
+		for i in range(len(sm.lines_nodes)):
+			self.m_dataViewTreeCtrl3.AppendItem(nodes,sm.lines_nodes[i])			
+		elem=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Elements')
+		for line in sm.lines_elem:
+			self.m_dataViewTreeCtrl3.AppendItem(elem,line)
+		bnd=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Boundary')
+		for line in sm.lines_bnd:
+			self.m_dataViewTreeCtrl3.AppendItem(bnd,line)
+		loading=self.m_dataViewTreeCtrl3.AppendItem(self.root,'Loading')
+		for line in sm.lines_loading:
+			self.m_dataViewTreeCtrl3.AppendItem(loading,line)
+
+
+		self.m_dataViewTreeCtrl3.Expand(self.root)
+		self.Show()
 
 	# Virtual event handlers, override them in your derived class
 	def OpenFile_click( self, e ):
-
+		sizes=[8,10,12,14]
+		families={"FONTFAMILY_ROMAN:wx.FONTFAMILY_ROMAN"}
+		#font1 = wx.Font(sizes[1], families, False, u'Consolas')
+		#font2=wx.Font(10)
+		#self.m_textfilein.SetFont(font1)
 		fileout = open("output.txt", "a")
 		wildcard = "XML Files (*.xml)|*.xml"
 		dlg = wx.FileDialog(self, "Choose a file", os.getcwd(),
@@ -283,10 +317,10 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 			fileout = open("output.txt", 'r')
 			self.m_textlog.SetValue(fileout.read())
 			fileout.close()
-
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file",wx.ICON_QUESTION |wx.OK)
 			return
+		self.show_dv()
 		dlg.Destroy()
 
 	def SaveFile_click( self, event ):
@@ -330,13 +364,17 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 		pylsa.stru3d.ib=sm.ib
 		if(sm.nlmem>0): 
 			pylsa.stru3d.mfemgen()
+		dt1=datetime.datetime.now()
 		pylsa.stru3d.k_assem()
 		self.m_textlog.AppendText("Assembly of Stiffness Matrix ...Completed\n")
 		pylsa.stru3d.boundgen()
 		pylsa.stru3d.bgaussgen()
-		self.m_textlog.AppendText("Solver Solution of Equations ...Completed\n")
 		pylsa.stru3d.forcegen()
 		pylsa.stru3d.outptgen()
+		dt2=datetime.datetime.now()
+		dt=dt2-dt1
+		txt="Solution of Equations Solver ..... Completed " + ' Elapsed Time: '+str(float(dt.seconds)) + ' seconds\n'
+		self.m_textlog.AppendText(txt)
 		f = open("fortran_out.txt", "r")
 		with f:
 			data = f.read()
@@ -363,13 +401,15 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 			with f: 
 				data = f.read() 
 				self.m_textfilein.SetValue(data)       
-			fname=f.name 
+			fname=f.name
+			index=fname.index('.')
 			#self.SetStatusText(self,fname)
 			self.m_statusBar1.SetStatusText(fname)
 			sm.XML_reader(fname)
 			fileout = open("output.txt", 'r')
 			self.m_textlog.SetValue(fileout.read())
 			fileout.close()
+			self.show_dv()
 
 		elif dlg.ShowModal() == wx.ID_CANCEL:
 			wx.MessageBox("No file selected","Try again: select input file", wx.ICON_QUESTION | wx.OK)
@@ -411,32 +451,54 @@ class EVCI_Form ( wx.Frame,sm,tk2d ):
 		event.Skip()
 
 	def wxmnu_clear( self, event ):
+		colors=['blue','green','purple','red','yellow']
+		for i in range(sm.nsec):
+			sm.sec_color.append(colors[i])
 		fig = plt.figure()
-		fig.set_size_inches(9.5, 9.5)
-		ax = fig.add_subplot(111, projection='3d')  # , aspect='equal')
+		fig.set_size_inches(8.5, 8.5)
+		ax = fig.add_subplot(111, projection='3d')# , aspect='equal')
 		#ax=plt.axes(projection='3d')
-		ax.view_init(azim=120)
-		ax.set_xlabel('X Coordinate')
-		ax.set_ylabel('Y Coordinate')
-		ax.set_zlabel('Z Coordinate')
+		
+		if(sm.strutype=='Frame2D   '):
+			ax.view_init(elev=90,azim=-90,roll=0)
+		elif(sm.strutype=='Truss2D   '):
+			ax.view_init(elev=90,azim=-90,roll=0)
+		else:
+			ax.view_init(azim=45)
+		ax.set_xlabel('X Coordinate (m)')
+		ax.set_ylabel('Y Coordinate (m)')
+		ax.set_zlabel('Z Coordinate (m)')
+		#ax.set_box_aspect([1.0,1.0,1.0])
+		#ax.set_aspect('auto')
 		ax.set_title(sm.exampletitle)
 		x=np.reshape(sm.x,newshape=sm.nn)
 		y = np.reshape(sm.y, newshape=sm.nn)
 		z = np.reshape(sm.z, newshape=sm.nn)
 		#print('{0} {1} {2}'.format(x,y,z))
-		vertices=[list(zip(x,y,z))]
+		#vertices=[list(zip(x,y,z))]
 		#poly=Poly3DCollection(vertices,alpha=0.8)
 		#plt.show()
+		xmax=max(x)+5
+		ymax=max(y)+5
 		ax.scatter3D(x, y, z,color='red', marker='s') #, c=np.array(zz), cmap='Greens') #,rstride=10, cstride=10)
-		print(sm.elem_prop)
+		for i in range(sm.ne+1):
+			ax.text(x[i]+0.5,y[i],z[i],sm.nodelist[i],color='blue')
+		
+		#print(sm.elem_prop)
+
+		ax.set_xlim(0,xmax)
+		ax.set_ylim(0,ymax)
+		ax.set_aspect('equal',None)
 		for i in range(sm.ne):
-			inc1=int(sm.elem_prop[i][0])
-			inc2 = int(sm.elem_prop[i][1])
+			inc1=int(sm.elem_proper[i][0])
+			inc2 = int(sm.elem_proper[i][1])
 			#print('{0} {1} {2}'.format(i,inc1,inc2))
 			xs=x[inc1-1],x[inc2-1]
 			ys=y[inc1-1],y[inc2-1]
 			zs = z[inc1-1], z[inc2-1]
-			line = plot3d.art3d.Line3D(xs, ys, zs)
+			index=int(sm.elem_prop_arr[i,2]-1)
+			# line = plot3d.art3d.Line3D(xs, ys, zs)
+			line = plot3d.Line3D(xs, ys, zs,color=sm.sec_color[index])
 			ax.add_line(line)
 		#line3d=[list(zip(lines))]
 		#poly1=Line3D(line3d)
