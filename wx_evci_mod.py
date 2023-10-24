@@ -120,6 +120,7 @@ class StruMod(Unit):
     lines_sec=[]
     lines_bnd=[]
     lines_loading=[]
+    sec_label=[]
     sec_color=[]
     elem_prop_arr = np.zeros((1, 1))
     sections_arr=np.zeros((1,1))
@@ -267,6 +268,7 @@ class StruMod(Unit):
             cls.seclist.append(lineinput[0])
             secid=lineinput[0]
             sectype = lineinput[1]
+            cls.sec_label.append(sectype)
             if sectype == 'Tube':
                 while i < len(lineinput):
                     if lineinput[i] == 'OD':

@@ -295,7 +295,11 @@ class EVCI_Form ( wx.Frame,sm ):
 
 	# Virtual event handlers, override them in your derived class
 	def OpenFile_click( self, e ):
-
+		sizes=[8,10,12,14]
+		families={"FONTFAMILY_ROMAN:wx.FONTFAMILY_ROMAN"}
+		#font1 = wx.Font(sizes[1], families, False, u'Consolas')
+		#font2=wx.Font(10)
+		#self.m_textfilein.SetFont(font1)
 		fileout = open("output.txt", "a")
 		wildcard = "XML Files (*.xml)|*.xml"
 		dlg = wx.FileDialog(self, "Choose a file", os.getcwd(),
@@ -449,7 +453,7 @@ class EVCI_Form ( wx.Frame,sm ):
 		for i in range(sm.nsec):
 			sm.sec_color.append(colors[i])
 		fig = plt.figure()
-		fig.set_size_inches(9.5, 9.5)
+		fig.set_size_inches(8.5, 8.5)
 		ax = fig.add_subplot(111, projection='3d')# , aspect='equal')
 		#ax=plt.axes(projection='3d')
 		
@@ -458,7 +462,7 @@ class EVCI_Form ( wx.Frame,sm ):
 		elif(sm.strutype=='Truss2D   '):
 			ax.view_init(elev=90,azim=-90,roll=0)
 		else:
-			ax.view_init(azim=120)
+			ax.view_init(azim=45)
 		ax.set_xlabel('X Coordinate (m)')
 		ax.set_ylabel('Y Coordinate (m)')
 		ax.set_zlabel('Z Coordinate (m)')
@@ -472,12 +476,17 @@ class EVCI_Form ( wx.Frame,sm ):
 		#vertices=[list(zip(x,y,z))]
 		#poly=Poly3DCollection(vertices,alpha=0.8)
 		#plt.show()
-		
+		xmax=max(x)+5
+		ymax=max(y)+5
 		ax.scatter3D(x, y, z,color='red', marker='s') #, c=np.array(zz), cmap='Greens') #,rstride=10, cstride=10)
 		for i in range(sm.ne+1):
 			ax.text(x[i]+0.5,y[i],z[i],sm.nodelist[i],color='blue')
+		
+		#print(sm.elem_prop)
+
+		ax.set_xlim(0,xmax)
+		ax.set_ylim(0,ymax)
 		ax.set_aspect('equal',None)
-		print(sm.elem_prop)
 		for i in range(sm.ne):
 			inc1=int(sm.elem_proper[i][0])
 			inc2 = int(sm.elem_proper[i][1])
