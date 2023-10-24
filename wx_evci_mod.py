@@ -261,6 +261,7 @@ class StruMod(Unit):
             scaleL = Unit.ToMeter(UnitL)
         lines_sec = content.splitlines()
         cls.nsec=len(lines_sec)
+        #cls.sec_label.clear
         for line in lines_sec:
             line = line.replace("=", " ")
             lineinput = line.split()
@@ -268,7 +269,7 @@ class StruMod(Unit):
             cls.seclist.append(lineinput[0])
             secid=lineinput[0]
             sectype = lineinput[1]
-            cls.sec_label.append(lineinput[2])
+
             if sectype == 'Tube':
                 while i < len(lineinput):
                     if lineinput[i] == 'OD':
@@ -285,6 +286,7 @@ class StruMod(Unit):
                 cls.sections.append(tuple(section))
             elif sectype == 'EDI':
                 edi = lineinput[2]
+                cls.sec_label.append(edi)
                 # Connecto to database
                 conn = sqlite3.connect(
                     abspath(expanduser('~/pyLSA/aisc_shapes_v15_US_R1.db')))

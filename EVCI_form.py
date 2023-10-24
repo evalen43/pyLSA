@@ -483,7 +483,7 @@ class EVCI_Form ( wx.Frame,sm ):
 			ax.text(x[i]+0.5,y[i],z[i],sm.nodelist[i],color='blue')
 		ymax=max(y)
 		for i in range(sm.nsec):
-			ax.text(0.5,ymax+5-i*2,0,sm.sec_label)
+			ax.text(0.5,ymax+5-i*2,0,sm.sec_label[i])
 		#print(sm.elem_prop)
 
 		ax.set_xlim(0,xmax)
