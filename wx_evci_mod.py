@@ -545,15 +545,24 @@ class StruMod(Unit):
         fileout.close()
         
     @classmethod
-    def compact(cls, lam, E, fy):
-        #cls.fy = fy  # Define the fy attribute in the StruMod class
-        lambdap = 0.38 * math.sqrt(E / fy)
-        lambdar = 1.0*math.sqrt(E / fy)
-        if lam <= lambdap:
-            result = 'compact'
-        elif lambdar >= lam > lambdap:
-            result = 'noncompact'
+    def compact(cls, lam_f, lam_w,E, fy):
+        #Flange test
+        lambdap_f = 0.38 * math.sqrt(E / fy)
+        lambdar_f = 1.0*math.sqrt(E / fy)
+        if lam_f <= lambdap_f:
+            result_f = 'compact'
+        elif lambdar_f >= lam_f > lambdap_f:
+            result_f = 'noncompact'
         else:
-            result = 'slender'
-        return result        
+            result_f = 'slender'
+        #Web test
+        lambdap_w = 3.76 * math.sqrt(E / fy)
+        lambdar_w = 5.7*math.sqrt(E / fy)
+        if lam_w <= lambdap_w:
+            result_w = 'compact'
+        elif lambdar_w >= lam_w > lambdap_w:
+            result_w = 'noncompact'
+        else:
+            result_w = 'slender'
+        return (result_f,result_w)        
 
