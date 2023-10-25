@@ -545,8 +545,8 @@ class StruMod(Unit):
         fileout.close()
         
     @classmethod
-    def compact(cls, lam_f, lam_w,E, fy):
-        #Flange test
+    def compact_test_comp_flex(cls, lam_f, lam_w,E, fy):
+        #Table B4.1b Case 10 Flange test
         lambdap_f = 0.38 * math.sqrt(E / fy)
         lambdar_f = 1.0*math.sqrt(E / fy)
         if lam_f <= lambdap_f:
@@ -555,7 +555,7 @@ class StruMod(Unit):
             result_f = 'noncompact'
         else:
             result_f = 'slender'
-        #Web test
+        #Table B4.1b Case 15 Web test
         lambdap_w = 3.76 * math.sqrt(E / fy)
         lambdar_w = 5.7*math.sqrt(E / fy)
         if lam_w <= lambdap_w:
@@ -564,5 +564,120 @@ class StruMod(Unit):
             result_w = 'noncompact'
         else:
             result_w = 'slender'
-        return (result_f,result_w)        
+        return (result_f,result_w)
+    
+    def slender_test_comp(self, lam_f, lam_w, E, fy):
+        #Table B4.1b Case 1 Flange test
+        lambdar_f = 0.56*math.sqrt(E / fy)
+        if lam_f <= lambdar_f:
+            result_f = 'nonslender'
+        else:
+            result_f = 'slender'
+        #Table B4.1b Case 5 Web test
+        lambdar_w = 1.49*math.sqrt(E / fy)
+        if lam_w <= lambdar_w:
+            result_w = 'nonslender'
+        else:
+            result_w = 'slender'
+        return (result_f,result_w)
+    
+def AISC_360_16_ASD():
+    r = 0
+    area = 0
+    rmomi = 0
+    rmomj = 0
+    rmom = 0.0
+    sx = 0
+    sy = 0
+    rx = 0
+    ry = 0
+    Pr = 0.0
+    slendy = 0.0
+    fb = 0
+    cc = 0
+    Fe = 0
+    uratio = 0
+    blngth = 0
+    E = 0
+    cc1 = 0
+    Fcr = 0
+    Pn = 0
+    Pc = 0
+    alpha = 1.6
+    zx = 0
+    zy = 0
+    Mnx = 0.0
+    Mrx = 0.0
+    klc = 0
+    n1 = 0
+    n2 = 0
+    k1 = 0
+    k2 = 0
+    eqtn = ""
+    with open(Fileout, "a") as outfile:
+        outfile.write("ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019\n")
+        for klc in range(1, Nlc + 1):
+            outfile.write("Load Case: " + str(klc) + "\n")
+            outfile.write("{0:10} {1:10} {2:10} {3:10}\n".format("Element", "Unity Ratio", "Equation", "Pr/Pc"))
+            for nel in range(1, Ne + 1):
+                n1 = wxelement[nel - 1].inc1
+                n2 = wxelement[nel - 1].inc2
+                k1 = Ndfel * (nel - 1) + Ne * Ndfel * (klc - 1)
+                k2 = k1 + 2
+                blngth = wxelement[nel - 1].d
+                imat = wxelement[nel - 1].mat_id
+                E = wxmaterial[imat].Ematerial
+                isec = wxelement[nel - 1].sec_id
+                area = wxsection[isec].A
+                sx = wxsection[isec].Sx
+                sy = wxsection[isec].Sy
+                rx = wxsection[isec].rx
+                ry = wxsection[isec].ry
+                zx = wxsection[isec].Zx
+                zy = wxsection[isec].Zy
+                if Structure == "Frame2D":
+                    Pr = intforc[k1]
+                    rmomi = intforc[k2]
+                    k1 = k2 + 1
+                    k2 = k1 + 2
+                    rmomj = intforc[k2]
+                    r = min(rx, ry)
+                    rmom = max(abs(rmomi), abs(rmomj))
+                    Mnx = Fyield * zx / alpha
+                    Mrx = rmom
+                    fx = rmom / sx
+                    faw = Pr / area
+                    slendy = blngth / r
+                    fy = 0.0
+                if Structure == "Frame3D":
+                    Mny = Fyield * zy / alpha
+                    fx = rmom / sx
+                    fy = rmom / sy
+                    faw = Pr / area
+                    slendy = blngth / r
+                fb = 0.66 * Fyield
+                if Pr > 0.0:
+                    cc = 4.71 * math.sqrt(E / Fyield)
+                    Fe = 5.149359 * E / (slendy ** 2)
+                    cc1 = Fyield / Fe
+                    if slendy <= cc or cc1 <= 2.25:
+                        Fcr = Fyield * 0.658 ** cc1
+                    else:
+                        Fcr = 0.877 * Fe
+                    Pn = Fcr * area
+                    Pc = Pn / alpha
+                    if Pr / Pc < 0.2:
+                        uratio = Pr / (2 * Pc) + abs(Mrx / Mnx)
+                        eqtn = "H1-1b"
+                    else:
+                        uratio = Pr / Pc + abs(Mrx / Mnx) * 8 / 9
+                        eqtn = "H1-1a"
+                else:
+                    Pn = fyield * area
+                    Pc = Pn / alpha
+                    uratio = abs(Pr / Pc) + abs(Mrx / Mnx)
+                    eqtn = "H1-2 (Flexure and Tension)"
+                outfile.write("{0:10} {1:10} {2:10} {3:10}\n".format(wxelement[nel - 1].memberid, "{0:0.000}".format(uratio), eqtn, "{0:0.000}".format(Pr / Pc)))
+            outfile.write("\n")
+            
 
