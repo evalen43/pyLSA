@@ -89,6 +89,7 @@ class StruMod(Unit):
     nlnodes=0
     nlmem=0
     fyield = 0.0
+    #emod=0.0
 
     strutype = ''
     projName=''
@@ -541,4 +542,18 @@ class StruMod(Unit):
                     cls.al[kdsp+2][klc] = nload[4]
                 #print(cls.al)    
             child = child.GetNext()
-        fileout.close()        
+        fileout.close()
+        
+    @classmethod
+    def compact(cls, lam, E, fy):
+        #cls.fy = fy  # Define the fy attribute in the StruMod class
+        lambdap = 0.38 * math.sqrt(E / fy)
+        lambdar = 1.0*math.sqrt(E / fy)
+        if lam <= lambdap:
+            result = 'compact'
+        elif lambdar >= lam > lambdap:
+            result = 'noncompact'
+        else:
+            result = 'slender'
+        return result        
+
