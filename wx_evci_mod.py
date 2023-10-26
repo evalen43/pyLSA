@@ -385,96 +385,95 @@ class StruMod(Unit):
             cls.boundaries.append(cls.bndparam(bnodeid,bntype))
     
     @classmethod
-    def loading(cls,content,child):
-        lineinput=[]
-        nodeid=''
-        memid=''
-        ldtype=''
-        kref=0
-        wa=0.0
-        wb=0.0
-        ldtuple=('',0,0,0.0,0.0,0.0,0)
+    def loading(cls, content, child):
         UnitL = child.GetAttribute("unitL", "m")
-        if UnitL == "default-value": scaleL = 1.0
-        else: scaleL = Unit.ToMeter(UnitL)
-        UnitF=child.GetAttribute("unitF","kN")
-        if UnitF=="default-value": scaleF=1.0
-        else: scaleF=Unit.TokN(UnitF)
-        i=0
+        scaleL = 1.0 if UnitL == "default-value" else Unit.ToMeter(UnitL)
+        UnitF = child.GetAttribute("unitF", "kN")
+        scaleF = 1.0 if UnitF == "default-value" else Unit.TokN(UnitF)
+        ldtype = ""
+        ldtuple = ()
+        i = 0
         load = child.GetChildren()
         while load:
-            tagchild=load.GetName()
-            tagattrib=load.GetAttribute("id",'')
-            if tagchild=='case':
+            tagchild = load.GetName()
+            tagattrib = load.GetAttribute("id", "")
+            if tagchild == "case":
                 load2 = load.GetChildren()
                 content2 = load2.GetNodeContent()
-                tag2=load2.GetName()
+                tag2 = load2.GetName()
                 cls.loadcaseslist.append(tagattrib)
-                cls.lines_loading.append('Locad case '+ str(i+1))
-                if tag2=='loaded-nodes':
+                cls.lines_loading.append(f"Load case {i+1}")
+                if tag2 == "loaded-nodes":
                     lines = content2.splitlines()
-                    cls.nlnodes=len(lines)
+                    cls.nlnodes = len(lines)
                     for line in lines:
                         cls.lines_loading.append(line)
-                        px = 0.0;py = 0.0;mz = 0.0
+                        nodeid, px, py, mz = "", 0.0, 0.0, 0.0
                         line = line.replace("=", " ")
                         lineinput = line.split()
                         for j in range(len(lineinput)):
-                            if  lineinput[j] =='nodeid':
+                            if lineinput[j] == "nodeid":
                                 nodeid = str(lineinput[j+1]).ljust(10)
-                            elif lineinput[j]=='Px': 
-                                px=float(lineinput[j+1])*scaleF
-                            elif lineinput[j] == 'Py':
-                                py = float(lineinput[j+1])*scaleF
-                            elif lineinput[j] == 'Mz':
-                                mz = float(lineinput[j+1])*scaleL*scaleF
-                        k=cls.nodelist.index(nodeid)    
-                        ldtuple=(i,k,px,py,mz)
-                        cls.nodeloads.append(ldtuple)    
-                if tag2 == 'loaded-members':
+                            elif lineinput[j] == "Px":
+                                px = float(lineinput[j+1]) * scaleF
+                            elif lineinput[j] == "Py":
+                                py = float(lineinput[j+1]) * scaleF
+                            elif lineinput[j] == "Mz":
+                                mz = float(lineinput[j+1]) * scaleL * scaleF
+                        k = cls.nodelist.index(nodeid)
+                        ldtuple = (i, k, px, py, mz)
+                        cls.nodeloads.append(ldtuple)
+                elif tag2 == "loaded-members":
                     lines = content2.splitlines()
-                    cls.nlmem=len(lines)
+                    cls.nlmem = len(lines)
                     for line in lines:
                         cls.lines_loading.append(line)
-                        p = 0.0;a = 0.0;mz = 0.0
+                        memid, p, a, mz, wa, wb, kref = "", 0.0, 0.0, 0.0, 0.0, 0.0, 0
                         line = line.replace("=", " ")
                         lineinput = line.split()
                         for j in range(len(lineinput)):
-                            if lineinput[j]=='memid':
+                            if lineinput[j] == "memid":
                                 memid = lineinput[j+1]
-                            elif lineinput[j]=='P': 
-                                p=float(lineinput[j+1])*scaleF
-                            elif lineinput[j] == 'a':
-                                a = float(lineinput[j+1])*scaleL
-                            elif lineinput[j] == 'loadtype':
+                            elif lineinput[j] == "P":
+                                p = float(lineinput[j+1]) * scaleF
+                            elif lineinput[j] == "a":
+                                a = float(lineinput[j+1]) * scaleL
+                            elif lineinput[j] == "loadtype":
                                 ldtype = lineinput[j+1]
-                            elif lineinput[j]=='wa': 
-                                wa=float(lineinput[j+1])*scaleF
-                            elif lineinput[j]=='wb': 
-                                wb=float(lineinput[j+1])*scaleF 
-                            elif lineinput[j] == 'sysref':
+                            elif lineinput[j] == "wa":
+                                wa = float(lineinput[j+1]) * scaleF
+                            elif lineinput[j] == "wb":
+                                wb = float(lineinput[j+1]) * scaleF
+                            elif lineinput[j] == "sysref":
                                 sysref = lineinput[j+1]
-                                if(sysref=='globx'): kref=1
-                                if (sysref == 'globy'):
+                                if sysref == "globx":
+                                    kref = 1
+                                elif sysref == "globy":
                                     kref = 2
-                                if (sysref == 'globz'):
+                                elif sysref == "globz":
                                     kref = 3
-                        k=cls.elemlist.index(memid.ljust(10))
-                        ltype=0
-                        if(ldtype=='pload'):
-                            ltype=2
-                            ldtuple=(ltype,i+1,k+1,p,a,0,kref)                            
-                        if(ldtype=='wload'):
-                            ltype=1                                
-                            ldtuple=(ltype,i+1,k+1,wa,wb,a,kref)
-                        cls.memloads.append(ldtuple)                        
-            i +=1    
-            load=load.GetNext()
-        cls.nlc=i    
-    
+                        k = cls.elemlist.index(memid.ljust(10))
+                        ltype = 0
+                        if ldtype == "pload":
+                            ltype = 2
+                            ldtuple = (ltype, i+1, k+1, p, a, 0, kref)
+                        elif ldtype == "wload":
+                            ltype = 1
+                            ldtuple = (ltype, i+1, k+1, wa, wb, a, kref)
+                        cls.memloads.append(ldtuple)
+            i += 1
+            load = load.GetNext()
+        cls.nlc = i
+
+
     @classmethod
     def XML_reader(cls,filein):
-    # start processing the XML file
+        """ This method reads an XML file and extracts information from it to initialize various 
+        variables and data structures used in the program. It opens an output file called "output.txt" 
+        and writes information about the project name, number of degrees of freedom per node, number of materials, 
+        number of sections, number of nodes, number of elements, number of boundaries, and number of loading cases. 
+        It also extracts information about the code used, materials, sections, nodes, elements, boundaries, and loading 
+        cases from the XML file and stores them in various data structures. """
         fileout = open("output.txt", "w")
         doc = wx.xml.XmlDocument()
         if not doc.Load(filein):
