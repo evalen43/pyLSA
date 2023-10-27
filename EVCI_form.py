@@ -8,7 +8,7 @@
 
 #from tokenize import tokenize, untokenize, NUMBER, STRING, NAME, OP
 import os
-
+import math
 import numpy as np
 import wx
 import wx.dataview as dv
@@ -515,6 +515,98 @@ class EVCI_Form ( wx.Frame,sm ):
 
 	def wxmnu_2rd( self, event ):
 		event.Skip()
+def AISC_360_16_ASD(self):
+	'''This function calculates the unity ratio and Pr/Pc for each element in a 3D truss or 
+	frame structure, based on the ANSI/AISC Code 360-16 (ASD/LRFD) standard. 
+	The function loops over each load case and each element, and calculates the forces and moments 
+	for each element based on its material and section properties. It then calculates the unity ratio and Pr/Pc for each element, and writes the results to an output file.'''
+	# Initialize variables
+	''' The function uses several variables to store intermediate results, such as r, area, rmomi, 
+	rmomj, rmom, sx, sy, rx, ry, Pr, slendy, fb, cc, Fe, uratio, blngth, E, cc1, Fcr, Pn, Pc, 
+	alpha, zx, zy, Mnx, Mrx, klc, n1, n2, k1, k2, and eqtn. These variables are used to simplify 
+	the calculation of the unity ratio and Pr/Pc for each element.'''
+	r = 0; 	area = 0; 	rmomi = 0; 	rmomj = 0; 	rmom = 0.0; sx = 0; sy = 0;	rx = 0; ry = 0
+	Pr = 0.0; slendy = 0.0; fb = 0; cc = 0; Fe = 0; uratio = 0; blngth = 0; E = 0; cc1 = 0
+	Fcr = 0; Pn = 0; Pc = 0; alpha = 1.6; zx = 0
+	zy = 0; Mnx = 0.0;  Mrx = 0.0;  klc = 0;  n1 = 0;  n2 = 0;  k1 = 0 ;  k2 = 0 ; eqtn = ""
+
+    # Open output file and write header
+	with open(pylsa.fileout, "a") as outfile:
+		outfile.write("ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019\n")
+
+        # Loop over load cases
+		for klc in range(1, pylsa.nlc + 1):
+			outfile.write("Load Case: " + str(klc) + "\n")
+			outfile.write("{0:10} {1:10} {2:10} {3:10}\n".format("Element", "Unity Ratio", "Equation", "Pr/Pc"))
+
+            # Loop over elements
+			for nel in range(1, sm.ne + 1):
+				n1 = pylsa.wxelement[nel - 1].inc1
+				n2 = pylsa.wxelement[nel - 1].inc2
+				k1 = sm.ndfel * (nel - 1) + sm.ne * pylsa.ndfel * (klc - 1)
+				k2 = k1 + 2
+				blngth = pylsa.wxelement[nel - 1].d
+				imat = pylsa.wxelement[nel - 1].mat_id
+				E = pylsa.wxmaterial[imat].Ematerial
+				isec = pylsa.wxelement[nel - 1].sec_id
+				area = pylsa.wxsection[isec].A
+				sx = pylsa.wxsection[isec].Sx
+				sy = pylsa.wxsection[isec].Sy
+				rx = pylsa.wxsection[isec].rx
+				ry = pylsa.wxsection[isec].ry
+				zx = pylsa.wxsection[isec].Zx
+				zy = pylsa.wxsection[isec].Zy
+
+				# Calculate axial and bending stressess
+				if sm.strutype == "Frame2D":
+					Pr = pylsa.intforc[k1]
+					rmomi = pylsa.intforc[k2]
+					k1 = k2 + 1
+					k2 = k1 + 2
+					rmomj = pylsa.intforc[k2]
+					r = min(rx, ry)
+					rmom = max(abs(rmomi), abs(rmomj))
+					Mnx = sm.fyield * zx / alpha
+					Mrx = rmom
+					fx = rmom / sx
+					faw = Pr / area
+					slendy = blngth / r
+					fy = 0.0
+				elif sm.strutype == "Frame3D":
+					Mny = sm.fyield * zy / alpha
+					fx = rmom / sx
+					fy = rmom / sy
+					faw = Pr / area
+					slendy = blngth / r
+
+				# Calculate other parameters
+				fb = 0.66 * sm.fyield
+				if Pr > 0.0:
+					cc = 4.71 * math.sqrt(E / sm.fyield)
+					Fe = 5.149359 * E / (slendy ** 2)
+					cc1 = sm.fyield / Fe
+					if slendy <= cc or cc1 <= 2.25:
+						Fcr = sm.fyield * 0.658 ** cc1
+					else:
+						Fcr = 0.877 * Fe
+					Pn = Fcr * area
+					Pc = Pn / alpha
+					if Pr / Pc < 0.2:
+						uratio = Pr / (2 * Pc) + abs(Mrx / Mnx)
+						eqtn = "H1-1b"
+					else:
+						uratio = Pr / Pc + abs(Mrx / Mnx) * 8 / 9
+						eqtn = "H1-1a"
+				else:
+					Pn = sm.fyield * area
+					Pc = Pn / alpha
+					uratio = abs(Pr / Pc) + abs(Mrx / Mnx)
+					eqtn = "H1-2 (Flexure and Tension)"
+
+                # Write results to output file
+				outfile.write("{0:10} {1:10} {2:10} {3:10}\n".format(pylsa.wxelement[nel - 1].memberid, "{0:0.000}".format(uratio), eqtn, "{0:0.000}".format(Pr / Pc)))
+
+		outfile.write("\n")
 
 if __name__ == '__main__':
 # When this module is run (not imported) then create the app, the
