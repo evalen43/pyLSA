@@ -1,4 +1,4 @@
-SUBROUTINE outptgen()
+module outptgen
 use iso_fortran_env
 !use structvarsgen, nodename => nodestring
 IMPLICIT NONE
@@ -81,44 +81,8 @@ DO  klc=1,nlc
 END DO
 CALL time_now()
 RETURN
-END SUBROUTINE outptgen
+END module outptgen
 
-! -----------------------
-! Prints date and time
-! -----------------------
 
-subroutine time_now()
-
-CALL date_and_time(DATE=date,TIME=time,ZONE=zone,VALUES=values)
-tmpmonth=values(2)
-tmpday=values(3)
-tmpyear=values(1)
-tmphour=values(5)
-tmpminute=values(6)
-tmpsecond=values(7)
-tmphund=values(8)
-IF (tmphour .GT. 12) THEN
-    mer = 'p'
-    tmphour = tmphour - 12
-    ELSE
-    mer = 'a'
-END IF 
-
-WRITE (fileout_unit, '(i2,"/",i2.2,"/",i4.4)') tmpmonth, tmpday,tmpyear
-WRITE (fileout_unit, '(i2,":",i2.2,":",i2.2," ",a,"m")') tmphour, &
-    tmpminute, tmpsecond,  mer
-
-end subroutine time_now
-
-! -----------------------
-! Prints Page Header
-! -----------------------
-
-subroutine header()
-WRITE(fileout_unit,'(20x,A20)') PNAME
-WRITE(fileout_unit,'(A80)') exampletitle
-WRITE(fileout_unit,'(80("-"))')
-
-end subroutine header
 
 
