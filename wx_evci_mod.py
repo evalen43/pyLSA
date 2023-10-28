@@ -10,7 +10,7 @@ import wx.xml
 #import wx.dataview
 
 class Unit:
-    
+    grav = 9.806
     @staticmethod
     def TokNperM2(unitF):
         if unitF == "kN/m2":
@@ -74,33 +74,11 @@ class Unit:
         return factor    
 
 class StruMod(Unit):
-    grav = 9.806
-    ndf = 0
-    ne = 0
-    ms = 0
-    n = 0
-    nn=0
-    nne = 2
-    nbn=0
-    ndfel=0
-    nlc=0
-    nmat=0
-    nsec=0
-    nlnodes=0
-    nlmem=0
-    fyield = 0.0
+    ndf, ne, ms, n, nn, nne, nbn, ndfel, nlc, nmat, nsec, nlnodes, nlmem, fyield = 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0.0
     #emod=0.0
-
-    strutype = ''
-    projName=''
-    exampletitle=''
+    strutype, projName, exampletitle = '', '', ''
     
-    materials = []
-    sections = []
-
-    x = []
-    y = []
-    z = []
+    materials, sections, x, y, z = [], [], [], [], []
     #nodes = []
     coor = []
     nodelist = []
