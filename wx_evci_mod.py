@@ -2,7 +2,7 @@ import math
 import sqlite3
 import xml.etree.ElementTree as ET
 from os.path import abspath, expanduser
-
+from scipy.sparse import coo_matrix
 import numpy as np
 import wx.xml
 
@@ -559,6 +559,63 @@ class StruMod(Unit):
             result_w = 'slender'
         return (result_f,result_w)
     
+        def grid(self,num_rows,num_columns,spacing):
+            """ This method creates a grid of nodes. It takes the number of rows, number of columns, and spacing between nodes as input and returns a list of nodes. """
+            x_coords = np.arange(num_cols) * spacing
+            y_coords = np.arange(num_rows) * spacing
+            node_coords = np.transpose([np.tile(x_coords, num_rows), np.repeat(y_coords, num_cols)])
 
+            # Create member incidences
+            member_incidences = []
+            for i in range(num_rows):
+                for j in range(num_cols):
+                    node_num = i * num_cols + j
+                    if j < num_cols - 1:
+                        member_incidences.append([node_num, node_num + 1])
+                    if i < num_rows - 1:
+                        member_incidences.append([node_num, node_num + num_cols])
+
+            # Print node coordinates and member incidences
+            print("Node Coordinates:")
+            print(node_coords)
+            print("Member Incidences:")
+            print(member_incidences)
+            return (nodes_coords,member_incidences)
             
+        def optimize_bandwidth(node_coords, member_incidences):
+            """ This function optimizes the bandwidth of a symmetric matrix using nodes 
+            coordinates and element incidences as edges. It returns the optimized matrix and 
+            the permutation vector.
+            This code takes the node coordinates and member incidences as input and creates 
+            an adjacency matrix representing the edges between nodes. It then converts 
+            the adjacency matrix to a sparse matrix and computes the bandwidth of the matrix. 
+            The matrix is then permuted to optimize the bandwidth, and the new bandwidth and 
+            permutation vector are computed. The optimized matrix and permutation vector 
+            are returned as output."""
+            num_nodes = len(node_coords)
+            num_members = len(member_incidences)
+
+            # Create the adjacency matrix
+            adj_matrix = np.zeros((num_nodes, num_nodes))
+            for member in member_incidences:
+                i, j = member
+                adj_matrix[i, j] = 1
+                adj_matrix[j, i] = 1
+
+            # Convert the adjacency matrix to a sparse matrix
+            sparse_matrix = coo_matrix(adj_matrix)
+
+            # Compute the bandwidth of the matrix
+            bandwidth = sparse_matrix.bandwidth
+
+            # Permute the matrix to optimize the bandwidth
+            permuted_matrix = sparse_matrix.permute(np.argsort(node_coords[:, 0]))
+
+            # Compute the new bandwidth of the matrix
+            new_bandwidth = permuted_matrix.bandwidth
+
+            # Compute the permutation vector
+            permutation = np.argsort(node_coords[:, 0])
+
+            return (permuted_matrix, permutation)
 
