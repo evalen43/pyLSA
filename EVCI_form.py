@@ -669,73 +669,30 @@ class EVCI_Form ( wx.Frame,sm ):
 			self.m_textfileout.write("Number of Iterations {}\n".format(kiter))
 		
 		# Write the nodal displacements for loading to the file
-		for klc in range(0, sm.nlc):
+		sm.al = pylsa.stru3d.al
+		sm.reac = pylsa.stru3d.reac
+
+		# Write the nodal displacements for loading to the file
+		for klc in range(1, sm.nlc):
 			self.m_textfileout.write("Nodal Displacements for Loading {:3}\n".format(klc))
 			self.m_textfileout.write("Active Units : {:8} {:8}\n".format(dat[slen][0], dat[kip][1]))
 			if sm.strutype == "Frame3D":
 				self.m_textfileout.write("Node       Dx         Dy         Dz        Rotx       Roty       Rotz\n")
 			elif sm.strutype == "Frame2D":
 				self.m_textfileout.write("Node               Dx         Dy         Rotz\n")
-			
-			for i in range(0, sm.nn):
-				k1 = sm.ndf * (i-1) + 1
+			for i in range(1, sm.nn):
+				k1 = sm.ndf * (i-1) #+ 1
 				k2 = k1 + sm.ndf - 1
-				
-				for j in range(k1, k2+1):
-					j1 = j - sm.ndf * (i-1)
-					sm.al[j, klc] = sm.al[j, klc]
-				
+				values = [pylsa.stru3d.al[j, klc-1] for j in range(k1, k2)]
+				if len(values) < 6:
+					values += [0] * (6 - len(values))  # Fill the rest with zeros
 				self.m_textfileout.write("{:10} {:15.4g} {:15.4g} {:15.4g} {:15.4g} {:15.4g} {:15.4g}\n".format(
-					sm.nodelist[i], *(sm.al[j, klc] for j in range(k1, k2+1))
+					sm.nodelist[i-1], *values
 				))
-		
-		# Write the nodal reaction for loading to the file
-		for klc in range(1, sm.nlc):
-			self.m_textfileout.write("Nodal Reaction for Loading {:3}\n".format(klc))
-			self.m_textfileout.write("Active Units : {:8} {:8}\n".format(dat[kip][0], dat[slen][1]))
-			
-			if sm.strutype == "Frame3D":
-				self.m_textfileout.write("Node       Px         Py         Pz        Mx         My         Mz\n")
-			elif sm.strutype == "Frame2D":
-				self.m_textfileout.write("Node               Px         Py               Mz\n")
-			
-			for i in range(1, sm.nbn):
-				l1 = (sm.ndf+1) * (i-1) + 1
-				no = sm.ib[l1]
-				k1 = sm.ndf * (no-1) + 1
-				k2 = k1 + sm.ndf - 1
-				
-				self.m_textfileout.write("{:10} {:15.2f} {:15.2f} {:15.2f} {:15.2f} {:15.2f} {:15.2f}\n".format(
-					sm.nodelist[no], *(sm.reac[j, klc] for j in range(k1, k2+1))
-				))
-		
-		# Write the total weight to the file
-		self.m_textfileout.write("Member End Forces\n")
-		self.m_textfileout.write("Active Units : {:8} {:8}\n".format(dat[slen][0], dat[kip][1]))
-		
-		if sm.strutype == "Frame3D":
-			self.m_textfileout.write("LC     Member  Node       Fx         Fy         Fz        Mx         My         Mz\n")
-		elif sm.strutype == "Frame2D":
-			self.m_textfileout.write("LC     Member  Node               Fx               Fy         Mz\n")
-		
-		for klc in range(1, sm.nlc+1):
-			for nel in range(1, sm.ne+1):
-				k1 = sm.ndfel * (nel-1) + 1 + sm.ne * sm.ndfel * (klc-1)
-				k2 = k1 + 2
-				n1 = sm.nne * (nel-1)
-				
-				self.m_textfileout.write("{:5} {:2} {:5} {:15.2f} {:15.2f} {:15.2f} {:15.2f} {:15.2f} {:15.2f}\n".format(
-					sm.elemlist[nel], sm.nodelist[int(pylsa.elem_prop[nel, 1])], *(pylsa.intforc[k] for k in range(k1, k2+1))
-				))
-				
-				k1 = k2 + 1
-				k2 = k1 + 2
-				
-				self.m_textfileout.write("{:2} {:13} {:15.2f} {:15.2f} {:15.2f}\n".format(
-					klc, sm.nodelist[int(pylsa.elem_prop[nel, 2])], *(pylsa.intforc[k] for k in range(k1, k2+1))
-				))
-			
-			self.m_textfileout.write("-" * 80 + "\n")
+
+		self.m_textfileout.write("-" * 80 + "\n")
+
+
 		
 		# Call the time_now function
 		self.time_now()
