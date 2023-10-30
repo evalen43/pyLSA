@@ -303,8 +303,7 @@ class EVCI_Form ( wx.Frame,sm ):
 		#self.m_textfilein.SetFont(font1)
 		fileout = open("output.txt", "a")
 		wildcard = "XML Files (*.xml)|*.xml"
-		dlg = wx.FileDialog(self, "Choose a file", os.getcwd(),
-		                    "", wildcard, wx.FD_OPEN)
+		dlg = wx.FileDialog(self, "Choose a file", os.getcwd(),"", wildcard, wx.FD_OPEN)
 		if dlg.ShowModal() == wx.ID_OK:
 			f = open(dlg.GetPath(), 'r')
 			with f:
