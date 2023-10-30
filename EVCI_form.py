@@ -379,6 +379,8 @@ class EVCI_Form ( wx.Frame,sm ):
 		with f:
 			data = f.read()
 			self.m_textfileout.SetValue(data)
+		f.close()
+		self.outputgen()
 
 	def Help_click( self, event ):
 		event.Skip()
@@ -612,8 +614,8 @@ class EVCI_Form ( wx.Frame,sm ):
 			outfile.write("\n")
 
 	def header(self):
-		self.m_textfileout.write(" " * 20 + pylsa.PNAME + "\n")
-		self.m_textfileout.write(pylsa.exampletitle + "\n")
+		self.m_textfileout.write(" " * 20 + sm.PNAME + "\n")
+		self.m_textfileout.write(sm.exampletitle + "\n")
 		self.m_textfileout.write("-" * 80 + "\n")
 
 	def time_now(self):
@@ -636,7 +638,7 @@ class EVCI_Form ( wx.Frame,sm ):
 		self.m_textfileout.write("{0:02}:{1:02}:{2:02} {3}m\n".format(tmphour, tmpminute, tmpsecond, mer))
 
 # Define the function outptgen
-	def outptgen(self):
+	def outputgen(self):
 		# Import the iso_fortran_env module
 		#from iso_fortran_env import INTEGER
 		
@@ -667,29 +669,28 @@ class EVCI_Form ( wx.Frame,sm ):
 			self.m_textfileout.write("Number of Iterations {}\n".format(kiter))
 		
 		# Write the nodal displacements for loading to the file
-		for klc in range(1, sm.nlc+1):
+		for klc in range(0, sm.nlc):
 			self.m_textfileout.write("Nodal Displacements for Loading {:3}\n".format(klc))
 			self.m_textfileout.write("Active Units : {:8} {:8}\n".format(dat[slen][0], dat[kip][1]))
-			
 			if sm.strutype == "Frame3D":
 				self.m_textfileout.write("Node       Dx         Dy         Dz        Rotx       Roty       Rotz\n")
 			elif sm.strutype == "Frame2D":
 				self.m_textfileout.write("Node               Dx         Dy         Rotz\n")
 			
-			for i in range(1, sm.nn+1):
+			for i in range(0, sm.nn):
 				k1 = sm.ndf * (i-1) + 1
 				k2 = k1 + sm.ndf - 1
 				
 				for j in range(k1, k2+1):
 					j1 = j - sm.ndf * (i-1)
-					pylsa.al[j, klc] = pylsa.al[j, klc]
+					sm.al[j, klc] = sm.al[j, klc]
 				
 				self.m_textfileout.write("{:10} {:15.4g} {:15.4g} {:15.4g} {:15.4g} {:15.4g} {:15.4g}\n".format(
-					sm.nodelist[i], *(pylsa.al[j, klc] for j in range(k1, k2+1))
+					sm.nodelist[i], *(sm.al[j, klc] for j in range(k1, k2+1))
 				))
 		
 		# Write the nodal reaction for loading to the file
-		for klc in range(1, sm.nlc+1):
+		for klc in range(1, sm.nlc):
 			self.m_textfileout.write("Nodal Reaction for Loading {:3}\n".format(klc))
 			self.m_textfileout.write("Active Units : {:8} {:8}\n".format(dat[kip][0], dat[slen][1]))
 			
@@ -698,14 +699,14 @@ class EVCI_Form ( wx.Frame,sm ):
 			elif sm.strutype == "Frame2D":
 				self.m_textfileout.write("Node               Px         Py               Mz\n")
 			
-			for i in range(1, sm.nbn+1):
+			for i in range(1, sm.nbn):
 				l1 = (sm.ndf+1) * (i-1) + 1
-				no = pylsa.ib[l1]
+				no = sm.ib[l1]
 				k1 = sm.ndf * (no-1) + 1
 				k2 = k1 + sm.ndf - 1
 				
 				self.m_textfileout.write("{:10} {:15.2f} {:15.2f} {:15.2f} {:15.2f} {:15.2f} {:15.2f}\n".format(
-					sm.nodelist[no], *(pylsa.reac[j, klc] for j in range(k1, k2+1))
+					sm.nodelist[no], *(sm.reac[j, klc] for j in range(k1, k2+1))
 				))
 		
 		# Write the total weight to the file
@@ -738,7 +739,7 @@ class EVCI_Form ( wx.Frame,sm ):
 		
 		# Call the time_now function
 		self.time_now()
-	
+
 		# Return from the function
 		return
 

@@ -76,7 +76,7 @@ class Unit:
 class StruMod(Unit):
     ndf, ne, ms, n, nn, nne, nbn, ndfel, nlc, nmat, nsec, nlnodes, nlmem, fyield = 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0.0
     #emod=0.0
-    strutype, projName, exampletitle = '', '', ''
+    strutype, projName, exampletitle,PNAME = '', '', '',''
     
     materials, sections, x, y, z = [], [], [], [], []
     #nodes = []
@@ -138,17 +138,26 @@ class StruMod(Unit):
     
     @staticmethod
     def structure(strutype):
-        if strutype == "Frame2D":   ndf = 3
-        elif strutype == "Frame3D": ndf = 6
+        if strutype == "Frame2D":   
+            ndf = 3
+            PNAME="Frame2D"
+        elif strutype == "Frame3D": 
+            ndf = 6
+            PNAME="Frame3D"
         elif strutype == "Truss3D":
             ndf = 3
+            PNAME="Truss3D"
         elif strutype == "Truss2D":
             ndf = 2
         elif strutype == "Grid":
             ndf = 3
+            PNAME="Grid"
         elif strutype == "Frame2D_8DOF":
             ndf = 4
-        else: ndf=3 
+            PNAME="Frame2D_8DOF"
+        else: 
+            ndf=3
+            PNAME="Frame2D" 
         return ndf       
 
     @classmethod
@@ -581,6 +590,6 @@ class StruMod(Unit):
             print("Member Incidences:")
             print(member_incidences)
             return (nodes_coords,member_incidences)
-            
+    
 
 

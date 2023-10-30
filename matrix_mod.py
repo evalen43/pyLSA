@@ -6,14 +6,14 @@ from scipy.sparse import csc_matrix
 class matrix:
     @staticmethod
     def optimize_bandwidth(node_coords, member_incidences):
-        """ This function optimizes the bandwidth of a symmetric matrix using nodes 
+        """ \brief This function optimizes the bandwidth of a symmetric matrix using nodes 
         coordinates and element incidences as edges. It returns the optimized matrix and 
         the permutation vector.
-        This code takes the node coordinates and member incidences as input and creates 
+        \note This code takes the node coordinates and member incidences as input and creates 
         an adjacency matrix representing the edges between nodes. It then converts 
         the adjacency matrix to a sparse matrix and computes the bandwidth of the matrix. 
         The matrix is then permuted to optimize the bandwidth, and the new bandwidth and 
-        permutation vector are computed. The optimized matrix and permutation vector 
+        permutation vector are computed. \return The optimized matrix and permutation vector 
         are returned as output."""
         num_nodes = len(node_coords)
         num_members = len(member_incidences)
