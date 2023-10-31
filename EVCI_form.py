@@ -214,7 +214,7 @@ class EVCI_Form ( wx.Frame,sm ):
 		self.m_lrfd = wx.MenuItem( self.AISC_mnu, wx.ID_ANY, u"LRFD", wx.EmptyString, wx.ITEM_NORMAL )
 
 		#self.m_lrfd.SetBitmap( wx.Bitmap( u"C:\\Users\\edval\\Dropbox\\wxFB\\resources\\exefile.xpm", wx.BITMAP_TYPE_ANY ) )
-		self.m_lrfd.SetBitmap(wx.Bitmap(u"/mnt/c/Users/edval/Dropbox/wxFB/resources/exefile.xpm", wx.BITMAP_TYPE_ANY) )
+		self.m_lrfd.SetBitmap(wx.Bitmap(u"/mnt/c/Users/Ermesto/OneDrive/wxFB/resources/exefile.xpm", wx.BITMAP_TYPE_ANY) )
 		self.AISC_mnu.Append( self.m_lrfd )
 
 		self.Codes_mnu.AppendSubMenu( self.AISC_mnu, u"AISC" )
@@ -222,7 +222,7 @@ class EVCI_Form ( wx.Frame,sm ):
 		self.m_api = wx.Menu()
 		self.m_2rd = wx.MenuItem( self.m_api, wx.ID_ANY, u"2RD", wx.EmptyString, wx.ITEM_NORMAL )
 		#self.m_2rd.SetBitmap( wx.Bitmap( u"C:\\Users\\edval\\Dropbox\\wxFB\\resources\\state2.xpm", wx.BITMAP_TYPE_ANY ) )
-		self.m_2rd.SetBitmap( wx.Bitmap( u"/mnt/c/Users/edval/Dropbox/wxFB/resources/state2.xpm", wx.BITMAP_TYPE_ANY ) )  
+		self.m_2rd.SetBitmap( wx.Bitmap( u"/mnt/c/Users/Ermesto/OneDrive/wxFB/resources/state2.xpm", wx.BITMAP_TYPE_ANY ) )  
 		self.m_api.Append( self.m_2rd )
 
 		self.Codes_mnu.AppendSubMenu( self.m_api, u"API" )
@@ -381,6 +381,7 @@ class EVCI_Form ( wx.Frame,sm ):
 			self.m_textfileout.SetValue(data)
 		f.close()
 		self.outputgen()
+		self.AISC_360_16()
 
 	def Help_click( self, event ):
 		event.Skip()
@@ -519,14 +520,14 @@ class EVCI_Form ( wx.Frame,sm ):
 
 	def wxmnu_2rd( self, event ):
 		event.Skip()
-	def AISC_360_16_ASD(self):
-		'''This function calculates the unity ratio and Pr/Pc for each element in a 3D truss or 
+	def AISC_360_16(self):
+		'''\brief This function calculates the unity ratio and Pr/Pc for each element in a 3D truss or 
 		frame structure, based on the ANSI/AISC Code 360-16 (ASD/LRFD) standard. 
 		The function loops over each load case and each element, and calculates the forces and moments 
 		for each element based on its material and section properties. It then calculates the 
 		unity ratio and Pr/Pc for each element, and writes the results to an output file.'''
 		# Initialize variables
-		''' The function uses several variables to store intermediate results, such as r, area, rmomi, 
+		''' \notes The function uses several variables to store intermediate results, such as r, area, rmomi, 
 		rmomj, rmom, sx, sy, rx, ry, Pr, slendy, fb, cc, Fe, uratio, blngth, E, cc1, Fcr, Pn, Pc, 
 		alpha, zx, zy, Mnx, Mrx, klc, n1, n2, k1, k2, and eqtn. These variables are used to simplify 
 		the calculation of the unity ratio and Pr/Pc for each element.'''
@@ -536,82 +537,82 @@ class EVCI_Form ( wx.Frame,sm ):
 		zy = 0; Mnx = 0.0;  Mrx = 0.0;  klc = 0;  n1 = 0;  n2 = 0;  k1 = 0 ;  k2 = 0 ; eqtn = ""
 
 		# Open output file and write header
-		with open(pylsa.fileout, "a") as outfile:
-			outfile.write("ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019\n")
+		outfile=open("aisc-output.txt","a")
+		outfile.write("ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019\n")
 
-			# Loop over load cases
-			for klc in range(1, pylsa.nlc + 1):
-				outfile.write("Load Case: " + str(klc) + "\n")
-				outfile.write("{0:10} {1:10} {2:10} {3:10}\n".format("Element", "Unity Ratio", "Equation", "Pr/Pc"))
+		# Loop over load cases
+		for klc in range(1, sm.nlc + 1):
+			outfile.write("Load Case: " + str(klc) + "\n")
+			outfile.write("{0:10} {1:10} {2:10} {3:10}\n".format("Element", "Unity Ratio", "Equation", "Pr/Pc"))
 
-				# Loop over elements
-				for nel in range(1, sm.ne + 1):
-					n1 = pylsa.wxelement[nel - 1].inc1
-					n2 = pylsa.wxelement[nel - 1].inc2
-					k1 = sm.ndfel * (nel - 1) + sm.ne * pylsa.ndfel * (klc - 1)
+			# Loop over elements
+			for nel in range(1, sm.ne + 1):
+				n1 = int(sm.elem_prop_arr[nel - 1,0]-1)#.inc1
+				n2 = int(sm.elem_prop_arr[nel - 1,1]-1)#.inc2
+				k1 = sm.ndfel * (nel - 1) + sm.ne * sm.ndfel * (klc - 1)
+				k2 = k1 + 2
+				blngth = sm.elem_prop_arr[nel - 1,4]#.d
+				imat = int(sm.elem_prop_arr[nel - 1,3]-1)#.mat_id
+				E = sm.mat_table[imat,0]#.Ematerial
+				isec = int(sm.elem_prop_arr[nel - 1,2]-1)#.sec_id
+				area = sm.sections_arr[isec,2] #.A
+				sx = sm.sections_arr[isec,6]#.Sx
+				sy = sm.sections_arr[isec,10]#.Sy
+				rx = sm.sections_arr[isec,7]#.rx
+				ry = sm.sections_arr[isec,11]#.ry
+				zx = sm.sections_arr[isec,5]#.Zx
+				zy = sm.sections_arr[isec,9]#.Zy
+
+				# Calculate axial and bending stressess
+				if sm.strutype == "Frame2D   ":
+					Pr = pylsa.stru3d.intforc[k1]
+					rmomi = pylsa.stru3d.intforc[k2]
+					k1 = k2 + 1
 					k2 = k1 + 2
-					blngth = pylsa.wxelement[nel - 1].d
-					imat = pylsa.wxelement[nel - 1].mat_id
-					E = pylsa.wxmaterial[imat].Ematerial
-					isec = pylsa.wxelement[nel - 1].sec_id
-					area = pylsa.wxsection[isec].A
-					sx = pylsa.wxsection[isec].Sx
-					sy = pylsa.wxsection[isec].Sy
-					rx = pylsa.wxsection[isec].rx
-					ry = pylsa.wxsection[isec].ry
-					zx = pylsa.wxsection[isec].Zx
-					zy = pylsa.wxsection[isec].Zy
+					rmomj = pylsa.stru3d.intforc[k2]
+					r = min(rx, ry)
+					rmom = max(abs(rmomi), abs(rmomj))
+					Mnx = sm.fyield * zx / alpha
+					Mrx = rmom
+					fx = rmom / sx
+					faw = Pr / area
+					slendy = blngth / r
+					fy = 0.0
+				elif sm.strutype == "Frame3D   ":
+					Mny = sm.fyield * zy / alpha
+					fx = rmom / sx
+					fy = rmom / sy
+					faw = Pr / area
+					slendy = blngth / r
 
-					# Calculate axial and bending stressess
-					if sm.strutype == "Frame2D":
-						Pr = pylsa.intforc[k1]
-						rmomi = pylsa.intforc[k2]
-						k1 = k2 + 1
-						k2 = k1 + 2
-						rmomj = pylsa.intforc[k2]
-						r = min(rx, ry)
-						rmom = max(abs(rmomi), abs(rmomj))
-						Mnx = sm.fyield * zx / alpha
-						Mrx = rmom
-						fx = rmom / sx
-						faw = Pr / area
-						slendy = blngth / r
-						fy = 0.0
-					elif sm.strutype == "Frame3D":
-						Mny = sm.fyield * zy / alpha
-						fx = rmom / sx
-						fy = rmom / sy
-						faw = Pr / area
-						slendy = blngth / r
-
-					# Calculate other parameters
-					fb = 0.66 * sm.fyield
-					if Pr > 0.0:
-						cc = 4.71 * math.sqrt(E / sm.fyield)
-						Fe = 5.149359 * E / (slendy ** 2)
-						cc1 = sm.fyield / Fe
-						if slendy <= cc or cc1 <= 2.25:
-							Fcr = sm.fyield * 0.658 ** cc1
-						else:
-							Fcr = 0.877 * Fe
-						Pn = Fcr * area
-						Pc = Pn / alpha
-						if Pr / Pc < 0.2:
-							uratio = Pr / (2 * Pc) + abs(Mrx / Mnx)
-							eqtn = "H1-1b"
-						else:
-							uratio = Pr / Pc + abs(Mrx / Mnx) * 8 / 9
-							eqtn = "H1-1a"
+				# Calculate other parameters
+				fb = 0.66 * sm.fyield
+				if Pr > 0.0:
+					cc = 4.71 * math.sqrt(E / sm.fyield)
+					Fe = 5.149359 * E / (slendy ** 2)
+					cc1 = sm.fyield / Fe
+					if slendy <= cc or cc1 <= 2.25:
+						Fcr = sm.fyield * 0.658 ** cc1
 					else:
-						Pn = sm.fyield * area
-						Pc = Pn / alpha
-						uratio = abs(Pr / Pc) + abs(Mrx / Mnx)
-						eqtn = "H1-2 (Flexure and Tension)"
+						Fcr = 0.877 * Fe
+					Pn = Fcr * area
+					Pc = Pn / alpha
+					if Pr / Pc < 0.2:
+						uratio = Pr / (2 * Pc) + abs(Mrx / Mnx)
+						eqtn = "H1-1b"
+					else:
+						uratio = Pr / Pc + abs(Mrx / Mnx) * 8 / 9
+						eqtn = "H1-1a"
+				else:
+					Pn = sm.fyield * area
+					Pc = Pn / alpha
+					uratio = abs(Pr / Pc) + abs(Mrx / Mnx)
+					eqtn = "H1-2 (Flexure and Tension)"
 
-					# Write results to output file
-					outfile.write("{0:10} {1:10} {2:10} {3:10}\n".format(pylsa.wxelement[nel - 1].memberid, "{0:0.000}".format(uratio), eqtn, "{0:0.000}".format(Pr / Pc)))
+				# Write results to output file
+				outfile.write("{0:10} {1:10} {2:10} {3:10}\n".format(sm.elemlist[nel - 1], "{0:0.000}".format(uratio), eqtn, "{0:0.000}".format(Pr / Pc)))
 
-			outfile.write("\n")
+		outfile.write("\n")
 
 	def header(self):
 		self.m_textfileout.write(" " * 20 + sm.PNAME + "\n")
@@ -683,7 +684,7 @@ class EVCI_Form ( wx.Frame,sm ):
 			for i in range(1, sm.nn):
 				k1 = sm.ndf * (i-1) #+ 1
 				k2 = k1 + sm.ndf - 1
-				values = [pylsa.stru3d.al[j, klc-1] for j in range(k1, k2)]
+				values = [pylsa.stru3d.al[j, klc-1] for j in range(k1, k2+1)]
 				if len(values) < 6:
 					values += [0] * (6 - len(values))  # Fill the rest with zeros
 				self.m_textfileout.write("{:10} {:15.4g} {:15.4g} {:15.4g} {:15.4g} {:15.4g} {:15.4g}\n".format(

@@ -1,0 +1,20 @@
+ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019
+Load Case: 1
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.06       H1-2 (Flexure and Tension) -0.0002   
+2          0.07       H1-2 (Flexure and Tension) -0.0004   
+3          0.2        H1-2 (Flexure and Tension) -0.0002   
+4          0.1        H1-2 (Flexure and Tension) -0.0005   
+5          0.1        H1-2 (Flexure and Tension) -0.0005   
+6          0.1        H1-2 (Flexure and Tension) -0.0004   
+7          0.2        H1-2 (Flexure and Tension) -0.0004   
+Load Case: 2
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      4e+07      H1-1a      4e+07     
+2          0.05       H1-2 (Flexure and Tension) -4e-06    
+3          0.03       H1-2 (Flexure and Tension) -6e-06    
+4          0.06       H1-2 (Flexure and Tension) -8e-05    
+5          0.02       H1-2 (Flexure and Tension) -9e-05    
+6          0.03       H1-2 (Flexure and Tension) -4e-05    
+7          0.01       H1-2 (Flexure and Tension) -4e-05    
+
