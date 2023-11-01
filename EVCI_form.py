@@ -640,72 +640,45 @@ class EVCI_Form ( wx.Frame,sm ):
 
 # Define the function outptgen
 	def outputgen(self):
-		# Import the iso_fortran_env module
-		#from iso_fortran_env import INTEGER
 		
 		# Declare variables
 		k, k2, k1, klc = 0, 0, 0, 0
 		i, j, nel, j1, l1, no, n1, kip, slen, kiter = 0, 0, 0, 0, 0, 0, 0, 0, 0,0
 		dat = [["kN", "m"] for _ in range(4)]
-		
-		# Open the file "fortran_out.txt" for writing
-		#with open("fortran_out.txt", "w") as fileout_unit:
-			# Allocate memory for nodelist and elemlist
-			#nodelist = nodebytes.copy()
-			#elemlist = elembytes.copy()
-			
-			# Get the number of active units
-		#nlc = pylsa.al.shape[1]
-		#ndfel = sm.nne * sm.ndf
-		
 		# Set the units for the output data
 		dat[0][0] = "kN"
 		dat[0][1] = "m"
-		
 		# Call the header function
 		self.header()
-		
 		# Write the number of iterations to the file if kiter > 0
 		if kiter > 0:
 			self.m_textfileout.write("Number of Iterations {}\n".format(kiter))
-		
-		# Write the nodal displacements for loading to the file
-		sm.al = pylsa.stru3d.al
-		sm.reac = pylsa.stru3d.reac
-
 		# Write the nodal displacements for loading to the file
 		for klc in range(1, sm.nlc):
 			self.m_textfileout.write("Nodal Displacements for Loading {:3}\n".format(klc))
 			self.m_textfileout.write("Active Units : {:8} {:8}\n".format(dat[slen][0], dat[kip][1]))
-			if sm.strutype == "Frame3D":
-				self.m_textfileout.write("Node       Dx         Dy         Dz        Rotx       Roty       Rotz\n")
-			elif sm.strutype == "Frame2D":
-				self.m_textfileout.write("Node               Dx         Dy         Rotz\n")
-			for i in range(1, sm.nn):
-				k1 = sm.ndf * (i-1) #+ 1
-				k2 = k1 + sm.ndf - 1
+			if sm.strutype == "Frame3D   ":
 				values = [pylsa.stru3d.al[j, klc-1] for j in range(k1, k2+1)]
-				if len(values) < 6:
-					values += [0] * (6 - len(values))  # Fill the rest with zeros
-				self.m_textfileout.write("{:10} {:15.4g} {:15.4g} {:15.4g} {:15.4g} {:15.4g} {:15.4g}\n".format(
-					sm.nodelist[i-1], *values
-				))
-
+				self.m_textfileout.write("{:10} {:15} {:15} {:15} {:15} {:15} {:15}\n".format('Node', 'Dx', 'Dy', 'Dz', 'Rotx', 'Roty', 'Rotz'))
+				self.m_textfileout.write("{:10} {:15.4g} {:15.4g} {:15.4g} {:15.4g} {:15.4g} {:15.4g}\n".format(sm.nodelist[i-1], *values))
+			elif sm.strutype == "Frame2D   ":
+				self.m_textfileout.write("{:10} {:15} {:15} {:15}\n".format('Node','Dx','Dy','Rotz'))
+				for i in range(1, sm.nn+1):
+					k1 = sm.ndf * (i-1) #+ 1
+					k2 = k1 + sm.ndf - 1
+					values = [pylsa.stru3d.al[j, klc-1] for j in range(k1, k2+1)]
+					self.m_textfileout.write("{:10} {:15.4f} {:15.4f} {:15.4f}\n".format(
+						sm.nodelist[i-1], *values))
 		self.m_textfileout.write("-" * 80 + "\n")
-
-
-		
 		# Call the time_now function
 		self.time_now()
-
+		self.m_textfileout.write("-" * 80 + "\n")
 		# Return from the function
 		return
-
 if __name__ == '__main__':
 # When this module is run (not imported) then create the app, the
 # frame, show it, and start the event loop.
     app = wx.App()
-
     frm = EVCI_Form(None)
     frm.Show()
     #window.Show(True)

@@ -7,16 +7,20 @@ from scipy.sparse import csr_matrix
 
 class matrix:
     @staticmethod
-    def optimize_bandwidth(node_coords, member_incidences):
-        """ \brief This function optimizes the bandwidth of a symmetric matrix using nodes 
+    def optimize_matrixband(node_coords, member_incidences):
+        """
+        @brief This function optimizes the bandwidth of a symmetric matrix using nodes 
         coordinates and element incidences as edges. It returns the optimized matrix and 
         the permutation vector.
-        \note This code takes the node coordinates and member incidences as input and creates 
+
+        @details This code takes the node coordinates and member incidences as input and creates 
         an adjacency matrix representing the edges between nodes. It then converts 
         the adjacency matrix to a sparse matrix and computes the bandwidth of the matrix. 
         The matrix is then permuted to optimize the bandwidth, and the new bandwidth and 
-        permutation vector are computed. \return The optimized matrix and permutation vector 
-        are returned as output."""
+        permutation vector are computed.
+
+        @return The optimized matrix and permutation vector.
+        """
         num_nodes = len(node_coords)
         num_members = len(member_incidences)
         # Create the adjacency matrix
@@ -71,71 +75,71 @@ class matrix:
         inv_sparse_matrix = inv(sparse_matrix)
         return inv_sparse_matrix
 
+    @staticmethod
+    def optimize_band(nodes, edges):
+        """
+        @brief Optimize the bandwidth of a symmetric matrix using nodes and edges.
 
-def optimize_band(nodes, edges):
-    """
-    @brief Optimize the bandwidth of a symmetric matrix using nodes and edges.
+        @param nodes List of node coordinates.
+        @param edges List of member incidences as edges.
 
-    @param nodes List of node coordinates.
-    @param edges List of member incidences as edges.
+        @return The optimized symmetric matrix as a numpy.ndarray.
+        """
 
-    @return The optimized symmetric matrix as a numpy.ndarray.
-    """
+        # Create a graph from the nodes and edges
+        G = nx.Graph()
+        G.add_nodes_from(nodes)
+        G.add_edges_from(edges)
 
-    # Create a graph from the nodes and edges
-    G = nx.Graph()
-    G.add_nodes_from(nodes)
-    G.add_edges_from(edges)
+        # Get the reverse Cuthill-Mckee ordering of the nodes
+        rcm = list(nx.utils.reverse_cuthill_mckee_ordering(G))
 
-    # Get the reverse Cuthill-Mckee ordering of the nodes
-    rcm = list(nx.utils.reverse_cuthill_mckee_ordering(G))
+        # Create a mapping from old nodes to new nodes
+        mapping = {old_node: new_node for new_node, old_node in enumerate(rcm)}
 
-    # Create a mapping from old nodes to new nodes
-    mapping = {old_node: new_node for new_node, old_node in enumerate(rcm)}
+        # Relabel the nodes in the graph according to the new ordering
+        G = nx.relabel_nodes(G, mapping)
 
-    # Relabel the nodes in the graph according to the new ordering
-    G = nx.relabel_nodes(G, mapping)
+        # Create a sparse matrix from the graph
+        A = nx.to_scipy_sparse_matrix(G, nodelist=range(len(G)), format='csr')
 
-    # Create a sparse matrix from the graph
-    A = nx.to_scipy_sparse_matrix(G, nodelist=range(len(G)), format='csr')
+        # Convert the sparse matrix to a dense matrix
+        matrix = A.todense()
 
-    # Convert the sparse matrix to a dense matrix
-    matrix = A.todense()
+        return matrix   
 
-    return matrix   
+    @staticmethod
+    def optimize_bandwidth(node_coords, member_incidences):
+        """
+        @brief This function optimizes the bandwidth of a symmetric matrix using nodes 
+        coordinates and element incidences as edges. It returns the new relabeled nodes and 
+        relabeled member incidences.
 
+        @param node_coords The coordinates of the nodes.
+        @param member_incidences The incidences of the members.
 
-def optimize_bandwidth(node_coords, member_incidences):
-    """
-    @brief This function optimizes the bandwidth of a symmetric matrix using nodes 
-    coordinates and element incidences as edges. It returns the new relabeled nodes and 
-    relabeled member incidences.
+        @return A tuple containing the new relabeled nodes and relabeled member incidences.
+        """
 
-    @param node_coords The coordinates of the nodes.
-    @param member_incidences The incidences of the members.
+        # Create a graph from the member incidences
+        G = nx.Graph()
+        G.add_edges_from(member_incidences)
 
-    @return A tuple containing the new relabeled nodes and relabeled member incidences.
-    """
+        # Compute the Reverse Cuthill-Mckee ordering
+        rcm = list(nx.utils.reverse_cuthill_mckee_ordering(G))
 
-    # Create a graph from the member incidences
-    G = nx.Graph()
-    G.add_edges_from(member_incidences)
+        # Create a mapping from old nodes to new nodes
+        mapping = {old: new for new, old in enumerate(rcm)}
 
-    # Compute the Reverse Cuthill-Mckee ordering
-    rcm = list(nx.utils.reverse_cuthill_mckee_ordering(G))
+        # Relabel the nodes in the graph according to the new ordering
+        G = nx.relabel_nodes(G, mapping)
 
-    # Create a mapping from old nodes to new nodes
-    mapping = {old: new for new, old in enumerate(rcm)}
+        # Relabel the node coordinates
+        new_node_coords = node_coords[rcm]
 
-    # Relabel the nodes in the graph according to the new ordering
-    G = nx.relabel_nodes(G, mapping)
+        # Relabel the member incidences
+        new_member_incidences = [(mapping[i], mapping[j]) for i, j in member_incidences]
 
-    # Relabel the node coordinates
-    new_node_coords = node_coords[rcm]
-
-    # Relabel the member incidences
-    new_member_incidences = [(mapping[i], mapping[j]) for i, j in member_incidences]
-
-    return new_node_coords, new_member_incidences 
+        return new_node_coords, new_member_incidences 
 
         
