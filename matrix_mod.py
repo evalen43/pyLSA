@@ -2,6 +2,8 @@ import numpy as np
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import inv
 from scipy.sparse import csc_matrix
+import networkx as nx
+from scipy.sparse import csr_matrix
 
 class matrix:
     @staticmethod
@@ -68,4 +70,74 @@ class matrix:
         # Compute the inverse of the sparse matrix
         inv_sparse_matrix = inv(sparse_matrix)
         return inv_sparse_matrix
+
+
+def optimize_band(nodes, edges):
+    """
+    Optimize the bandwidth of a symmetric matrix using nodes and edges.
+
+    Parameters:
+    nodes (list): List of node coordinates.
+    edges (list): List of member incidences as edges.
+
+    Returns:
+    numpy.ndarray: The optimized symmetric matrix.
+    """
+
+    # Create a graph from the nodes and edges
+    G = nx.Graph()
+    G.add_nodes_from(nodes)
+    G.add_edges_from(edges)
+
+    # Get the reverse Cuthill-Mckee ordering of the nodes
+    rcm = list(nx.utils.reverse_cuthill_mckee_ordering(G))
+
+    # Create a mapping from old nodes to new nodes
+    mapping = {old_node: new_node for new_node, old_node in enumerate(rcm)}
+
+    # Relabel the nodes in the graph according to the new ordering
+    G = nx.relabel_nodes(G, mapping)
+
+    # Create a sparse matrix from the graph
+    A = nx.to_scipy_sparse_matrix(G, nodelist=range(len(G)), format='csr')
+
+    # Convert the sparse matrix to a dense matrix
+    matrix = A.todense()
+
+    return matrix   
+
+
+def optimize_bandwidth(node_coords, member_incidences):
+    """
+    @brief This function optimizes the bandwidth of a symmetric matrix using nodes 
+    coordinates and element incidences as edges. It returns the new relabeled nodes and 
+    relabeled member incidences.
+
+    @param node_coords The coordinates of the nodes.
+    @param member_incidences The incidences of the members.
+
+    @return A tuple containing the new relabeled nodes and relabeled member incidences.
+    """
+
+    # Create a graph from the member incidences
+    G = nx.Graph()
+    G.add_edges_from(member_incidences)
+
+    # Compute the Reverse Cuthill-Mckee ordering
+    rcm = list(nx.utils.reverse_cuthill_mckee_ordering(G))
+
+    # Create a mapping from old nodes to new nodes
+    mapping = {old: new for new, old in enumerate(rcm)}
+
+    # Relabel the nodes in the graph according to the new ordering
+    G = nx.relabel_nodes(G, mapping)
+
+    # Relabel the node coordinates
+    new_node_coords = node_coords[rcm]
+
+    # Relabel the member incidences
+    new_member_incidences = [(mapping[i], mapping[j]) for i, j in member_incidences]
+
+    return new_node_coords, new_member_incidences 
+
         
