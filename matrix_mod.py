@@ -74,14 +74,12 @@ class matrix:
 
 def optimize_band(nodes, edges):
     """
-    Optimize the bandwidth of a symmetric matrix using nodes and edges.
+    @brief Optimize the bandwidth of a symmetric matrix using nodes and edges.
 
-    Parameters:
-    nodes (list): List of node coordinates.
-    edges (list): List of member incidences as edges.
+    @param nodes List of node coordinates.
+    @param edges List of member incidences as edges.
 
-    Returns:
-    numpy.ndarray: The optimized symmetric matrix.
+    @return The optimized symmetric matrix as a numpy.ndarray.
     """
 
     # Create a graph from the nodes and edges
