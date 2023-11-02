@@ -136,29 +136,30 @@ class StruMod(Unit):
         elif bntype=='HSLIDEY': ibnd=[j+1,0,1,0]
         return ibnd
     
-    @staticmethod
-    def structure(strutype):
-        if strutype == "Frame2D":   
-            ndf = 3
-            PNAME="Structural Analysis for 2D-Frames"
-        elif strutype == "Frame3D": 
-            ndf = 6
-            PNAME="Frame3D"
-        elif strutype == "Truss3D":
-            ndf = 3
-            PNAME="Truss3D"
-        elif strutype == "Truss2D":
-            ndf = 2
-        elif strutype == "Grid":
+    @classmethod
+    def structure(cls):
+        if cls.strutype == "Frame2D   ":   
+            cls.ndf = 3
+            cls.PNAME="Structural Analysis for 2D-Frames".center(80)
+        elif cls.strutype == "Frame3D": 
+            cls.ndf = 6
+            cls.PNAME="Frame3D"
+        elif cls.strutype == "Truss3D":
+            cls.ndf = 3
+            cls.PNAME="Truss3D"
+        elif cls.strutype == "Truss2D":
+            cls.ndf = 2
+            cls.PNAME="Truss2D"
+        elif cls.strutype == "Grid":
             ndf = 3
             PNAME="Grid"
-        elif strutype == "Frame2D_8DOF":
-            ndf = 4
-            PNAME="Frame2D_8DOF"
+        elif cls.strutype == "Frame2D_8DOF":
+            cls.ndf = 4
+            cls.PNAME="Frame2D_8DOF"
         else: 
-            ndf=3
-            PNAME="Frame2D" 
-        return ndf       
+            cls.ndf=3
+            cls.PNAME="Frame2D" 
+        return #ndf       
 
     @classmethod
     def code(cls,content,child):
@@ -304,7 +305,7 @@ class StruMod(Unit):
         cls.sections_arr=np.reshape(cls.sections,newshape=(cls.nsec,12))
         #print(cls.sections_arr)
     @staticmethod
-    def nodes(content,child):
+    def nodes(content,child,ndf):
         coor=[]
         nodelist=[]
         UnitL = child.GetAttribute("unitL", "m")
@@ -312,7 +313,7 @@ class StruMod(Unit):
         else: scaleL = Unit.ToMeter(UnitL)
         lines_nodes = content.splitlines()
         nn=len(lines_nodes)
-        n=nn*StruMod.ndf
+        n=nn*ndf
         for line in lines_nodes:
             lineinput = line.split()
             nodelist.append(lineinput[0].ljust(10))
@@ -425,7 +426,7 @@ class StruMod(Unit):
                             elif lineinput[j] == "P":
                                 p = float(lineinput[j+1]) * scaleF
                             elif lineinput[j] == "a":
-                                a = float(lineinput[j+1]) * scaleL
+                                a = float(lineinput[j+1]) #* scaleL 11/02/23
                             elif lineinput[j] == "loadtype":
                                 ldtype = lineinput[j+1]
                             elif lineinput[j] == "wa":
@@ -467,9 +468,9 @@ class StruMod(Unit):
         if not doc.Load(filein):
             return False
         cls.strutype = str(doc.GetRoot().GetName()).ljust(10)
+        cls.structure()
 
-        StruMod.ndf=cls.structure(cls.strutype)
-        fileout.write('{0} Degrees of Freedom per node: {1}\n'.format(cls.strutype,StruMod.ndf))
+        fileout.write('{0} Degrees of Freedom per node: {1}\n'.format(cls.strutype,cls.ndf))
         child = doc.GetRoot().GetChildren()
         while child:
             tagname = child.GetName()
@@ -493,7 +494,7 @@ class StruMod(Unit):
                 fileout.write('{0}\t{1}\n'.format('Number of Sections:',cls.nsec).expandtabs(10))
                 cls.lines_sec=content.splitlines()
             elif tagname == "nodes":
-                (StruMod.nn,StruMod.n,StruMod.coor,StruMod.nodelist)=cls.nodes(content,child)
+                (StruMod.nn,StruMod.n,StruMod.coor,StruMod.nodelist)=cls.nodes(content,child,cls.ndf)
                 #fileout.write('Number of Nodes: {0}\nNumber of Equations: {1}\n'.format(cls.nn,StruMod.n))
                 fileout.write('{0}\t{1}\n'.format('Number of Nodes:',cls.nn).expandtabs(10))
                 cls.lines_nodes=content.splitlines()
@@ -504,7 +505,7 @@ class StruMod(Unit):
                 cls.lines_elem=content.splitlines()
             elif tagname == "boundary":
                 cls.boundary(content,child)
-                cls.ib=np.reshape(cls.boundaries,newshape=((cls.ndf+1)*cls.nbn))
+                cls.ib=np.array(cls.boundaries).reshape(-1)
                 #fileout.write('Number of Boundaries: {0}\n {1}\n'.format(cls.nbn,cls.boundaries))
                 fileout.write('{0}\t{1}\n'.format('Number of Boundaries:',cls.nbn).expandtabs(10))
                 cls.lines_bnd=content.splitlines()

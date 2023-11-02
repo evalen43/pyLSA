@@ -2,7 +2,7 @@ module stru3d
 implicit none
 
 character(len=10), public :: strutype
-character(len=20), public :: PNAME
+character(len=80), public :: PNAME
 character(len=80), public :: exampletitle
 integer(kind=4), public :: ndfel,nn,ne,ndf,nne,n,ms,nbn,nlc,nlmem, &
 fileout_unit,kiter,slen,kip
@@ -555,7 +555,7 @@ a=a*dl
     rma=wa*((dl-a)**3)*(dl+3.*a)/(12.*dl*dl)
     rmb=(ra*dl)-((wa*(dl-a)**2)/2.)-((wb-wa)*(dl-a)*(dl-a)/6.)+rma
   elseif(mltype==2) then
-    b=dl-a
+    b=dl*(1-a)
     ra=p*(3*a+b)*b**2/dl**3
     rb=p*(a+3*b)*a**2/dl**3
     rma=p*a*b**2/dl**2
@@ -622,7 +622,7 @@ SUBROUTINE forcegen()
 IMPLICIT NONE
 REAL(kind=8), DIMENSION(ndfel) :: u,f,ul,fg
 REAL(kind=8), DIMENSION(ndfel,ndfel) :: rot,elst
-INTEGER(kind=4) :: klc,n1,n2,lc,nel,k1,k2,j1,j2,i,i1,i2,mkdsp
+INTEGER(kind=4) :: klc,n1,n2,nel,k1,k2,j1,j2,i,i1,i2,mkdsp
 
 !lc=size(al,2)
 
@@ -810,7 +810,7 @@ end subroutine time_now
 ! -----------------------
 
 subroutine header()
-WRITE(fileout_unit,'(20x,A20)') strutype
+WRITE(fileout_unit,'(A80)') PNAME
 WRITE(fileout_unit,'(A80)') exampletitle
 WRITE(fileout_unit,'(80("-"))')
 

@@ -342,6 +342,7 @@ class EVCI_Form ( wx.Frame,sm ):
 		pylsa.stru3d.kip=1
 		pylsa.stru3d.strutype = sm.strutype
 		pylsa.stru3d.exampletitle=sm.exampletitle
+		pylsa.stru3d.PNAME=sm.PNAME
 
 		xstring=np.array(sm.nodelist,dtype='c').T
 		ystring = np.array(sm.elemlist, dtype='c').T
@@ -675,11 +676,31 @@ class EVCI_Form ( wx.Frame,sm ):
 					self.m_textfileout.write("{0:10} {1:10.4f} {2:10.4f} {3:10.4f}\n".format(
 						sm.nodelist[i-1], float(values[0]), float(values[1]), float(values[2])))
 		self.m_textfileout.write("-" * 80 + "\n")
-		# Call the time_now function
+		# Assuming nlc, nbn, ndf, strutype, dat, ib, reac, and nodelist are defined and have the correct values
+		for klc in range(1,sm.nlc+1):
+			self.m_textfileout.write(f"Nodal Reaction for Loading {klc+1:3}\nActive Units : {dat[kip][0]:8} {dat[slen][1]:8}\n")
+			if sm.strutype == 'Frame3D':
+				self.m_textfileout.write("Node     Px          Py          Pz          Mx          My          Mz")
+			elif sm.strutype == 'Frame2D':
+				self.m_textfileout.write("Node               Px          Py               Mz")
+	
+			for i in range(1,sm.nbn+1):
+				l1 = (sm.ndf-1) * i
+				no = sm.ib[l1]
+				k1 = sm.ndf * (no-1)
+				k2 = k1 + sm.ndf
+				values = [pylsa.stru3d.reac[j, klc-1] for j in range(k1, k2+1)]
+				self.m_textfileout.write("{0:10} {1:10.2f} {2:10.2f} {3:10.2f}\n".format(
+					f"{sm.nodelist[no-1]:10}", float(values[0]), float(values[1]), float(values[2])))
 		self.time_now()
 		self.m_textfileout.write("-" * 80 + "\n")
-		# Return from the function
 		return
+""" 				self.m_textfileout.write(f"{sm.nodelist[no-1]:10}")
+				for j in range(k1, k2+1):
+					self.m_textfileout.write(f"{pylsa.stru3d.reac[j, klc-1]:15.2f}") """
+		# Call the time_now function
+
+
 if __name__ == '__main__':
 # When this module is run (not imported) then create the app, the
 # frame, show it, and start the event loop.
