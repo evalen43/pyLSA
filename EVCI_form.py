@@ -365,6 +365,7 @@ class EVCI_Form ( wx.Frame,sm ):
 		if(sm.nlmem>0): 
 			pylsa.stru3d.mfemgen()
 		dt1=datetime.datetime.now()
+		pylsa.stru3d.dloadgen()
 		pylsa.stru3d.k_assem()
 		self.m_textlog.AppendText("Assembly of Stiffness Matrix ...Completed\n")
 		pylsa.stru3d.boundgen()
@@ -654,21 +655,25 @@ class EVCI_Form ( wx.Frame,sm ):
 		if kiter > 0:
 			self.m_textfileout.write("Number of Iterations {}\n".format(kiter))
 		# Write the nodal displacements for loading to the file
-		for klc in range(1, sm.nlc):
+		for klc in range(1, sm.nlc+1):
 			self.m_textfileout.write("Nodal Displacements for Loading {:3}\n".format(klc))
 			self.m_textfileout.write("Active Units : {:8} {:8}\n".format(dat[slen][0], dat[kip][1]))
 			if sm.strutype == "Frame3D   ":
+				k1 = sm.ndf * (i-1) #+ 1
+				k2 = k1 + sm.ndf - 1
 				values = [pylsa.stru3d.al[j, klc-1] for j in range(k1, k2+1)]
 				self.m_textfileout.write("{:10} {:15} {:15} {:15} {:15} {:15} {:15}\n".format('Node', 'Dx', 'Dy', 'Dz', 'Rotx', 'Roty', 'Rotz'))
 				self.m_textfileout.write("{:10} {:15.4g} {:15.4g} {:15.4g} {:15.4g} {:15.4g} {:15.4g}\n".format(sm.nodelist[i-1], *values))
 			elif sm.strutype == "Frame2D   ":
-				self.m_textfileout.write("{:10} {:15} {:15} {:15}\n".format('Node','Dx','Dy','Rotz'))
+				# Write the nodal displacements for each loading case to the file
+				self.m_textfileout.write("{:10} {:10} {:10} {:10}\n".format('Node'.rjust(10),'Dx'.rjust(10),'Dy'.rjust(10),'Rotz'.rjust(10)))
+				self.m_textfileout.write("{:10} {:10} {:10} {:10}\n".format('    '.rjust(10),'(m)'.rjust(10),'(m)'.rjust(10),'(rad)'.rjust(10)))
 				for i in range(1, sm.nn+1):
 					k1 = sm.ndf * (i-1) #+ 1
 					k2 = k1 + sm.ndf - 1
 					values = [pylsa.stru3d.al[j, klc-1] for j in range(k1, k2+1)]
-					self.m_textfileout.write("{:10} {:15.4f} {:15.4f} {:15.4f}\n".format(
-						sm.nodelist[i-1], *values))
+					self.m_textfileout.write("{0:10} {1:10.4f} {2:10.4f} {3:10.4f}\n".format(
+						sm.nodelist[i-1], float(values[0]), float(values[1]), float(values[2])))
 		self.m_textfileout.write("-" * 80 + "\n")
 		# Call the time_now function
 		self.time_now()

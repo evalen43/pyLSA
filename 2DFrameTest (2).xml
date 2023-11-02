@@ -9,37 +9,37 @@ node2	 0.0 	600.0
 node3	 1000. 850.0
 node4	 2000. 600.0
 node5	 2000. 0.
-6	 	3000. 	850.
-7	 	4000. 	600.
-8	 	4000. 	0.
+node6   3000. 	850.
+node7 	4000. 	600.
+node8 	4000. 	0.
 </nodes>
 <section unitL='inch' >
-400 EDI W30X99 
-200 EDI W24X68
+400 EDI W24X68 
+200 EDI W24X62
 </section>
-<material unitS='psi' den='kgf/m3'>
-400 General E=29000  Density=7850. Poisson=0.3
+<material unitS='ksi' den='kgf/m3'>
+400 General E=30000  Density=7850. Poisson=0.3
 </material>	
 <elements>	
 elem1 	node1 	node2 	400 400
-2 	node5 	node4 	200 400
-3 	8 	7 	400 400
-4 	node2 	node3 	200 400
-5 	node3 	node4 	200 400
-6 	node4 	6 	200 400
-7 	6 	7 	200 400
+elem2 	node5 	node4 	200 400
+elem3 	node8 	node7 	400 400
+elem4 	node2 	node3 	200 400
+elem5 	node3 	node4 	200 400
+elem6 	node4 	node6 	200 400
+elem7 	node6 	node7 	200 400
 </elements>
 <boundary>	
 node1 ENCASTRE 
 node5 ENCASTRE
-8 ENCASTRE
+node8 ENCASTRE
 </boundary>
 <loading unitL='m' unitF='N' id='1'>
 <case id='1'>
 <loaded-nodes>
 nodeid=node2 Px=30000.
 nodeid=node3 Py=-40000.
-nodeid=6 Py=-40000.
+nodeid=node6 Py=-40000.
 </loaded-nodes>
 </case>
 <case id="2">

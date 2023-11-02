@@ -101,14 +101,14 @@ class StruMod(Unit):
     lines_loading=[]
     sec_label=[]
     sec_color=[]
-    elem_prop_arr = np.zeros((1, 1))
-    sections_arr=np.zeros((1,1))
-    mat_table=np.zeros((1,1))
-    al=np.zeros((1,1))
-    reac=np.zeros((1,1))
+    elem_prop_arr = np.zeros((1, 1), dtype=float)
+    sections_arr=np.zeros((1,1), dtype=float)
+    mat_table=np.zeros((1,1), dtype=float)
+    al=np.zeros((1,1), dtype=float)
+    reac=np.zeros((1,1), dtype=float)
     ib=np.zeros((1), dtype=int)
-    mfem_param=np.zeros((1,1))
-    node_list=np.empty((1,10), dtype='S10')
+    mfem_param=np.zeros((1,1), dtype=float)
+    node_list=np.empty((1,10), dtype='U10')
 
     @staticmethod
     def pipeparam(od,wth):
@@ -140,7 +140,7 @@ class StruMod(Unit):
     def structure(strutype):
         if strutype == "Frame2D":   
             ndf = 3
-            PNAME="Frame2D"
+            PNAME="Structural Analysis for 2D-Frames"
         elif strutype == "Frame3D": 
             ndf = 6
             PNAME="Frame3D"
@@ -286,8 +286,8 @@ class StruMod(Unit):
                 for item in items:
                     if item[0] == edi:
                         y = list(item)
-                        y[1] = y[1]*0.01459  # w
-                        y[2] = y[2]*scaleL**2  # A
+                        y[1] = y[1]*0.01459  # w linear weight lb/ft before conversion
+                        y[2] = y[2]*scaleL**2  # A area in2
                         y[3] = y[3]*scaleL  # d
                         y[4] = y[4]*scaleL**4  # Ix
                         y[5] = y[5]*scaleL**3  # Zx
@@ -590,6 +590,57 @@ class StruMod(Unit):
             print("Member Incidences:")
             print(member_incidences)
             return (nodes_coords,member_incidences)
+"""     def Dloadgen(self):
+        f = [0.0]*Ndfel
+        vlocal = [0.0]*Ndfel
+        vglob = [0.0]*Ndfel
+        totalwht = 0.0
+        for nel in range(Ne):
+            rot = [[0.0]*Ndfel for _ in range(Ndfel)]
+            isec = wxelement[nel]['sec_id']
+            imat = wxelement[nel]['mat_id']
+            inc1 = wxelement[nel]['inc1']
+            inc2 = wxelement[nel]['inc2']
+            cx = wxelement[nel]['cx']
+            cy = wxelement[nel]['cy']
+            dl = wxelement[nel]['d']
+            wload = wxsection[isec]['A'] * wxmaterial[imat]['denMaterial']
+            kdsp1 = Ndf * inc1
+            kdsp2 = Ndf * inc2
+            ra = wload * dl / 2.0
+            rma = wload * dl * dl / 12.0
+            totalwht += wload * dl
+            if Structure == "Frame3D":
+                f = [0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0]
+                rot = Rotmat(nel)
+                vlocal = MvecMultiply(rot, f)
+                vlocal = [ra * v for v in vlocal]
+                vlocal[3:6] = [-rma * v for v in vlocal[3:6]]
+                vlocal[9:12] = [rma * v for v in vlocal[9:12]]
+            elif Structure == "Frame2D":
+                f = [0, -1, 0.0, 0, -1, 0.0]
+                rot = Rotmat(nel)
+                vlocal = MvecMultiply(rot, f)
+                vlocal = [ra * v for v in vlocal]
+                vlocal[2] = -rma * vlocal[2]
+                vlocal[5] = rma * vlocal[5]
+            elif Structure == "Truss2D":
+                f = [0.0, -1.0, 0.0, -1.0]
+                rot = Rotmat(nel)
+                vlocal = MvecMultiply(rot, f)
+                vlocal = [ra * v for v in vlocal]
+            elif Structure == "Truss3D":
+                f = [0.0, -1.0, 0.0, 0.0, -1.0, 0.0]
+                rot = Rotmat(nel)
+                vlocal = MvecMultiply(rot, f)
+                vlocal = [ra * v for v in vlocal]
+            vglob = MvecMultiply(Transpose(rot), vlocal)
+            for j in range(Ndfel):
+                fem_dload[nel][j] -= vlocal[j]
+            for klc in range(Nlc):
+                for j in range(Ndf):
+                    al[kdsp1 + j][klc] += vglob[j]
+                    al[kdsp2 + j][klc] += vglob[j + Ndf] """
     
 
 
