@@ -42,6 +42,7 @@ deallocate(rot,elst)
 !write(*,'(a35,2x,a10)') "Stiffness Matrix Assembeld for:",strutype 
 end subroutine k_assem 
 
+!#region Element Stiffness Matrix
 ! -----------------------
 ! element stiffness matrix
 ! -----------------------
@@ -143,7 +144,7 @@ end select
 
 return
 end subroutine elem_stiff
-
+!#endregion end of element stiffness matrix
 ! -----------------------
 ! Element Rotation Matrix
 ! -----------------------
@@ -514,13 +515,14 @@ RETURN
 END SUBROUTINE dloadgen
 !----------- Elements Fixed End Moments
 SUBROUTINE mfemgen()
+use iso_fortran_env
 implicit none
 
 real(kind=8) ::  vlocal(ndfel),vglob(ndfel),rot(ndfel,ndfel),f(ndfel)
 real(kind=8) :: wa=0,wb=0,a=0,dl,ra=0,rb=0,rma=0,rmb=0,p=0,b=0
 integer(kind=4) :: n1,n2,kdsp1,kdsp2,mn,i,j,mltype,klc,mkdsp,kref
 
-
+open(unit=fileout_unit,file="fortran_mfem.txt")
 DO  i=1,nlmem
   f=0.0
   mltype=int(mfem_param(i,1))
@@ -541,7 +543,7 @@ DO  i=1,nlmem
 n1=int(elem_prop(mn,1))!%inc1 nne*(mn-1)
 n2=int(elem_prop(mn,2))!%inc2 
 dl=elem_prop(i,5)!%elem_len
-a=a*dl 
+
 !write(*,*) n1,n2,dl,a
 !---- COMPUTE MOMENTS VECTOR ORIENTATION ---
 
@@ -550,19 +552,21 @@ a=a*dl
 !----- mltype=1 trapezoidal load
 !----- mltype=2 concentrated load    
   if(mltype==1) then
+    a=a*dl 
     ra=wa*((dl-a)**3)*(dl+a)/(2.*dl**3)
     rb=((wa+wb)*(dl-a)/2.)- ra
     rma=wa*((dl-a)**3)*(dl+3.*a)/(12.*dl*dl)
     rmb=(ra*dl)-((wa*(dl-a)**2)/2.)-((wb-wa)*(dl-a)*(dl-a)/6.)+rma
   elseif(mltype==2) then
-    b=dl*(1-a)
+    b=dl*(1-a)!a is percentage of length
+    a=a*dl !convert to length
     ra=p*(3*a+b)*b**2/dl**3
     rb=p*(a+3*b)*a**2/dl**3
     rma=p*a*b**2/dl**2
     rmb=p*b*a**2/dl**2
 !    write(*,*) b,ra,rb,rma,rmb
   endif  
-
+  f=0.0
   IF(strutype == 'Frame3D') then !GO TO 12
 !    vlocal=rot .mv. f
     ! f(1)=0.0; f(2)=-1.0; f(3)=0.0 ;f(4)=0.0; f(5)=0.0 ; f(6)=0.0
@@ -596,10 +600,12 @@ a=a*dl
     vlocal=matmul(rot , f )   
     vlocal(1)=ra*vlocal(1)
     vlocal(2)=ra*vlocal(2)    
-    vlocal(3)=-rma
+    vlocal(3)=rma*vlocal(3)
     vlocal(4)=rb*vlocal(4)
     vlocal(5)=rb*vlocal(5)
-    vlocal(6)=rmb
+    vlocal(6)=-rmb*vlocal(6)
+    write(fileout_unit,*) 'Parameters for mfem'
+    write(fileout_unit,'(4f10.2,2x,i2,2x,3f10.2)') ra,rb,rma,rmb,kref,p,a,b
   end if !41    CONTINUE
   mkdsp=ne*(klc-1)
 !  vglob=transpose(rot) .mv. vlocal
@@ -612,6 +618,7 @@ a=a*dl
     al(kdsp2+j,klc)=al(kdsp2+j,klc)+vglob(j+ndf)
   END DO
 END DO
+close(fileout_unit)
 !deallocate(vlocal,vglob,rot,f)
 RETURN
 END SUBROUTINE mfemgen
@@ -622,7 +629,8 @@ SUBROUTINE forcegen()
 IMPLICIT NONE
 REAL(kind=8), DIMENSION(ndfel) :: u,f,ul,fg
 REAL(kind=8), DIMENSION(ndfel,ndfel) :: rot,elst
-INTEGER(kind=4) :: klc,n1,n2,nel,k1,k2,j1,j2,i,i1,i2,mkdsp
+INTEGER(kind=4) :: klc,nel,j1,j2,i,i1,i2,mkdsp
+INTEGER(kind=8) :: n1,n2,k1,k2
 
 !lc=size(al,2)
 
@@ -631,8 +639,8 @@ DO klc=1,nlc
 mkdsp=ne*(klc-1)
   DO nel=1,NE
     rot=0.0
-    n1=int(elem_prop(nel,1))!%inc1
-    n2=int(elem_prop(nel,2))!%inc2
+    n1=NINT(elem_prop(nel,1),KIND=8)!%inc1
+    n2=NINT(elem_prop(nel,2),KIND=8)!%inc2
     !rot=rotmatgen(nel)
     call rotmatgen(nel,rot)
     !call printmatrix(rot,"rot")

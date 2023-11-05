@@ -678,3 +678,223 @@ elem5      1e+07      H1-1a      1e+07
 elem6      2e+06      H1-1a      2e+06     
 elem7      2e+06      H1-1a      2e+06     
 
+ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019
+Load Case: 1
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.1        H1-2 (Flexure and Tension) -0.0003   
+elem2      0.1        H1-2 (Flexure and Tension) -0.0006   
+elem3      0.3        H1-2 (Flexure and Tension) -0.0004   
+elem4      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem5      0.2        H1-2 (Flexure and Tension) -0.0006   
+elem6      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem7      0.3        H1-2 (Flexure and Tension) -0.0005   
+Load Case: 2
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem2      0.001      H1-2 (Flexure and Tension) -0.0002   
+elem3      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem4      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem5      0.05       H1-2 (Flexure and Tension) -7e-05    
+elem6      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem7      0.05       H1-2 (Flexure and Tension) -8e-05    
+
+ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019
+Load Case: 1
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.1        H1-2 (Flexure and Tension) -0.0003   
+elem2      0.1        H1-2 (Flexure and Tension) -0.0006   
+elem3      0.3        H1-2 (Flexure and Tension) -0.0004   
+elem4      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem5      0.2        H1-2 (Flexure and Tension) -0.0006   
+elem6      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem7      0.3        H1-2 (Flexure and Tension) -0.0005   
+Load Case: 2
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem2      0.001      H1-2 (Flexure and Tension) -0.0002   
+elem3      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem4      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem5      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem6      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem7      0.05       H1-2 (Flexure and Tension) -8e-05    
+
+ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019
+Load Case: 1
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.1        H1-2 (Flexure and Tension) -0.0003   
+elem2      0.1        H1-2 (Flexure and Tension) -0.0006   
+elem3      0.3        H1-2 (Flexure and Tension) -0.0004   
+elem4      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem5      0.2        H1-2 (Flexure and Tension) -0.0006   
+elem6      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem7      0.3        H1-2 (Flexure and Tension) -0.0005   
+Load Case: 2
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem2      0.001      H1-2 (Flexure and Tension) -0.0002   
+elem3      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem4      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem5      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem6      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem7      0.05       H1-2 (Flexure and Tension) -8e-05    
+
+ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019
+Load Case: 1
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.1        H1-2 (Flexure and Tension) -0.0003   
+elem2      0.1        H1-2 (Flexure and Tension) -0.0006   
+elem3      0.3        H1-2 (Flexure and Tension) -0.0004   
+elem4      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem5      0.2        H1-2 (Flexure and Tension) -0.0006   
+elem6      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem7      0.3        H1-2 (Flexure and Tension) -0.0005   
+Load Case: 2
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem2      0.001      H1-2 (Flexure and Tension) -0.0002   
+elem3      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem4      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem5      0.05       H1-2 (Flexure and Tension) -7e-05    
+elem6      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem7      0.05       H1-2 (Flexure and Tension) -8e-05    
+
+ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019
+Load Case: 1
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.1        H1-2 (Flexure and Tension) -0.0003   
+elem2      0.1        H1-2 (Flexure and Tension) -0.0006   
+elem3      0.3        H1-2 (Flexure and Tension) -0.0004   
+elem4      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem5      0.2        H1-2 (Flexure and Tension) -0.0006   
+elem6      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem7      0.3        H1-2 (Flexure and Tension) -0.0005   
+Load Case: 2
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem2      0.001      H1-2 (Flexure and Tension) -0.0002   
+elem3      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem4      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem5      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem6      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem7      0.05       H1-2 (Flexure and Tension) -8e-05    
+
+ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019
+Load Case: 1
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.1        H1-2 (Flexure and Tension) -0.0003   
+elem2      0.1        H1-2 (Flexure and Tension) -0.0006   
+elem3      0.3        H1-2 (Flexure and Tension) -0.0004   
+elem4      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem5      0.2        H1-2 (Flexure and Tension) -0.0006   
+elem6      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem7      0.3        H1-2 (Flexure and Tension) -0.0005   
+Load Case: 2
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem2      0.001      H1-2 (Flexure and Tension) -0.0002   
+elem3      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem4      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem5      0.05       H1-2 (Flexure and Tension) -7e-05    
+elem6      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem7      0.05       H1-2 (Flexure and Tension) -8e-05    
+
+ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019
+Load Case: 1
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.1        H1-2 (Flexure and Tension) -0.0003   
+elem2      0.1        H1-2 (Flexure and Tension) -0.0006   
+elem3      0.3        H1-2 (Flexure and Tension) -0.0004   
+elem4      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem5      0.2        H1-2 (Flexure and Tension) -0.0006   
+elem6      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem7      0.3        H1-2 (Flexure and Tension) -0.0005   
+Load Case: 2
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem2      0.001      H1-2 (Flexure and Tension) -0.0002   
+elem3      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem4      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem5      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem6      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem7      0.05       H1-2 (Flexure and Tension) -8e-05    
+
+ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019
+Load Case: 1
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.1        H1-2 (Flexure and Tension) -0.0003   
+elem2      0.1        H1-2 (Flexure and Tension) -0.0006   
+elem3      0.3        H1-2 (Flexure and Tension) -0.0004   
+elem4      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem5      0.2        H1-2 (Flexure and Tension) -0.0006   
+elem6      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem7      0.3        H1-2 (Flexure and Tension) -0.0005   
+Load Case: 2
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem2      0.001      H1-2 (Flexure and Tension) -0.0002   
+elem3      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem4      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem5      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem6      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem7      0.05       H1-2 (Flexure and Tension) -8e-05    
+
+ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019
+Load Case: 1
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.1        H1-2 (Flexure and Tension) -0.0003   
+elem2      0.1        H1-2 (Flexure and Tension) -0.0006   
+elem3      0.3        H1-2 (Flexure and Tension) -0.0004   
+elem4      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem5      0.2        H1-2 (Flexure and Tension) -0.0006   
+elem6      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem7      0.3        H1-2 (Flexure and Tension) -0.0005   
+Load Case: 2
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem2      0.001      H1-2 (Flexure and Tension) -0.0002   
+elem3      0.05       H1-2 (Flexure and Tension) -0.0001   
+elem4      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem5      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem6      0.05       H1-2 (Flexure and Tension) -8e-05    
+elem7      0.05       H1-2 (Flexure and Tension) -8e-05    
+
+ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019
+Load Case: 1
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.1        H1-2 (Flexure and Tension) -0.0003   
+elem2      0.1        H1-2 (Flexure and Tension) -0.0006   
+elem3      0.3        H1-2 (Flexure and Tension) -0.0004   
+elem4      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem5      0.2        H1-2 (Flexure and Tension) -0.0006   
+elem6      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem7      0.3        H1-2 (Flexure and Tension) -0.0005   
+Load Case: 2
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.03       H1-2 (Flexure and Tension) -0.0001   
+elem2      0.05       H1-2 (Flexure and Tension) -0.0002   
+elem3      0.08       H1-2 (Flexure and Tension) -0.0001   
+elem4      0.02       H1-2 (Flexure and Tension) -0.0001   
+elem5      0.04       H1-2 (Flexure and Tension) -0.0002   
+elem6      0.04       H1-2 (Flexure and Tension) -0.0001   
+elem7      0.06       H1-2 (Flexure and Tension) -0.0001   
+
+ANSI/AISC Code 360-16 (ASD/LRFD) - July 7, 2016 - Revised June 2019
+Load Case: 1
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.1        H1-2 (Flexure and Tension) -0.0003   
+elem2      0.1        H1-2 (Flexure and Tension) -0.0006   
+elem3      0.3        H1-2 (Flexure and Tension) -0.0004   
+elem4      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem5      0.2        H1-2 (Flexure and Tension) -0.0006   
+elem6      0.2        H1-2 (Flexure and Tension) -0.0005   
+elem7      0.3        H1-2 (Flexure and Tension) -0.0005   
+Load Case: 2
+Element    Unity Ratio Equation   Pr/Pc     
+elem1      0.03       H1-2 (Flexure and Tension) -0.0001   
+elem2      0.05       H1-2 (Flexure and Tension) -0.0002   
+elem3      0.08       H1-2 (Flexure and Tension) -0.0001   
+elem4      0.02       H1-2 (Flexure and Tension) -0.0001   
+elem5      0.04       H1-2 (Flexure and Tension) -0.0002   
+elem6      0.04       H1-2 (Flexure and Tension) -0.0001   
+elem7      0.06       H1-2 (Flexure and Tension) -0.0001   
+

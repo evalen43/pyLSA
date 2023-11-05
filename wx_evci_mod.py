@@ -413,6 +413,7 @@ class StruMod(Unit):
                         ldtuple = (i, k, px, py, mz)
                         cls.nodeloads.append(ldtuple)
                 elif tag2 == "loaded-members":
+                    cls.f=np.zeros(cls.ndfel)
                     lines = content2.splitlines()
                     cls.nlmem = len(lines)
                     for line in lines:
